@@ -1,0 +1,23 @@
+@import "rcd-core";
+
+.rcd-admin {
+  .menubar :extend(.rcd-vertical-container) {
+    background-color: @rcd-primary-color;
+    color: white;
+  }
+
+  .menu {
+    cursor: pointer;
+    &:hover {
+      background-color: darken(@rcd-primary-color, 10%);
+    }
+  }
+
+  .menubar-title :extend(.rcd-admin .menu all) {
+    font-size: @rcd-title-font-size;
+  }
+
+  .details :extend(.rcd-vertical-container) {
+    flex: 1 1 auto;
+  }
+}
