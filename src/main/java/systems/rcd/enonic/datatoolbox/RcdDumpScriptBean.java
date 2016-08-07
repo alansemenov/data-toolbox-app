@@ -22,7 +22,6 @@ public class RcdDumpScriptBean
     public String list()
     {
         final RcdJsonArray result = RcdJsonService.createJsonArray();
-        result.add( "sss" );
 
         final Path dumpDirectoryPath = HomeDir.get().
             toFile().
@@ -32,7 +31,13 @@ public class RcdDumpScriptBean
         if ( dumpDirectoryPath.toFile().exists() )
         {
 
-            RcdFileService.listSubPaths( dumpDirectoryPath, dumpPath -> System.out.println( dumpPath ) );
+            RcdFileService.listSubPaths( dumpDirectoryPath, dumpPath -> {
+                if ( dumpPath.toFile().isDirectory() )
+                {
+                    final String dumpName = dumpPath.getFileName().toString();
+                    result.add( dumpName );
+                }
+            } );
         }
         return RcdJsonService.toString( result );
     }
