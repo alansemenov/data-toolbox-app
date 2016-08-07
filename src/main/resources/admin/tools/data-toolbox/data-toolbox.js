@@ -12,7 +12,7 @@ exports.get = function (req) {
     } else {
         return render("main",
             {
-                assetsUrl: portalLib.assetUrl({path: "main"})
+                assetsUrl: portalLib.assetUrl({path: ""})
             }
         );
     }
