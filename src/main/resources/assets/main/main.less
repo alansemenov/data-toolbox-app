@@ -1,20 +1,19 @@
 @import "rcd-admin";
-@import "rcd-opensans";
-
-@rcd-background-color: #f3f3f4;
-//@rcd-primary-color: #474544;
+@import "rcd-roboto";
 
 body :extend(.rcd-horizontal-container) {
-  .menubar :extend(.rcd-admin .menubar) {
-    .menubar-title :extend(.rcd-admin .menubar-title) {
+  .nav-bar :extend(.rcd-admin .nav-bar) {
+    .nav-title :extend(.rcd-admin .nav-title) {
     }
-    .menu :extend(.rcd-admin .menu all) {
+    .nav-item :extend(.rcd-admin .nav-item all) {
     }
 
   }
   .main :extend(.rcd-admin .main) {
-    .card :extend(.rcd-admin .card) {
+    .header :extend(.rcd-admin .header) {
+      .header-title :extend(.rcd-admin .header-title) {
 
+      }
     }
   }
 }

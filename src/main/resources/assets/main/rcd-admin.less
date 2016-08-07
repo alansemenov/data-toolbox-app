@@ -1,27 +1,40 @@
-@import "rcd-core";
+@import "rcd";
 
 .rcd-admin {
-  .menubar :extend(.rcd-vertical-container) {
-    background-color: @rcd-primary-color;
-    color: white;
+  .nav-bar :extend(.rcd-vertical-container) {
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12)
   }
 
-  .menu {
-    cursor: pointer;
-    &:hover {
-      background-color: darken(@rcd-primary-color, 10%);
-    }
-  }
-
-  .menubar-title :extend(.rcd-admin .menu all) {
+  .nav-title :extend(.rcd-admin .nav-item) {
     font-size: @rcd-title-font-size;
+  }
+
+  .nav-item {
+    cursor: pointer;
+    font-weight: 500;
+    &:hover {
+      background-color: darken(@rcd-background-color, 5%);
+    }
   }
 
   .main :extend(.rcd-vertical-container) {
     flex: 1 1 auto;
   }
 
-  .card :extend(.rcd-vertical-container) {
-    border-radius: 2px;
+  .header :extend(.rcd-horizontal-container) {
+    background-color: @rcd-primary-color;
+    color: white;
+
+  }
+
+  .header-title :extend(.rcd-horizontal-container) {
+    font-size: @rcd-title-font-size;
+    .rcd-align-items-center;
+  }
+
+  .container :extend(.rcd-vertical-container) {
+    margin: 0 auto;
+    max-width: 1280px;
+    background-color: green;
   }
 }
