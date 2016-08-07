@@ -28,7 +28,7 @@ dependencies {
     include "com.enonic.xp:lib-portal:${xpVersion}"
     include "com.enonic.xp:lib-mustache:${xpVersion}"
 
-    compile "systems.rcd.fwk.core:rcd-fwk-core:7.0.0-SNAPSHOT"
+    include "systems.rcd.fwk.core:rcd-fwk-core:7.0.0-SNAPSHOT"
 }
 
 repositories {
