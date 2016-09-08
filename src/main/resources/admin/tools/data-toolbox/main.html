@@ -6,6 +6,11 @@
     <link rel="stylesheet/less" type="text/css" href="{{assetsUrl}}/main/main.less"/>
     <script src="{{assetsUrl}}/less/less-2.7.1.min.js" type="text/javascript"></script>
     <script src="{{assetsUrl}}/jquery/jquery-3.1.0.min.js" type="text/javascript"></script>
+    <script>
+        var config = {
+            servicesUrl: "{{servicesUrl}}"
+        };
+    </script>
 </head>
 
 <body>
@@ -26,8 +31,28 @@
     </header>
 
     <div class="container">
-        <div class="section">
-            <p class="caption">Data toolbox includes multiple Admin tool allowing you to view and manage your data</p>
+        <div class="view">
+            <div class="section">
+                <p class="caption">Data toolbox includes multiple Admin tool allowing you to view and manage your data</p>
+            </div>
+        </div>
+        <div class="view" id="dumpView" hidden>
+            <div class="table">
+                <div class="table-header">
+                    <div class="table-column-header">
+                        <span>Dump name</span>
+                    </div>
+                    <div class="table-column-header">
+                        <span>Timestamp</span>
+                    </div>
+                </div>
+                <div class="table-body" id="dumpTableBody">
+                </div>
+                <div class="table-footer">
+                    <input type="text" placeholder="dump-{{timestamp}}" id="dumpNameInput">
+                    <button id="dumpAddButton">Add</button>
+                </div>
+            </div>
         </div>
     </div>
 

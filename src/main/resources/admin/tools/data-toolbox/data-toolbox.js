@@ -10,7 +10,9 @@ exports.get = function (req) {
     } else {
         return render("main",
             {
-                assetsUrl: portalLib.assetUrl({path: ""})
+                assetsUrl: portalLib.assetUrl({path: ""}),
+                servicesUrl: portalLib.serviceUrl({service: ""}),
+                timestamp: new Date().toISOString()
             }
         );
     }

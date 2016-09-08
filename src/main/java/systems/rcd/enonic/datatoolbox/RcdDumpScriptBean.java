@@ -4,6 +4,7 @@ import java.nio.file.Path;
 
 import systems.rcd.fwk.core.format.json.RcdJsonService;
 import systems.rcd.fwk.core.format.json.data.RcdJsonArray;
+import systems.rcd.fwk.core.format.json.data.RcdJsonObject;
 import systems.rcd.fwk.core.io.file.RcdFileService;
 
 import com.enonic.xp.home.HomeDir;
@@ -30,12 +31,13 @@ public class RcdDumpScriptBean
 
         if ( dumpDirectoryPath.toFile().exists() )
         {
-
             RcdFileService.listSubPaths( dumpDirectoryPath, dumpPath -> {
                 if ( dumpPath.toFile().isDirectory() )
                 {
-                    final String dumpName = dumpPath.getFileName().toString();
-                    result.add( dumpName );
+                    final RcdJsonObject dump = RcdJsonService.createJsonObject().
+                        put( "name", dumpPath.getFileName().toString() ).
+                        put( "timestamp", dumpPath.toFile().lastModified() );
+                    result.add( dump );
                 }
             } );
         }
