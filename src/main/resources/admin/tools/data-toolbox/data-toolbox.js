@@ -2,8 +2,6 @@ var mustacheLib = require('/lib/xp/mustache');
 var portalLib = require('/lib/xp/portal');
 
 exports.get = function (req) {
-
-
     if (req.params.action) {
         switch (req.params.action) {
         case "render":
@@ -17,7 +15,6 @@ exports.get = function (req) {
         );
     }
 
-
     return {
         status: 400
     };
@@ -26,7 +23,7 @@ exports.get = function (req) {
 };
 
 function render(viewName, params) {
-    var view = resolve(viewName + ".html"); //TODO Secu
+    var view = resolve(viewName + ".html");
     var body = mustacheLib.render(view, params);
 
     return {
