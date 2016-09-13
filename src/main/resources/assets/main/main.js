@@ -34,6 +34,8 @@ function deleteDump(dumpName) {
         url: config.servicesUrl + '/dump-delete',
         data: JSON.stringify({name: dumpName}),
         contentType: 'application/json; charset=utf-8'
+    }).always(function () {
+        displayDumpView();
     });
 }
 
