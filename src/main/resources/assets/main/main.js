@@ -24,12 +24,12 @@ function displayDumpView() {
 }
 
 function createDumpRow(dump) {
-    return '<div class="table-row"><div class="table-cell"><span>' + dump.name + '</span></div><div class="table-cell"><span>' +
+    return '<div class="table-row"><div class="table-cell name-column"><span>' + dump.name + '</span></div><div class="table-cell"><span>' +
            new Date(dump.timestamp).toISOString() + '</span></div></div>';
 }
 
 
 function displayView(viewId) {
-    $('.view').hide();
-    $('#' + viewId).show();
+    $('.view').addClass("rcd-hidden");
+    $('#' + viewId).removeClass("rcd-hidden");
 }

@@ -7,21 +7,32 @@ body :extend(.rcd-horizontal-container) {
     }
     .nav-item :extend(.rcd-admin .nav-item all) {
     }
-
   }
   .main :extend(.rcd-admin .main) {
     .header :extend(.rcd-admin .header) {
       .header-title :extend(.rcd-admin .header-title) {
-
       }
     }
-
     .container :extend(.rcd-admin .container) {
       .section :extend(.rcd-admin .section) {
-
       }
       .caption :extend(.rcd-admin .caption) {
+      }
+      .view :extend(.rcd-admin .view) {
 
+        .table :extend(.rcd-admin .table) {
+
+          .table-header :extend(.rcd-admin .table-header) {
+          }
+          .table-body :extend(.rcd-admin .table-body) {
+            .table-row :extend(.rcd-admin .table-row) {
+            }
+          }
+
+          .name-column {
+            width: 20em;
+          }
+        }
       }
 
     }
