@@ -23,11 +23,7 @@ public class RcdDumpScriptBean
     public String list()
     {
         final RcdJsonArray result = RcdJsonService.createJsonArray();
-
-        final Path dumpDirectoryPath = HomeDir.get().
-            toFile().
-            toPath().
-            resolve( "data/dump" );
+        final Path dumpDirectoryPath = getDumpDirectoryPath();
 
         if ( dumpDirectoryPath.toFile().exists() )
         {
@@ -42,5 +38,28 @@ public class RcdDumpScriptBean
             } );
         }
         return RcdJsonService.toString( result );
+    }
+
+    public RcdJsonObject delete( final String dumpName )
+    {
+        try
+        {
+            final Path dumpPath = getDumpDirectoryPath().resolve( dumpName );
+            RcdFileService.deleteDirectory( dumpPath );
+            return RcdJsonService.createJsonObject().put( "deleted", true );
+
+        }
+        catch ( Exception e )
+        {
+            return RcdJsonService.createJsonObject().put( "deleted", false );
+        }
+    }
+
+    private Path getDumpDirectoryPath()
+    {
+        return HomeDir.get().
+            toFile().
+            toPath().
+            resolve( "data/dump" );
     }
 }
