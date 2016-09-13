@@ -19,7 +19,7 @@ function displayDumpView() {
         var tableBody = dumps.map(createDumpRow);
         $('#dumpTableBody').html(tableBody);
     }).always(function () {
-        displayView("dumpView");
+        displayView("dumpView", "Dumps");
     });
 }
 
@@ -29,7 +29,8 @@ function createDumpRow(dump) {
 }
 
 
-function displayView(viewId) {
+function displayView(viewId, title) {
     $('.view').addClass("rcd-hidden");
     $('#' + viewId).removeClass("rcd-hidden");
+    $('#headerTitleText').html(title);
 }
