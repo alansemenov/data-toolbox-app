@@ -11,17 +11,16 @@ body :extend(.rcd-flex .vbox) {
   }
   .main :extend(.rcd-material .main) {
     .nav :extend(.rcd-material .nav) {
-
-    }
-    .nav-link :extend(.rcd-material .nav-link) {
-      .nav-icon :extend(.rcd-material .nav-icon) {
+      .nav-link :extend(.rcd-material .nav-link) {
+        .nav-icon :extend(.rcd-material .nav-icon) {
+        }
+      }
+      .nav-link.selected :extend(.rcd-material .nav-link-selected) {
+        .nav-icon :extend(.rcd-material .nav-link-selected) {
+        }
       }
     }
-    .nav-link.selected :extend(.rcd-material .nav-link-selected) {
-      .nav-icon :extend(.rcd-material .nav-link-selected) {
-      }
-    }
-
+    
   }
 }
 
