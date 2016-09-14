@@ -1,5 +1,4 @@
 /* Default values removal */
-
 body {
   margin: 0;
 }
@@ -19,6 +18,12 @@ html, body {
   height: 100%
 }
 
+header {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+}
+
 /* Colors settings */
 @rcd-background-color: #fcfcfc;
 @rcd-color: #000;
@@ -33,17 +38,9 @@ html {
   font-size: 62.5%;
 }
 
-@rcd-text-font-size: 1.4rem;
-@rcd-title-font-size: 3.8rem;
-
+@rcd-font-size: 1.4rem;
 body {
-  font-size: @rcd-text-font-size;
-}
-
-@rcd-text-padding: 0.5em 1em;
-span {
-  padding: @rcd-text-padding;
-  display: block;
+  font-size: @rcd-font-size;
 }
 
 @rcd-font-family: Arial, sans-serif;

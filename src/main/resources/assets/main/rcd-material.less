@@ -1,0 +1,29 @@
+@import "rcd";
+@import "rcd-material-icons";
+
+.rcd-material {
+  .header :extend(.rcd-flex .hbox) {
+    width: 100%;
+    background-color: @rcd-primary-color;
+    color: white;
+
+    height: 64px;
+    padding-left: 24px;
+    padding-right: 24px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+  }
+  .menu :extend(.rcd-flex .cbox) {
+  }
+  .title :extend(.rcd-flex .hbox) {
+    font-weight: 400;
+    font-size: 20px;
+    padding-left: 32px;
+  }
+  .main :extend(.rcd-flex .hbox) {
+    width: 100%;
+  }
+  .nav :extend(.rcd-flex .vbox) {
+
+  }
+}

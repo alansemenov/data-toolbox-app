@@ -14,54 +14,37 @@
 </head>
 
 <body>
-<nav class="nav-bar">
-    <div class="nav-title">
-        <span>Data toolbox</span>
-    </div>
 
-    <div id="nav-item-dump" class="nav-item">
-        <span>Dump</span>
+<header class="header">
+    <div class="menu">
+        <i class="material-icons">menu</i>
     </div>
-</nav>
+    <div class="title"><span>Data toolbox</span></div>
+</header>
 <main class="main">
-    <header class="header">
-        <div class="header-title">
-            <span id="headerTitleText">Data toolbox</span>
+    <nav class="nav">
+        <a class="nav-link">Exports & Dumps</a>
+        <a class="nav-link">Snapshots</a>
+    </nav>
+    <div class="content">
+        <div class="content-header">
+            <div class="content-title"></div>
+            <div class="breadcrumbs"></div>
         </div>
-    </header>
+        <div class="content-description"></div>
 
-    <div class="container">
-        <div class="view">
-            <div class="section">
-                <p class="caption">Data toolbox includes multiple Admin tool allowing you to view and manage your data</p>
-            </div>
-        </div>
-        <div class="view rcd-hidden" id="dumpView">
-            <div class="section">
-                <p class="caption">Dumps are an export of your entire installation</p>
-            </div>
-            <div class="table">
-                <div class="table-header">
-                    <div class="table-column-header button-column">
-                    </div>
-                    <div class="table-column-header name-column">
-                        <span>Dump name</span>
-                    </div>
-                    <div class="table-column-header">
-                        <span>Timestamp</span>
-                    </div>
-                </div>
-                <div class="table-body" id="dumpTableBody">
-                </div>
-                <div class="table-footer">
-                    <input type="text" placeholder="dump-{{timestamp}}" id="dumpNameInput">
-                    <button id="dumpAddButton">Add</button>
+        <div class="views">
+            <div class="view">
+                <div class="section">
+                    <div class="section-header"></div>
+                    <div class="section-description"></div>
+                    <div class="section-content"></div>
                 </div>
             </div>
         </div>
     </div>
-
 </main>
+
 
 <script src="{{assetsUrl}}/main/main.js" type="text/javascript"></script>
 </body>

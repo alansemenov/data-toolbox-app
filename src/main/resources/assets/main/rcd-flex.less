@@ -1,15 +1,21 @@
 
-.rcd-container {
-  display: flex;
+.rcd-flex {
+  .box {
+    display: flex;
+    align-items: center;
+  }
+
+  .cbox :extend(.rcd-flex .box) {
+    justify-items: center;
+  }
+
+  .hbox :extend(.rcd-flex .box) {
+  }
+
+  .vbox :extend(.rcd-flex .box) {
+    flex-direction: column;
+  }
 }
 
-.rcd-horizontal-container :extend(.rcd-container) {
-}
 
-.rcd-vertical-container :extend(.rcd-container) {
-  flex-direction: column;
-}
 
-.rcd-align-items-center {
-  align-items: center;
-}

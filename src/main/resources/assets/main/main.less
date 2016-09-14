@@ -1,42 +1,16 @@
-@import "rcd-admin";
+@import "rcd-material";
 @import "rcd-roboto";
 
-body :extend(.rcd-horizontal-container) {
-  .nav-bar :extend(.rcd-admin .nav-bar) {
-    .nav-title :extend(.rcd-admin .nav-title) {
+body :extend(.rcd-flex .vbox) {
+  .header :extend(.rcd-material .header) {
+
+    .menu :extend(.rcd-material .menu) {
     }
-    .nav-item :extend(.rcd-admin .nav-item all) {
+    .title :extend(.rcd-material .title) {
     }
   }
-  .main :extend(.rcd-admin .main) {
-    .header :extend(.rcd-admin .header) {
-      .header-title :extend(.rcd-admin .header-title) {
-      }
-    }
-    .container :extend(.rcd-admin .container) {
-      .section :extend(.rcd-admin .section) {
-      }
-      .caption :extend(.rcd-admin .caption) {
-      }
-      .view :extend(.rcd-admin .view) {
-
-        .table :extend(.rcd-admin .table) {
-
-          .table-header :extend(.rcd-admin .table-header) {
-          }
-          .table-body :extend(.rcd-admin .table-body) {
-            .table-row :extend(.rcd-admin .table-row) {
-            }
-          }
-
-          .button-column {
-            width: 2em;
-          }
-          .name-column {
-            width: 20em;
-          }
-        }
-      }
+  .main :extend(.rcd-material .main) {
+    .nav :extend(.rcd-material .nav) {
 
     }
   }
