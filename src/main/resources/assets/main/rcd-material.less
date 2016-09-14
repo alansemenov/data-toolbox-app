@@ -6,7 +6,9 @@
     width: 100%;
     background-color: @rcd-primary-color;
     color: white;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
 
+    //Material design metrics
     height: 64px;
     padding-left: 24px;
     padding-right: 24px;
@@ -22,8 +24,36 @@
   }
   .main :extend(.rcd-flex .hbox) {
     width: 100%;
+    height: 100%;
   }
   .nav :extend(.rcd-flex .vbox) {
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+    padding-top: 5px;
 
+    //Material design metrics
+    width: 240px;
+    height: 100%;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .nav-link :extend(.rcd-flex .hbox) {
+    width: 100%;
+    //Material design metrics
+    height: 48px;
+    color: rgba(0, 0, 0, 0.87);
+  }
+
+  .nav-icon {
+    width: 24px;
+    height: 24px;
+
+    //Material design metrics
+    color: rgba(0, 0, 0, 0.54);
+    padding-right: 32px;
+  }
+
+  .nav-link-selected {
+    color: @rcd-primary-color;
   }
 }
