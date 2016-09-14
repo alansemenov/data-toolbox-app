@@ -24,22 +24,22 @@
 </header>
 <main class="main">
     <nav class="nav">
-        <a class="nav-link selected">
+        <div class="nav-link selected">
             <i class="nav-icon material-icons">home</i>
             <span>Presentation</span>
-        </a>
-        <a class="nav-link">
+        </div>
+        <div class="nav-link" id="navLinkExports">
             <i class="nav-icon material-icons">file_download</i>
             <span>Exports & Dumps</span>
-        </a>
-        <a class="nav-link">
+        </div>
+        <div class="nav-link">
             <i class="nav-icon material-icons">photo_camera</i>
             <span>Snapshots</span>
-        </a>
+        </div>
     </nav>
     <div class="content">
         <div class="content-header">
-            <div class="content-title"><span>Presentation</span></div>
+            <div class="content-title" id="contentTitle"><span>Presentation</span></div>
             <div class="breadcrumbs">
                 <span class="breadcrumb">Data toolbox</span>
                 <span> / </span>
@@ -52,11 +52,30 @@
             occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p></div>
 
         <div class="views">
-            <div class="view">
+            <div class="view rcd-hidden" id="viewExports">
                 <div class="section">
-                    <div class="section-header"></div>
+                    <div class="section-header">DUMPS</div>
                     <div class="section-description"></div>
-                    <div class="section-content"></div>
+                    <div class="section-content">
+                        <div class="table">
+                            <div class="table-header">
+                                <div class="table-column-header button-column">
+                                </div>
+                                <div class="table-column-header name-column">
+                                    <span>Dump name</span>
+                                </div>
+                                <div class="table-column-header">
+                                    <span>Timestamp</span>
+                                </div>
+                            </div>
+                            <div class="table-body" id="dumpTableBody">
+                            </div>
+                            <div class="table-footer">
+                                <input type="text" placeholder="dump-{{timestamp}}" id="dumpNameInput">
+                                <button id="dumpAddButton">Add</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

@@ -35,6 +35,27 @@ body :extend(.rcd-flex .vbox) {
 
       .content-description :extend(.rcd-material .content-description) {
       }
+
+      .views :extend(.rcd-material .views) {
+        .view :extend(.rcd-material .view) {
+          .table :extend(.rcd-material .table) {
+
+            .table-header :extend(.rcd-material .table-header) {
+            }
+            .table-body :extend(.rcd-material .table-body) {
+              .table-row :extend(.rcd-material .table-row) {
+              }
+            }
+
+            .button-column {
+              width: 42px;
+            }
+            .name-column {
+              width: 20em;
+            }
+          }
+        }
+      }
     }
 
   }

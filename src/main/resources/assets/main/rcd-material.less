@@ -73,13 +73,13 @@
   }
 
   .content-child {
+    width: 100%;
     //Material design metrics
     padding-left: 24px;
     padding-right: 24px;
   }
 
   .content-header :extend(.rcd-flex .vbox, .rcd-material .content-child) {
-    width: 100%;
     background-color: #f3f3f3;
 
     //Material design metrics
@@ -105,7 +105,6 @@
   }
 
   .content-description :extend(.rcd-flex .hbox, .rcd-material .content-child) {
-    width: 100%;
     padding-bottom: 30px;
     font-weight: 300;
     font-size: 17px;
@@ -114,5 +113,15 @@
   .views :extend(.rcd-flex .hbox, .rcd-material .content-child) {
     //Material design metrics
     padding-bottom: 16px;
+  }
+
+  .table :extend(.rcd-flex .vbox) {
+  }
+  .table-header :extend(.rcd-flex .hbox) {
+    width: 100%;
+  }
+  .table-body :extend(.rcd-flex .vbox) {
+  }
+  .table-row :extend(.rcd-flex .hbox) {
   }
 }

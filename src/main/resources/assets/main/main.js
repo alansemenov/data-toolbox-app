@@ -1,4 +1,4 @@
-$('#nav-item-dump').click(displayDumpView);
+$('#navLinkExports').click(displayExportsView);
 
 $('#dumpAddButton').click(function () {
     var dumpName = $('#dumpNameInput').val() || 'dump-' + new Date().toISOString();
@@ -12,7 +12,7 @@ $('#dumpAddButton').click(function () {
 });
 
 
-function displayDumpView() {
+function displayExportsView() {
     $.ajax({
         url: config.servicesUrl + '/dump-list'
 
@@ -24,7 +24,7 @@ function displayDumpView() {
             deleteDump(event.target.value);
         });
     }).always(function () {
-        displayView('dumpView', 'Dumps');
+        displayView('viewExports', 'Exports & Dumps');
     });
 }
 
@@ -51,5 +51,5 @@ function createDumpRow(dump) {
 function displayView(viewId, title) {
     $('.view').addClass('rcd-hidden');
     $('#' + viewId).removeClass('rcd-hidden');
-    $('#headerTitleText').html(title);
+    $('#contentTitle').html(title);
 }
