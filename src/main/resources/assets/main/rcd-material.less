@@ -1,11 +1,14 @@
 @import "rcd";
 @import "rcd-material-icons";
 
+@rcd-font-size: 13px;
+
 .rcd-material {
   .header :extend(.rcd-flex .hbox) {
     width: 100%;
     background-color: @rcd-primary-color;
     color: white;
+    z-index: 2;
     box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
 
     //Material design metrics
@@ -27,8 +30,10 @@
     height: 100%;
   }
   .nav :extend(.rcd-flex .vbox) {
+    z-index: 1;
     box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
     padding-top: 5px;
+    background-color: #fff;
 
     //Material design metrics
     width: 240px;
@@ -41,6 +46,7 @@
     width: 100%;
     //Material design metrics
     height: 48px;
+    font-size: 14px;
     color: rgba(0, 0, 0, 0.87);
   }
 
@@ -54,6 +60,45 @@
   }
 
   .nav-link-selected {
+
+    //Material design metrics
     color: @rcd-primary-color;
+  }
+
+  .content :extend(.rcd-flex .vbox) {
+    flex-grow: 1;
+    height: 100%;
+
+  }
+
+  .content-header :extend(.rcd-flex .vbox) {
+    width: 100%;
+    background-color: #f3f3f3;
+
+    //Material design metrics
+    padding: 24px 24px 0 24px;
+  }
+
+  .content-title :extend(.rcd-flex .hbox) {
+    width: 100%;
+    font-size: 20px;
+
+    //Material design metrics
+    //font-size: 15px;
+  }
+
+  .breadcrumbs :extend(.rcd-flex .hbox) {
+    width: 100%;
+    margin: 15px 0;
+  }
+
+  .link {
+    //Material design metrics
+    color: @rcd-primary-color;
+  }
+
+  .views {
+    //Material design metrics
+    padding-bottom: 16px;
   }
 }
