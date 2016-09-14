@@ -34,6 +34,7 @@
     box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
     padding-top: 5px;
     background-color: #fff;
+    flex-shrink: 0;
 
     //Material design metrics
     width: 240px;
@@ -71,12 +72,18 @@
 
   }
 
-  .content-header :extend(.rcd-flex .vbox) {
+  .content-child {
+    //Material design metrics
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+
+  .content-header :extend(.rcd-flex .vbox, .rcd-material .content-child) {
     width: 100%;
     background-color: #f3f3f3;
 
     //Material design metrics
-    padding: 24px 24px 0 24px;
+    padding-top: 24px;
   }
 
   .content-title :extend(.rcd-flex .hbox) {
@@ -97,7 +104,14 @@
     color: @rcd-primary-color;
   }
 
-  .views {
+  .content-description :extend(.rcd-flex .hbox, .rcd-material .content-child) {
+    width: 100%;
+    padding-bottom: 30px;
+    font-weight: 300;
+    font-size: 17px;
+  }
+
+  .views :extend(.rcd-flex .hbox, .rcd-material .content-child) {
     //Material design metrics
     padding-bottom: 16px;
   }
