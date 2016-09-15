@@ -61,8 +61,9 @@ body :extend(.rcd-flex .vbox) {
     .table-body :extend(.rcd-material .table-body) {
       .table-row :extend(.rcd-material .table-row) {
       }
-      .table-row:hover:extend(.rcd-material .table-row-hover) {
-
+      .table-row:hover :extend(.rcd-material .table-row-hover) {
+      }
+      .table-row.selected :extend(.rcd-material .table-row-selected) {
       }
     }
     .button-column {
