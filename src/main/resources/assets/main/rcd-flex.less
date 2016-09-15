@@ -1,25 +1,27 @@
-
-.rcd-flex {
-  .box {
-    display: flex;
-    align-items: center;
-  }
-
-  .cbox :extend(.rcd-flex .box) {
-    justify-content: center;
-  }
-
-  .sbox :extend(.rcd-flex .box) {
-    justify-content: space-between;
-  }
-
-  .hbox :extend(.rcd-flex .box) {
-  }
-
-  .vbox :extend(.rcd-flex .box) {
-    flex-direction: column;
-  }
+.rcd-flex-box {
+  display: flex;
+  align-items: center;
 }
+
+.rcd-flex-cbox :extend(.rcd-flex-box) {
+  justify-content: center;
+}
+
+.rcd-flex-sbox :extend(.rcd-flex-box) {
+  justify-content: space-between;
+}
+
+.rcd-flex-hbox :extend(.rcd-flex-box) {
+}
+
+.rcd-flex-vbox :extend(.rcd-flex-box) {
+  flex-direction: column;
+}
+
+.rcd-flex-unshrinkable {
+  flex-shrink: 0;
+}
+
 
 
 

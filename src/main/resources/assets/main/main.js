@@ -61,11 +61,12 @@ function selectDumpRow(index) {
 }
 
 function createDumpRow(dump, index) {
-    return '<div class="table-row" id="rowDump' + index + '">' +
-           '<div class="table-cell button-column"><i class="material-icons checkbox action-select-dump" id="checkboxDump' + index +
+    return '<div class="rcd-material-table-row" id="rowDump' + index + '">' +
+           '<div class="rcd-material-table-cell button-column"><i class="material-icons rcd-material-checkbox action-select-dump" id="checkboxDump' +
+           index +
            '" index="' + index + '">check_box_outline_blank</i>' + '</div>' +
-           '<div class="table-cell name-column"><span>' + dump.name + '</span></div>' +
-           '<div class="table-cell"><span>' + new Date(dump.timestamp).toISOString() + '</span></div>' +
+           '<div class="rcd-material-table-cell name-column"><span>' + dump.name + '</span></div>' +
+           '<div class="rcd-material-table-cell"><span>' + new Date(dump.timestamp).toISOString() + '</span></div>' +
            '</div>';
 }
 
