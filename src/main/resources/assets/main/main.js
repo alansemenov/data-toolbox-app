@@ -41,7 +41,7 @@ function deleteDump(dumpName) {
 
 function createDumpRow(dump) {
     return '<div class="table-row">' +
-           '<div class="table-cell button-column"><button class="deleteDumpButton" value="' + dump.name + '">Del</button></div>' +
+           '<div class="table-cell button-column"><i class="material-icons checkbox">check_box_outline_blank</i></div>' +
            '<div class="table-cell name-column"><span>' + dump.name + '</span></div>' +
            '<div class="table-cell"><span>' + new Date(dump.timestamp).toISOString() + '</span></div>' +
            '</div>';

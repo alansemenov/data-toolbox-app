@@ -3,13 +3,22 @@
 
 @rcd-font-size: 13px;
 
+@rcd-primary-color: #2A5C88;
+@rcd-light-primary-color: #426F98;
+@rcd-dark-primary-color: #184571;
+@rcd-accent-color: #D29136;
+
 .rcd-material {
-  .header :extend(.rcd-flex .hbox) {
+
+  .shadow-1 {
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+  }
+
+  .header :extend(.rcd-flex .hbox, .rcd-material .shadow-1) {
     width: 100%;
     background-color: @rcd-primary-color;
     color: white;
     z-index: 2;
-    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
 
     //Material design metrics
     height: 64px;
@@ -29,9 +38,8 @@
     width: 100%;
     height: 100%;
   }
-  .nav :extend(.rcd-flex .vbox) {
+  .nav :extend(.rcd-flex .vbox, .rcd-material .shadow-1) {
     z-index: 1;
-    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
     padding-top: 5px;
     background-color: #fff;
     flex-shrink: 0;
@@ -43,7 +51,7 @@
     padding-right: 16px;
   }
 
-  .nav-link :extend(.rcd-flex .hbox) {
+  .nav-link :extend(.rcd-flex .hbox, .rcd-core .clickable) {
     width: 100%;
     //Material design metrics
     height: 48px;
@@ -115,13 +123,71 @@
     padding-bottom: 16px;
   }
 
+  .view :extend(.rcd-flex .vbox) {
+    width: 100%;
+  }
+
+  .card :extend(.rcd-flex .vbox, .rcd-material .shadow-1) {
+    border-radius: 2px;
+    background-color: #fff;
+  }
+  .card-header :extend(.rcd-flex .sbox) {
+    width: 100%;
+    //Material design metrics
+    height: 64px;
+    padding-left: 24px;
+    padding-right: 14px;
+  }
+  .card-title :extend(.rcd-flex .hbox) {
+    //Material design metrics
+    font-size: 20px;
+    color: rgba(0, 0, 0, 0.87);
+  }
+  .card-action-icons :extend(.rcd-flex .hbox) {
+    justify-self: flex-end;
+    //Material design metrics
+    font-size: 24px;
+    color: rgba(0, 0, 0, 0.54);
+  }
+  .card-action-icon :extend(.rcd-flex .hbox, .rcd-core .clickable) {
+    margin-left: 24px;
+  }
+
   .table :extend(.rcd-flex .vbox) {
+    //Material design metrics
+    font-size: 13px;
+    color: rgba(0, 0, 0, 0.87);
   }
   .table-header :extend(.rcd-flex .hbox) {
     width: 100%;
+    //Material design metrics
+    height: 56px;
+    font-size: 12px;
+    color: rgba(0, 0, 0, 0.54);
+    padding-left: 24px;
+    padding-right: 24px;
   }
   .table-body :extend(.rcd-flex .vbox) {
   }
   .table-row :extend(.rcd-flex .hbox) {
+    border-top: solid rgba(0, 0, 0, 0.12) 1px;
+    //Material design metrics
+    height: 48px;
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+  .table-row-hover {
+    //Material design metrics
+    background-color: #eee;
+  }
+  .table-row-selected {
+    //Material design metrics
+    background-color: #f5f5f5;
+  }
+
+  .checkbox :extend(.rcd-core .clickable) {
+  }
+  .checkbox-selected {
+    color: @rcd-accent-color;
   }
 }

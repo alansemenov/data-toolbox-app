@@ -38,26 +38,44 @@ body :extend(.rcd-flex .vbox) {
 
       .views :extend(.rcd-material .views) {
         .view :extend(.rcd-material .view) {
-          .table :extend(.rcd-material .table) {
-
-            .table-header :extend(.rcd-material .table-header) {
-            }
-            .table-body :extend(.rcd-material .table-body) {
-              .table-row :extend(.rcd-material .table-row) {
-              }
-            }
-
-            .button-column {
-              width: 42px;
-            }
-            .name-column {
-              width: 20em;
-            }
-          }
         }
       }
     }
-
   }
+
+  .card :extend(.rcd-material .card) {
+    .card-header :extend(.rcd-material .card-header) {
+      .card-title :extend(.rcd-material .card-title) {
+      }
+      .card-action-icons :extend(.rcd-material .card-action-icons) {
+        .card-action-icon :extend(.rcd-material .card-action-icon) {
+
+        }
+      }
+    }
+  }
+
+  .table :extend(.rcd-material .table) {
+    .table-header :extend(.rcd-material .table-header) {
+    }
+    .table-body :extend(.rcd-material .table-body) {
+      .table-row :extend(.rcd-material .table-row) {
+      }
+      .table-row:hover:extend(.rcd-material .table-row-hover) {
+
+      }
+    }
+    .button-column {
+      width: 42px;
+    }
+    .name-column {
+      width: 250px;
+    }
+  }
+  .checkbox :extend(.rcd-material .checkbox) {
+  }
+  .checkbox.selected :extend(.rcd-material .checkbox-selected) {
+  }
+
 }
 

@@ -53,14 +53,18 @@
 
         <div class="views">
             <div class="view rcd-hidden" id="viewExports">
-                <div class="section">
-                    <div class="section-header">DUMPS</div>
-                    <div class="section-description"></div>
-                    <div class="section-content">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title"><span>Dumps</span></div>
+                        <div class="card-action-icons">
+                            <div class="card-action-icon"><i class="material-icons">add</i></div>
+                            <div class="card-action-icon"><i class="material-icons">delete</i></div>
+                        </div>
+                    </div>
+                    <div class="card-content">
                         <div class="table">
                             <div class="table-header">
-                                <div class="table-column-header button-column">
-                                </div>
+                                <div class="table-cell button-column"><i class="material-icons checkbox">check_box_outline_blank</i></div>
                                 <div class="table-column-header name-column">
                                     <span>Dump name</span>
                                 </div>
@@ -69,10 +73,6 @@
                                 </div>
                             </div>
                             <div class="table-body" id="dumpTableBody">
-                            </div>
-                            <div class="table-footer">
-                                <input type="text" placeholder="dump-{{timestamp}}" id="dumpNameInput">
-                                <button id="dumpAddButton">Add</button>
                             </div>
                         </div>
                     </div>
