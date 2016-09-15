@@ -149,7 +149,7 @@
     font-size: 24px;
     color: rgba(0, 0, 0, 0.54);
   }
-  .card-action-icon :extend(.rcd-flex .hbox, .rcd-core .clickable) {
+  .card-action-icon :extend(.rcd-flex .hbox, .rcd-material .button) {
     margin-left: 24px;
   }
 
@@ -185,9 +185,15 @@
     background-color: #f5f5f5;
   }
 
+  .button :extend(.rcd-core .clickable) {
+
+  }
+
   .checkbox :extend(.rcd-core .clickable) {
   }
+
   .checkbox-selected {
     color: @rcd-accent-color;
   }
+
 }
