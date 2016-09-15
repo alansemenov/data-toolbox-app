@@ -12,6 +12,11 @@ function displayExportsView() {
         url: config.servicesUrl + '/dump-list'
 
     }).done(function (dumps) {
+
+        $('.rcd-material-nav-link').removeClass('selected');
+        $('#navLinkExports').addClass('selected');
+
+
         var tableBody = dumps.map(createDumpRow);
         $('#dumpTableBody').html(tableBody);
 
