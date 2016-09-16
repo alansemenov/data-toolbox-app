@@ -26,7 +26,7 @@ function displayExportsView() {
             selectDumpRow(index);
         });
     }).always(function () {
-        displayView('viewExports', 'Exports & Dumps');
+        displayView('viewDumps', 'Exports & Dumps');
     });
 }
 
@@ -80,7 +80,4 @@ function displayView(viewId, title) {
     $('.view').addClass('rcd-hidden');
     $('#' + viewId).removeClass('rcd-hidden');
     $('#contentTitle').html(title);
-
-    $("#breadcrumbs").html('<span class="rcd-material-breadcrumb">Data toolbox</span><span> / </span><span class="rcd-material-breadcrumb">' +
-                           title + '</span>')
 }
