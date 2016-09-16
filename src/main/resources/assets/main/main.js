@@ -39,7 +39,10 @@ function createDump(dumpName) {
         data: JSON.stringify({name: dumpName}),
         contentType: 'application/json; charset=utf-8'
     });
-    displayExportsView();
+    setTimeout(function () {
+        displayView('viewDumps');
+    }, 1000);
+    //displayView('viewDumps');
 }
 
 function deleteDumps(dumpNames) {
@@ -49,7 +52,7 @@ function deleteDumps(dumpNames) {
         data: JSON.stringify({dumpNames: dumpNames}),
         contentType: 'application/json; charset=utf-8'
     }).always(function () {
-        displayExportsView();
+        displayView('viewDumps');
     });
 }
 
