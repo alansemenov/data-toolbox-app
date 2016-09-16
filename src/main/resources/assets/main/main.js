@@ -6,6 +6,12 @@ $('#actionCreateDump').click(function () {
     createDump(dumpName);
 
 });
+$('#actionDeleteDump').click(function () {
+    var dumpNames = $('.dump-row.selected').map(function (dumpRow) {
+        return $(this).attr('dump');
+    }).get();
+    deleteDumps(dumpNames);
+});
 
 function displayExportsView() {
     $.ajax({
@@ -36,17 +42,17 @@ function createDump(dumpName) {
         data: JSON.stringify({name: dumpName}),
         contentType: 'application/json; charset=utf-8'
     });
-    displayDumpView();
+    displayExportsView();
 }
 
-function deleteDump(dumpName) {
+function deleteDumps(dumpNames) {
     $.ajax({
         method: 'POST',
         url: config.servicesUrl + '/dump-delete',
-        data: JSON.stringify({name: dumpName}),
+        data: JSON.stringify({dumpNames: dumpNames}),
         contentType: 'application/json; charset=utf-8'
     }).always(function () {
-        displayDumpView();
+        displayExportsView();
     });
 }
 
@@ -66,7 +72,7 @@ function selectDumpRow(index) {
 }
 
 function createDumpRow(dump, index) {
-    return '<div class="rcd-material-table-row" id="rowDump' + index + '">' +
+    return '<div class="rcd-material-table-row dump-row" dump="' + dump.name + '" id="rowDump' + index + '">' +
            '<div class="rcd-material-table-cell button-column"><i class="material-icons rcd-material-checkbox action-select-dump" id="checkboxDump' +
            index +
            '" index="' + index + '">check_box_outline_blank</i>' + '</div>' +

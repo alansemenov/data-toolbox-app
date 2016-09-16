@@ -1,9 +1,9 @@
 exports.post = function (req) {
     var bean = __.newBean('systems.rcd.enonic.datatoolbox.RcdDumpScriptBean');
-    var dumpName = JSON.parse(req.body).name;
+    var dumpNames = JSON.parse(req.body).dumpNames;
 
     return {
         contentType: 'application/json',
-        body: bean.delete(dumpName)
+        body: bean.delete(dumpNames)
     }
 };

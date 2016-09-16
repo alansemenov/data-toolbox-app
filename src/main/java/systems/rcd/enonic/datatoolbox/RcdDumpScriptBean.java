@@ -40,18 +40,21 @@ public class RcdDumpScriptBean
         return RcdJsonService.toString( result );
     }
 
-    public RcdJsonObject delete( final String dumpName )
+    public RcdJsonObject delete( final String... dumpNames )
     {
         try
         {
-            final Path dumpPath = getDumpDirectoryPath().resolve( dumpName );
-            RcdFileService.deleteDirectory( dumpPath );
-            return RcdJsonService.createJsonObject().put( "deleted", true );
+            for ( String dumpName : dumpNames )
+            {
+                final Path dumpPath = getDumpDirectoryPath().resolve( dumpName );
+                RcdFileService.deleteDirectory( dumpPath );
+            }
+            return RcdJsonService.createJsonObject().put( "success", true );
 
         }
         catch ( Exception e )
         {
-            return RcdJsonService.createJsonObject().put( "deleted", false );
+            return RcdJsonService.createJsonObject().put( "success", false );
         }
     }
 
