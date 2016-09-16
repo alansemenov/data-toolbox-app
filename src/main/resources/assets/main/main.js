@@ -16,16 +16,11 @@ $('#actionDeleteDump').click(function () {
 function displayExportsView() {
     $.ajax({
         url: config.servicesUrl + '/dump-list'
-
     }).done(function (dumps) {
-
         $('.rcd-material-nav-link').removeClass('selected');
         $('#navLinkExports').addClass('selected');
-
-
         var tableBody = dumps.map(createDumpRow);
         $('#dumpTableBody').html(tableBody);
-
         $('.action-select-dump').click(function (event) {
             var index = event.target.getAttribute('index');
             selectDumpRow(index);
@@ -85,4 +80,7 @@ function displayView(viewId, title) {
     $('.view').addClass('rcd-hidden');
     $('#' + viewId).removeClass('rcd-hidden');
     $('#contentTitle').html(title);
+
+    $("#breadcrumbs").html('<span class="rcd-material-breadcrumb">Data toolbox</span><span> / </span><span class="rcd-material-breadcrumb">' +
+                           title + '</span>')
 }

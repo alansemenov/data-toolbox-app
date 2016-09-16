@@ -111,12 +111,13 @@
   margin: 15px 0;
 }
 
-.rcd-material-breadcrumb :extend(.rcd-material-link) {
+.rcd-material-breadcrumb:not(:last-of-type) :extend(.rcd-material-link) {
 }
 
 .rcd-material-link {
   //Material design metrics
   color: @rcd-primary-color;
+  cursor: pointer;
 }
 
 .rcd-material-content-description :extend(.rcd-flex-hbox, .rcd-material-content-child, .rcd-flex-unshrinkable) {
