@@ -1,4 +1,6 @@
-$('#navLinkExports').click(displayExportsView);
+$('#navLinkExports').click(function () {
+    displayView('viewDumps')
+});
 
 $('#actionCreateDump').click(function () {
     //var dumpName = $('#dumpNameInput').val() || 'dump-' + new Date().toISOString();
@@ -13,8 +15,8 @@ $('#actionDeleteDump').click(function () {
     deleteDumps(dumpNames);
 });
 
-function displayExportsView() {
-    $.ajax({
+function loadDumps(callback) {
+    return $.ajax({
         url: config.servicesUrl + '/dump-list'
     }).done(function (dumps) {
         $('.rcd-material-nav-link').removeClass('selected');
@@ -26,7 +28,7 @@ function displayExportsView() {
             selectDumpRow(index);
         });
     }).always(function () {
-        displayView('viewDumps', 'Exports & Dumps');
+        callback();
     });
 }
 
@@ -76,8 +78,19 @@ function createDumpRow(dump, index) {
            '</div>';
 }
 
-function displayView(viewId, title) {
-    $('.view').addClass('rcd-hidden');
-    $('#' + viewId).removeClass('rcd-hidden');
-    $('#contentTitle').html(title);
+function displayView(viewId) {
+    history.pushState(viewId, null, '#' + viewId);
+    loadView(viewId);
 }
+
+$(window).bind('popstate',
+    function (event) {
+        loadView(event.originalEvent.state || 'viewPresentation');
+    }
+);
+
+addView('viewPresentation', function (callback) {
+    callback();
+});
+addView('viewDumps', loadDumps);
+loadView((window.location.hash && window.location.hash.substring(1) ) || 'viewPresentation');
