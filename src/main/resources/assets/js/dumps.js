@@ -87,7 +87,6 @@ $('#navLinkExports').click(function () {
 });
 
 $('#actionCreateDump').click(function () {
-    //var dumpName = $('#dumpNameInput').val() || 'dump-' + new Date().toISOString();
     var dumpName = 'dump-' + new Date().toISOString();
     createDump(dumpName);
 

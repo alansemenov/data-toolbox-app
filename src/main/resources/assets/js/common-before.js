@@ -3,12 +3,12 @@ function displayView(viewId) {
     loadView(viewId);
 }
 
+addView('viewPresentation', function (callback) {
+    callback();
+});
+
 $(window).bind('popstate',
     function (event) {
         loadView(event.originalEvent.state || 'viewPresentation');
     }
 );
-
-addView('viewPresentation', function (callback) {
-    callback();
-});

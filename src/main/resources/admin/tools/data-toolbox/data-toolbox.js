@@ -1,35 +1,15 @@
 var mustacheLib = require('/lib/xp/mustache');
 var portalLib = require('/lib/xp/portal');
 
-exports.get = function (req) {
-    if (req.params.action) {
-        switch (req.params.action) {
-        case "render":
-            //return render(TODO);
-        }
-    } else {
-        return render("main",
-            {
-                assetsUrl: portalLib.assetUrl({path: ""}),
-                servicesUrl: portalLib.serviceUrl({service: ""}),
-                timestamp: new Date().toISOString()
-            }
-        );
-    }
-
-    return {
-        status: 400
-    };
-
-
-};
-
-function render(viewName, params) {
-    var view = resolve(viewName + ".html");
-    var body = mustacheLib.render(view, params);
+exports.get = function () {
+    var view = resolve("main.html");
+    var body = mustacheLib.render(view, {
+        assetsUrl: portalLib.assetUrl({path: ""}),
+        servicesUrl: portalLib.serviceUrl({service: ""})
+    });
 
     return {
         body: body,
         contentType: 'text/html'
     };
-}
+};
