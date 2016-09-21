@@ -6,10 +6,7 @@ function loadDumps(callback) {
         $('#navLinkExports').addClass('selected');
         var tableBody = dumps.map(createDumpRow);
         $('#dumpTableBody').html(tableBody);
-        $('.action-select-dump').click(function (event) {
-            var index = event.target.getAttribute('index');
-            selectDumpRow(index);
-        });
+        $('.action-select-dump').click(onDumpSelected);
     }).always(function () {
         callback();
     });
@@ -37,6 +34,24 @@ function deleteDumps(dumpNames) {
     }).always(function () {
         displayView('viewDumps');
     });
+}
+
+function onDumpSelected(event) {
+    var index = event.target.getAttribute('index');
+    selectDumpRow(index);
+
+    var nbDumpSelected = $('.dump-row.selected').length;
+    enableIcon('actionLoadDump', nbDumpSelected == 1);
+    enableIcon('actionDeleteDump', nbDumpSelected == 1);
+}
+
+function enableIcon(id, enabled) {
+    console.log("aa");
+    if (enabled) {
+        $('#' + id).removeClass('disabled');
+    } else {
+        $('#' + id).addClass('disabled');
+    }
 }
 
 function selectDumpRow(index) {
