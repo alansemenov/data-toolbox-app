@@ -1,20 +1,3 @@
-$('#navLinkExports').click(function () {
-    displayView('viewDumps')
-});
-
-$('#actionCreateDump').click(function () {
-    //var dumpName = $('#dumpNameInput').val() || 'dump-' + new Date().toISOString();
-    var dumpName = 'dump-' + new Date().toISOString();
-    createDump(dumpName);
-
-});
-$('#actionDeleteDump').click(function () {
-    var dumpNames = $('.dump-row.selected').map(function (dumpRow) {
-        return $(this).attr('dump');
-    }).get();
-    deleteDumps(dumpNames);
-});
-
 function loadDumps(callback) {
     return $.ajax({
         url: config.servicesUrl + '/dump-list'
@@ -81,19 +64,22 @@ function createDumpRow(dump, index) {
            '</div>';
 }
 
-function displayView(viewId) {
-    history.pushState(viewId, null, '#' + viewId);
-    loadView(viewId);
-}
-
-$(window).bind('popstate',
-    function (event) {
-        loadView(event.originalEvent.state || 'viewPresentation');
-    }
-);
-
-addView('viewPresentation', function (callback) {
-    callback();
+$('#navLinkExports').click(function () {
+    displayView('viewDumps')
 });
+
+$('#actionCreateDump').click(function () {
+    //var dumpName = $('#dumpNameInput').val() || 'dump-' + new Date().toISOString();
+    var dumpName = 'dump-' + new Date().toISOString();
+    createDump(dumpName);
+
+});
+$('#actionDeleteDump').click(function () {
+    var dumpNames = $('.dump-row.selected').map(function (dumpRow) {
+        return $(this).attr('dump');
+    }).get();
+    deleteDumps(dumpNames);
+});
+
 addView('viewDumps', loadDumps);
-loadView((window.location.hash && window.location.hash.substring(1) ) || 'viewPresentation');
+
