@@ -7,6 +7,7 @@ function loadDumps(callback) {
         var tableBody = dumps.map(createDumpRow);
         $('#dumpTableBody').html(tableBody);
         $('.action-select-dump').click(onDumpSelected);
+        refreshDumpActions();
     }).always(function () {
         callback();
     });
@@ -22,7 +23,6 @@ function createDump(dumpName) {
     setTimeout(function () {
         displayView('viewDumps');
     }, 1000);
-    //displayView('viewDumps');
 }
 
 function deleteDumps(dumpNames) {
@@ -39,10 +39,13 @@ function deleteDumps(dumpNames) {
 function onDumpSelected(event) {
     var index = event.target.getAttribute('index');
     selectDumpRow(index);
+    refreshDumpActions();
+}
 
+function refreshDumpActions() {
     var nbDumpSelected = $('.dump-row.selected').length;
     enableIcon('actionLoadDump', nbDumpSelected == 1);
-    enableIcon('actionDeleteDump', nbDumpSelected == 1);
+    enableIcon('actionDeleteDump', nbDumpSelected > 0);
 }
 
 function enableIcon(id, enabled) {
@@ -89,7 +92,7 @@ $('#actionCreateDump').click(function () {
     createDump(dumpName);
 
 });
-$('#actionDeleteDump').click(function () {
+$('#actionDeleteDump').click(function (event) {
     var dumpNames = $('.dump-row.selected').map(function (dumpRow) {
         return $(this).attr('dump');
     }).get();
