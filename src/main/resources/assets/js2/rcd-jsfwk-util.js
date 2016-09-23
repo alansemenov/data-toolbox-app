@@ -1,4 +1,4 @@
-class RcdTextDivisionElement extends RcdDivisionElement {
+class RcdTextDivisionElement extends RcdDivElement {
     constructor(text) {
         super();
         this.span = new RcdSpanElement().init().setText(text);

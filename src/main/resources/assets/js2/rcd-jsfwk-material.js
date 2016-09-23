@@ -1,4 +1,4 @@
-class RcdGoogleMaterialIcon extends RcdItalicElement {
+class RcdGoogleMaterialIcon extends RcdIElement {
     constructor(iconName) {
         super();
         this.iconName = iconName;
@@ -14,7 +14,7 @@ class RcdMaterialHeader extends RcdHeaderElement {
     constructor(title) {
         super();
         var icon = new RcdGoogleMaterialIcon('menu').init();
-        this.menuIcon = new RcdDivisionElement().
+        this.menuIcon = new RcdDivElement().
             init().
             addClass('rcd-material-menu').
             addChild(icon);
@@ -30,4 +30,29 @@ class RcdMaterialHeader extends RcdHeaderElement {
     }
 }
 
-document.body.appendChild(new RcdMaterialHeader('Data toolbox').init().getDomElement());
+class RcdMaterialNav extends RcdNavElement {
+    constructor() {
+        super();
+    }
+
+    init() {
+        return this.addClass('rcd-material-nav');
+    }
+}
+
+class RcdMaterialMain extends RcdMainElement {
+    constructor() {
+        super();
+        this.nav = new RcdMaterialNav().init();
+    }
+
+    init() {
+        return this.addClass('rcd-material-main').addChild(this.nav);
+    }
+}
+
+var header = new RcdMaterialHeader('Data toolbox').init();
+document.body.appendChild(header.getDomElement());
+
+var main = new RcdMaterialMain().init();
+document.body.appendChild(main.getDomElement());

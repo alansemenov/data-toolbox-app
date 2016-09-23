@@ -96,13 +96,13 @@ class RcdHtmlElement extends RcdDomElement {
     }
 }
 
-class RcdDivisionElement extends RcdHtmlElement {
+class RcdDivElement extends RcdHtmlElement {
     constructor() {
         super('div');
     }
 }
 
-class RcdParagraphElement extends RcdHtmlElement {
+class RcdPElement extends RcdHtmlElement {
     constructor() {
         super('p');
     }
@@ -114,7 +114,7 @@ class RcdHeaderElement extends RcdHtmlElement {
     }
 }
 
-class RcdItalicElement extends RcdHtmlElement {
+class RcdIElement extends RcdHtmlElement {
     constructor() {
         super('i');
     }
@@ -123,6 +123,18 @@ class RcdItalicElement extends RcdHtmlElement {
 class RcdSpanElement extends RcdHtmlElement {
     constructor() {
         super('span');
+    }
+}
+
+class RcdMainElement extends RcdHtmlElement {
+    constructor() {
+        super('main');
+    }
+}
+
+class RcdNavElement extends RcdHtmlElement {
+    constructor() {
+        super('nav');
     }
 }
 
