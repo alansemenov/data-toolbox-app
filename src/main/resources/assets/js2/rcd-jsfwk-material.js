@@ -115,11 +115,8 @@ class RcdMaterialContent extends RcdDivElement {
         return this.addClass('rcd-material-content');
     }
 
-    addView(view, display) {
+    addView(view) {
         this.views[view.viewId] = view;
-        if (display) {
-            this.displayView(view.viewId);
-        }
         return this;
     }
 
