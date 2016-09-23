@@ -120,21 +120,3 @@ class RcdMaterialMain extends RcdMainElement {
             addChild(this.content);
     }
 }
-
-var header = new RcdMaterialHeader('Data toolbox').init();
-document.body.appendChild(header.getDomElement());
-
-var main = new RcdMaterialMain().init();
-
-//Fills the nav bar
-main.nav.addLink('file_download', 'Dumps').
-    addLink('photo_camera', 'Snapshots');
-
-//Creates presentation view
-var presentationDescription = 'To secure your data or migrate it to another installation, a dump of your installation can be made. ' +
-                              'This dump includes all the current versions of your content, users, groups and roles.';
-var presentationView = new RcdMaterialView(['Data Toolbox', 'Presentation'], presentationDescription).init();
-main.content.addChild(presentationView);
-
-
-document.body.appendChild(main.getDomElement());
