@@ -1,15 +1,3 @@
-class RcdGoogleMaterialIcon extends RcdIElement {
-    constructor(iconName) {
-        super();
-        this.iconName = iconName;
-    }
-
-    init() {
-        return this.addClass('material-icons').
-            setText(this.iconName);
-    }
-}
-
 class RcdMaterialHeader extends RcdHeaderElement {
     constructor(title) {
         super();
@@ -30,6 +18,20 @@ class RcdMaterialHeader extends RcdHeaderElement {
     }
 }
 
+class RcdMaterialNavLink extends RcdDivElement {
+    constructor(iconName, text) {
+        super();
+        this.icon = new RcdGoogleMaterialIcon(iconName).init().addClass('rcd-material-nav-icon');
+        this.text = new RcdTextElement(text).init();
+    }
+
+    init() {
+        return this.addClass('rcd-material-nav-link').
+            addChild(this.icon).
+            addChild(this.text);
+    }
+}
+
 class RcdMaterialNav extends RcdNavElement {
     constructor() {
         super();
@@ -37,6 +39,11 @@ class RcdMaterialNav extends RcdNavElement {
 
     init() {
         return this.addClass('rcd-material-nav');
+    }
+
+    addLink(iconName, text) {
+        var link = new RcdMaterialNavLink(iconName, text).init();
+        return this.addChild(link);
     }
 }
 
@@ -55,4 +62,8 @@ var header = new RcdMaterialHeader('Data toolbox').init();
 document.body.appendChild(header.getDomElement());
 
 var main = new RcdMaterialMain().init();
+main.nav.addLink('file_download', 'Dumps').
+    addLink('photo_camera', 'Snapshots');
+
+
 document.body.appendChild(main.getDomElement());
