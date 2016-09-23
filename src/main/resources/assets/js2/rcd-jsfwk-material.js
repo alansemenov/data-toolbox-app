@@ -73,8 +73,9 @@ class RcdMaterialBreadcrumbs extends RcdDivElement {
 }
 
 class RcdMaterialView extends RcdDivElement {
-    constructor(pathElements, description) {
+    constructor(viewId, pathElements, description) {
         super();
+        this.viewId = viewId;
         this.title = new RcdTextDivElement(pathElements[pathElements.length - 1]).
             init().
             addClass('rcd-material-content-title');
@@ -100,10 +101,27 @@ class RcdMaterialView extends RcdDivElement {
 class RcdMaterialContent extends RcdDivElement {
     constructor() {
         super();
+        this.views = {};
+        this.currentView;
     }
 
     init() {
         return this.addClass('rcd-material-content');
+    }
+
+    addView(view, display) {
+        this.views[view.viewId] = view;
+        this.displayView(view.viewId);
+        return this;
+    }
+
+    displayView(viewId) {
+        if (this.currentView) {
+            this.removeChild(this.currentView);
+        }
+        this.currentView = this.views[viewId];
+        this.addChild(this.currentView);
+        return this;
     }
 }
 
