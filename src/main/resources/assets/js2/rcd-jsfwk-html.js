@@ -60,7 +60,7 @@ class RcdDomElement extends RcdXmlElement {
 
     removeChild(child) {
         super.removeChild(child);
-        this.domElement.removeChild(child);
+        this.domElement.removeChild(child.getDomElement());
         return this;
     }
 }
@@ -69,6 +69,10 @@ class RcdHtmlElement extends RcdDomElement {
     constructor(name) {
         super(name);
         this.classes = [];
+    }
+
+    init() {
+        return this;
     }
 
     setId(id) {
@@ -91,8 +95,12 @@ class RcdHtmlElement extends RcdDomElement {
         return this;
     }
 
-    init() {
-        return this;
+    addEventListener(type, listener) {
+        this.domElement.addEventListener(type, listener);
+    }
+
+    onClick(listener) {
+        this.addEventListener('click', listener);
     }
 }
 

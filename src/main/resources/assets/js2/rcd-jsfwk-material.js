@@ -19,16 +19,22 @@ class RcdMaterialHeader extends RcdHeaderElement {
 }
 
 class RcdMaterialNavLink extends RcdDivElement {
-    constructor(iconName, text) {
+    constructor(iconName, text, callback) {
         super();
         this.icon = new RcdGoogleMaterialIcon(iconName).init().addClass('rcd-material-nav-icon');
         this.text = new RcdTextElement(text).init();
+        this.callback = callback;
     }
 
     init() {
-        return this.addClass('rcd-material-nav-link').
+        this.addClass('rcd-material-nav-link').
             addChild(this.icon).
             addChild(this.text);
+
+        if (this.callback) {
+            this.onClick(this.callback);
+        }
+        return this;
     }
 }
 
@@ -41,8 +47,8 @@ class RcdMaterialNav extends RcdNavElement {
         return this.addClass('rcd-material-nav');
     }
 
-    addLink(iconName, text) {
-        var link = new RcdMaterialNavLink(iconName, text).init();
+    addLink(iconName, text, callback) {
+        var link = new RcdMaterialNavLink(iconName, text, callback).init();
         return this.addChild(link);
     }
 }
@@ -111,7 +117,9 @@ class RcdMaterialContent extends RcdDivElement {
 
     addView(view, display) {
         this.views[view.viewId] = view;
-        this.displayView(view.viewId);
+        if (display) {
+            this.displayView(view.viewId);
+        }
         return this;
     }
 
