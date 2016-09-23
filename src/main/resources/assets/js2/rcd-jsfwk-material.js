@@ -63,17 +63,17 @@ class RcdMaterialBreadcrumbs extends RcdDivElement {
         return this.addClass('rcd-material-breadcrumbs');
     }
 
-    addBreadcrumbs(names) {
-        names.forEach(this.addBreadcrumb, this);
+    addPathElements(pathElements) {
+        pathElements.forEach(this.addPathElement, this);
         return this;
     }
 
-    addBreadcrumb(name) {
-        this.breadcrumbs.push(name);
+    addPathElement(pathElement) {
+        this.breadcrumbs.push(pathElement.name);
         if (this.breadcrumbs.length > 1) {
             this.addChild(new RcdTextElement(' / ').init());
         }
-        var breadcrumb = new RcdTextDivElement(name).init().addClass('rcd-material-breadcrumb');
+        var breadcrumb = new RcdTextDivElement(pathElement.name).init().addClass('rcd-material-breadcrumb');
         return this.addChild(breadcrumb);
     }
 }
@@ -82,12 +82,12 @@ class RcdMaterialView extends RcdDivElement {
     constructor(viewId, pathElements, description) {
         super();
         this.viewId = viewId;
-        this.title = new RcdTextDivElement(pathElements[pathElements.length - 1]).
+        this.title = new RcdTextDivElement(pathElements[pathElements.length - 1].name).
             init().
             addClass('rcd-material-content-title');
         this.breadcrumbs = new RcdMaterialBreadcrumbs().
             init().
-            addBreadcrumbs(pathElements);
+            addPathElements(pathElements);
         this.header = new RcdDivElement().
             init().
             addClass('rcd-material-content-header').

@@ -10,15 +10,17 @@ main.nav.addLink('file_download', 'Dumps', () => router.setState('dumps')).
     addLink('photo_camera', 'Snapshots');
 
 //Creates and appends the presentation view
+var presentationViewPathElements = [{name: 'Data Toolbox'}];
 var presentationViewDescription = 'Data toolbox provides a web interface to visualize and manipulate your Enonic XP: ' +
                                   'dump & load your data, take & restore a snapshot, ...';
-var presentationView = new RcdMaterialView('presentation', ['Data Toolbox'], presentationViewDescription).init();
+var presentationView = new RcdMaterialView('presentation', presentationViewPathElements, presentationViewDescription).init();
 main.content.addView(presentationView);
 
 //Creates the dump view
+var dumpViewPathElements = [{name: 'Data Toolbox'}, {name: 'Dumps', link: '#dumps'}];
 var dumpViewDescription = 'To secure your data or migrate it to another installation, a dump of your installation can be made. ' +
                           'This dump includes all the current versions of your content, users, groups and roles.';
-var dumpView = new RcdMaterialView('dumps', ['Data Toolbox', 'Dumps'], dumpViewDescription).init();
+var dumpView = new RcdMaterialView('dumps', dumpViewPathElements, dumpViewDescription).init();
 main.content.addView(dumpView);
 
 
