@@ -73,7 +73,7 @@ class RcdMaterialBreadcrumbs extends RcdDivElement {
 }
 
 class RcdMaterialView extends RcdDivElement {
-    constructor(pathElements) {
+    constructor(pathElements, description) {
         super();
         this.title = new RcdTextDivElement(pathElements[pathElements.length - 1]).
             init().
@@ -86,10 +86,14 @@ class RcdMaterialView extends RcdDivElement {
             addClass('rcd-material-content-header').
             addChild(this.title).
             addChild(this.breadcrumbs);
+
+        this.description = new RcdParagraphDivElement(description).init().addClass('rcd-material-content-description');
     }
 
     init() {
-        return this.addClass('rcd-material-view').addChild(this.header);
+        return this.addClass('rcd-material-view').
+            addChild(this.header).
+            addChild(this.description);
     }
 }
 
@@ -127,7 +131,9 @@ main.nav.addLink('file_download', 'Dumps').
     addLink('photo_camera', 'Snapshots');
 
 //Creates presentation view
-var presentationView = new RcdMaterialView(['Data Toolbox', 'Presentation']).init();
+var presentationDescription = 'To secure your data or migrate it to another installation, a dump of your installation can be made. ' +
+                              'This dump includes all the current versions of your content, users, groups and roles.';
+var presentationView = new RcdMaterialView(['Data Toolbox', 'Presentation'], presentationDescription).init();
 main.content.addChild(presentationView);
 
 
