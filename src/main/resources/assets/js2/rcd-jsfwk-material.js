@@ -47,16 +47,45 @@ class RcdMaterialNav extends RcdNavElement {
     }
 }
 
-class RcdMaterialView extends RcdDivElement {
-    constructor(title) {
+class RcdMaterialBreadcrumbs extends RcdDivElement {
+    constructor() {
         super();
-        this.title = new RcdTextDivElement(title).
+        this.breadcrumbs = [];
+    }
+
+    init() {
+        return this.addClass('rcd-material-breadcrumbs');
+    }
+
+    addBreadcrumbs(names) {
+        names.forEach(this.addBreadcrumb, this);
+        return this;
+    }
+
+    addBreadcrumb(name) {
+        this.breadcrumbs.push(name);
+        if (this.breadcrumbs.length > 1) {
+            this.addChild(new RcdTextElement(' / ').init());
+        }
+        var breadcrumb = new RcdTextDivElement(name).init().addClass('rcd-material-breadcrumb');
+        return this.addChild(breadcrumb);
+    }
+}
+
+class RcdMaterialView extends RcdDivElement {
+    constructor(pathElements) {
+        super();
+        this.title = new RcdTextDivElement(pathElements[pathElements.length - 1]).
             init().
-            addClass('rcd-material-content-title')
+            addClass('rcd-material-content-title');
+        this.breadcrumbs = new RcdMaterialBreadcrumbs().
+            init().
+            addBreadcrumbs(pathElements);
         this.header = new RcdDivElement().
             init().
             addClass('rcd-material-content-header').
-            addChild(this.title);
+            addChild(this.title).
+            addChild(this.breadcrumbs);
     }
 
     init() {
@@ -98,7 +127,7 @@ main.nav.addLink('file_download', 'Dumps').
     addLink('photo_camera', 'Snapshots');
 
 //Creates presentation view
-var presentationView = new RcdMaterialView('Presentation').init();
+var presentationView = new RcdMaterialView(['Data Toolbox', 'Presentation']).init();
 main.content.addChild(presentationView);
 
 
