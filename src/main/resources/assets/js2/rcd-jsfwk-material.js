@@ -7,7 +7,7 @@ class RcdMaterialHeader extends RcdHeaderElement {
             addClass('rcd-material-menu').
             addChild(icon);
 
-        this.title = new RcdTextDivisionElement(title).init().
+        this.title = new RcdTextDivElement(title).init().
             addClass('rcd-material-title');
     }
 
@@ -47,14 +47,44 @@ class RcdMaterialNav extends RcdNavElement {
     }
 }
 
+class RcdMaterialView extends RcdDivElement {
+    constructor(title) {
+        super();
+        this.title = new RcdTextDivElement(title).
+            init().
+            addClass('rcd-material-content-title')
+        this.header = new RcdDivElement().
+            init().
+            addClass('rcd-material-content-header').
+            addChild(this.title);
+    }
+
+    init() {
+        return this.addClass('rcd-material-view').addChild(this.header);
+    }
+}
+
+class RcdMaterialContent extends RcdDivElement {
+    constructor() {
+        super();
+    }
+
+    init() {
+        return this.addClass('rcd-material-content');
+    }
+}
+
 class RcdMaterialMain extends RcdMainElement {
     constructor() {
         super();
         this.nav = new RcdMaterialNav().init();
+        this.content = new RcdMaterialContent().init();
     }
 
     init() {
-        return this.addClass('rcd-material-main').addChild(this.nav);
+        return this.addClass('rcd-material-main').
+            addChild(this.nav).
+            addChild(this.content);
     }
 }
 
@@ -62,8 +92,14 @@ var header = new RcdMaterialHeader('Data toolbox').init();
 document.body.appendChild(header.getDomElement());
 
 var main = new RcdMaterialMain().init();
+
+//Fills the nav bar
 main.nav.addLink('file_download', 'Dumps').
     addLink('photo_camera', 'Snapshots');
+
+//Creates presentation view
+var presentationView = new RcdMaterialView('Presentation').init();
+main.content.addChild(presentationView);
 
 
 document.body.appendChild(main.getDomElement());

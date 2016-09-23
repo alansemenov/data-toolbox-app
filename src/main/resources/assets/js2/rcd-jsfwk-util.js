@@ -9,7 +9,7 @@ class RcdTextElement extends RcdSpanElement {
     }
 }
 
-class RcdTextDivisionElement extends RcdDivElement {
+class RcdTextDivElement extends RcdDivElement {
     constructor(text) {
         super();
         this.span = new RcdTextElement(text).init();
