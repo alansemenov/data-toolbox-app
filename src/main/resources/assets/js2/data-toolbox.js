@@ -23,7 +23,7 @@ function createPresentationView() {
 
 function createDumpsTable() {
     var dumpsTable = new RcdMaterialTable().init();
-    dumpsTable.header.addCell('Dump name').addCell('Timestamp');
+    dumpsTable.header.addCell('Dump name').addCell('Size').addCell('Timestamp');
     return dumpsTable;
 }
 function createDumpsView(dumpsTable) {
@@ -50,6 +50,7 @@ function retrieveDumps() {
         dumps.forEach((dump) => {
             dumpsTable.body.createRow().
                 addCell(dump.name).
+                addCell(dump.size.toLocaleString()).
                 addCell(new Date(dump.timestamp).toISOString());
         });
     });
