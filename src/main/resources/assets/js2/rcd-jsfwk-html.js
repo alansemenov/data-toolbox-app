@@ -146,5 +146,29 @@ class RcdNavElement extends RcdHtmlElement {
     }
 }
 
+class RcdTableElement extends RcdHtmlElement {
+    constructor() {
+        super('table');
+    }
+}
+
+class RcdThElement extends RcdHtmlElement {
+    constructor() {
+        super('th');
+    }
+}
+
+class RcdTrElement extends RcdHtmlElement {
+    constructor() {
+        super('tr');
+    }
+}
+
+class RcdTdElement extends RcdHtmlElement {
+    constructor() {
+        super('td');
+    }
+}
+
 
 

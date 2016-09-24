@@ -27,6 +27,10 @@ var dumpsCard = new RcdMaterialCard('Dumps').
     addIcon('file_download').addIcon('file_upload').addIcon('delete');
 dumpView.addChild(dumpsCard);
 
+var dumpsTableHeader = new RcdMaterialTableHeader().init().addCell('Dump name').addCell('Timestamp');
+var dumpsTable = new RcdMaterialTable(dumpsTableHeader).init();
+dumpsCard.addContent(dumpsTable);
+
 main.content.addView(dumpView);
 
 

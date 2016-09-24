@@ -9,3 +9,9 @@ class RcdGoogleMaterialIcon extends RcdIElement {
             setText(this.iconName);
     }
 }
+
+class RcdMaterialCheckbox extends RcdGoogleMaterialIcon {
+    constructor() {
+        super('check_box_outline_blank');
+    }
+}
