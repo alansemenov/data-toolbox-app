@@ -17,7 +17,6 @@ public class RcdDumpScriptBean
     @Override
     public void initialize( final BeanContext context )
     {
-
     }
 
     public String list()

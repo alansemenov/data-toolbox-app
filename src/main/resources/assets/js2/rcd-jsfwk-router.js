@@ -20,11 +20,13 @@ class RcdHistoryRouter {
     }
 
     setState(state) {
-        if (state) {
-            history.pushState(state, null, '#' + state);
-            this.routes[state]();
-        } else {
-            this.defaultRoute();
+        if (state != this.getCurrentState()) {
+            if (state) {
+                history.pushState(state, null, '#' + state);
+                this.routes[state]();
+            } else {
+                this.defaultRoute();
+            }
         }
         return this;
     }

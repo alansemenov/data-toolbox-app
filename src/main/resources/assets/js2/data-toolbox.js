@@ -1,9 +1,8 @@
-function createMain() {
-    //Creates and appends the header
-    var header = new RcdMaterialHeader('Data toolbox').init();
-    document.body.appendChild(header.getDomElement());
+function createHeader() {
+    return new RcdMaterialHeader('Data toolbox').init();
+}
 
-    //Create the main part
+function createMain() {
     var main = new RcdMaterialMain().init();
 
     //Fills the nav bar
@@ -35,7 +34,9 @@ function createDumpsView(dumpsTable) {
 
     var dumpsCard = new RcdMaterialCard('Dumps').
         init().
-        addIcon('file_download').addIcon('file_upload').addIcon('delete');
+        addIcon('file_download').
+        addIcon('file_upload').
+        addIcon('delete');
     dumpsView.addChild(dumpsCard);
     dumpsCard.addContent(dumpsTable);
 
@@ -57,13 +58,15 @@ function retrieveDumps() {
 }
 
 //Create the static part
+var header = createHeader();
 var main = createMain();
 var presentationView = createPresentationView();
 var dumpsTable = createDumpsTable();
 var dumpsView = createDumpsView(dumpsTable);
 main.content.addView(presentationView).addView(dumpsView);
 
-//Appends the main part
+//Appends the header and main elements
+document.body.appendChild(header.getDomElement());
 document.body.appendChild(main.getDomElement());
 
 //Sets up the router
