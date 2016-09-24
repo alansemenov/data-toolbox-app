@@ -152,15 +152,27 @@ class RcdTableElement extends RcdHtmlElement {
     }
 }
 
-class RcdThElement extends RcdHtmlElement {
+class RcdTheadElement extends RcdHtmlElement {
     constructor() {
-        super('th');
+        super('thead');
+    }
+}
+
+class RcdTbodyElement extends RcdHtmlElement {
+    constructor() {
+        super('tbody');
     }
 }
 
 class RcdTrElement extends RcdHtmlElement {
     constructor() {
         super('tr');
+    }
+}
+
+class RcdThElement extends RcdHtmlElement {
+    constructor() {
+        super('th');
     }
 }
 

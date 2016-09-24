@@ -207,25 +207,6 @@ class RcdMaterialTableCheckbox extends RcdMaterialTableCell {
     }
 }
 
-class RcdMaterialTableHeader extends RcdThElement {
-    constructor() {
-        super();
-        this.checkbox = new RcdMaterialTableCheckbox().init();
-    }
-
-    init() {
-        return this.addClass('rcd-material-table-header').
-            addChild(this.checkbox);
-    }
-
-    addCell(value) {
-        var cell = new RcdMaterialTableCell().
-            init().
-            setText(value);
-        return this.addChild(cell);
-    }
-}
-
 class RcdMaterialTableRow extends RcdTrElement {
     constructor() {
         super();
@@ -233,7 +214,7 @@ class RcdMaterialTableRow extends RcdTrElement {
     }
 
     init() {
-        return this.addClass('rcd-material-table-roe').
+        return this.addClass('rcd-material-table-row').
             addChild(this.checkbox);
     }
 
@@ -245,14 +226,52 @@ class RcdMaterialTableRow extends RcdTrElement {
     }
 }
 
-class RcdMaterialTable extends RcdTableElement {
-    constructor(header) {
+class RcdMaterialTableHeader extends RcdTheadElement {
+    constructor() {
         super();
-        this.header = header
+        this.row = new RcdMaterialTableRow().init();
+    }
+
+    init() {
+        return this.addClass('rcd-material-table-header').
+            addChild(this.row);
+    }
+
+    addCell(value) {
+        var cell = new RcdMaterialTableCell().
+            init().
+            setText(value);
+        return this.row.addChild(cell);
+    }
+}
+
+class RcdMaterialTableBody extends RcdTbodyElement {
+    constructor() {
+        super();
+    }
+
+    init() {
+        return this.addClass('rcd-material-table-body');
+    }
+
+    createRow() {
+        var row = new RcdMaterialTableRow().
+            init();
+        this.addChild(row);
+        return row;
+    }
+}
+
+class RcdMaterialTable extends RcdTableElement {
+    constructor() {
+        super();
+        this.header = new RcdMaterialTableHeader().init();
+        this.body = new RcdMaterialTableBody().init();
     }
 
     init() {
         return this.addClass('rcd-material-table').
-            addChild(this.header);
+            addChild(this.header).
+            addChild(this.body);
     }
 }
