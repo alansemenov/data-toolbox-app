@@ -63,6 +63,10 @@ class RcdDomElement extends RcdXmlElement {
         this.domElement.removeChild(child.getDomElement());
         return this;
     }
+
+    clear() {
+        this.domElement.innerHTML = '';
+    }
 }
 
 class RcdHtmlElement extends RcdDomElement {

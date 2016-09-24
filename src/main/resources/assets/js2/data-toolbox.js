@@ -21,7 +21,12 @@ function createPresentationView() {
     return new RcdMaterialView('presentation', presentationViewPathElements, presentationViewDescription).init();
 }
 
-function createDumpsView() {
+function createDumpsTable() {
+    var dumpsTable = new RcdMaterialTable().init();
+    dumpsTable.header.addCell('Dump name').addCell('Timestamp');
+    return dumpsTable;
+}
+function createDumpsView(dumpsTable) {
     //Creates the dump view
     var dumpsViewPathElements = [{name: 'Data Toolbox'}, {name: 'Dumps', link: '#dumps'}];
     var dumpsViewDescription = 'To secure your data or migrate it to another installation, a dump of your installation can be made. ' +
@@ -32,18 +37,29 @@ function createDumpsView() {
         init().
         addIcon('file_download').addIcon('file_upload').addIcon('delete');
     dumpsView.addChild(dumpsCard);
-
-    var dumpsTable = new RcdMaterialTable().init();
-    dumpsTable.header.addCell('Dump name').addCell('Timestamp');
     dumpsCard.addContent(dumpsTable);
 
     return dumpsView;
 }
 
+function retrieveDumps() {
+    return $.ajax({
+        url: config.servicesUrl + '/dump-list'
+    }).done(function (dumps) {
+        dumpsTable.body.clear();
+        dumps.forEach((dump) => {
+            dumpsTable.body.createRow().
+                addCell(dump.name).
+                addCell(new Date(dump.timestamp).toISOString());
+        });
+    });
+}
+
 //Create the static part
 var main = createMain();
 var presentationView = createPresentationView();
-var dumpsView = createDumpsView();
+var dumpsTable = createDumpsTable();
+var dumpsView = createDumpsView(dumpsTable);
 main.content.addView(presentationView).addView(dumpsView);
 
 //Appends the main part
@@ -52,5 +68,8 @@ document.body.appendChild(main.getDomElement());
 //Sets up the router
 var router = new RcdHistoryRouter();
 router.addDefaultRoute(() => main.content.displayView(presentationView.viewId));
-router.addRoute(dumpsView.viewId, () => main.content.displayView(dumpsView.viewId));
+router.addRoute(dumpsView.viewId, () => {
+    retrieveDumps();
+    main.content.displayView(dumpsView.viewId);
+});
 router.setState(router.getCurrentState());
