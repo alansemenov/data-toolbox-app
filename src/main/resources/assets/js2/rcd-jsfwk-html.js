@@ -85,14 +85,16 @@ class RcdHtmlElement extends RcdDomElement {
     }
 
     addClass(aClass) {
-        this.classes.push(aClass);
-        this.setAttribute("class", this.classes.join(' '));
+        if (this.classes.indexOf(aClass) == -1) {
+            this.classes.push(aClass);
+            this.setAttribute("class", this.classes.join(' '));
+        }
         return this;
     }
 
     removeClass(aClass) {
-        var index = this.classes.indexOf(child);
-        if (index > -1) {
+        var index = this.classes.indexOf(aClass);
+        if (index != -1) {
             this.classes.splice(index, 1);
             this.setAttribute("class", this.classes.join(' '));
         }
@@ -101,10 +103,12 @@ class RcdHtmlElement extends RcdDomElement {
 
     addEventListener(type, listener) {
         this.domElement.addEventListener(type, listener);
+        return this;
     }
 
     onClick(listener) {
         this.addEventListener('click', listener);
+        return this;
     }
 }
 

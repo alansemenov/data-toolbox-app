@@ -203,7 +203,8 @@ class RcdMaterialTableCheckbox extends RcdMaterialTableCell {
     }
 
     init() {
-        return this.addChild(this.checkbox);
+        return this.addChild(this.checkbox).
+            onClick(() => this.checkbox.select(!this.checkbox.isSelected()));
     }
 }
 

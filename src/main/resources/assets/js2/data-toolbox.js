@@ -63,7 +63,8 @@ var main = createMain();
 var presentationView = createPresentationView();
 var dumpsTable = createDumpsTable();
 var dumpsView = createDumpsView(dumpsTable);
-main.content.addView(presentationView).addView(dumpsView);
+main.content.addView(presentationView).
+    addView(dumpsView);
 
 //Appends the header and main elements
 document.body.appendChild(header.getDomElement());
