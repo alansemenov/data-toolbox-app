@@ -143,3 +143,37 @@ class RcdMaterialMain extends RcdMainElement {
             addChild(this.content);
     }
 }
+
+
+/*****************************************************
+ * Cards
+ ****************************************************/
+class RcdMaterialCard extends RcdDivElement {
+    constructor(title) {
+        super();
+        this.title = new RcdTextDivElement(title).
+            init().
+            addClass('rcd-material-card-title');
+        this.icons = new RcdDivElement().init().
+            addClass('rcd-material-card-action-icons');
+        this.header = new RcdDivElement().init().
+            addClass('rcd-material-card-header').
+            addChild(this.title).
+            addChild(this.icons);
+    }
+
+    init() {
+        return this.addClass('rcd-material-card').
+            addChild(this.header);
+    }
+
+    addIcon(iconName) {
+        var icon = new RcdGoogleMaterialIcon(iconName).init();
+        var div = new RcdDivElement().
+            init().
+            addClass('rcd-material-card-action-icon').
+            addChild(icon);
+        this.icons.addChild(div);
+        return this;
+    }
+}

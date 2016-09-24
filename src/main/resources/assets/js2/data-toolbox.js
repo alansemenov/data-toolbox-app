@@ -21,6 +21,12 @@ var dumpViewPathElements = [{name: 'Data Toolbox'}, {name: 'Dumps', link: '#dump
 var dumpViewDescription = 'To secure your data or migrate it to another installation, a dump of your installation can be made. ' +
                           'This dump includes all the current versions of your content, users, groups and roles.';
 var dumpView = new RcdMaterialView('dumps', dumpViewPathElements, dumpViewDescription).init();
+
+var dumpsCard = new RcdMaterialCard('Dumps').
+    init().
+    addIcon('file_download').addIcon('file_upload').addIcon('delete');
+dumpView.addChild(dumpsCard);
+
 main.content.addView(dumpView);
 
 
