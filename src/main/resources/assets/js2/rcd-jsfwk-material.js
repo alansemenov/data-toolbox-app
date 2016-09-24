@@ -215,6 +215,7 @@ class RcdMaterialTableRow extends RcdTrElement {
     }
 
     init() {
+        this.checkbox.onClick(() => this.select(!this.isSelected()));
         return this.addClass('rcd-material-table-row').
             addChild(this.checkbox);
     }

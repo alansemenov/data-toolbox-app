@@ -110,6 +110,18 @@ class RcdHtmlElement extends RcdDomElement {
         this.addEventListener('click', listener);
         return this;
     }
+
+    isSelected() {
+        return this.classes.indexOf('selected') != -1;
+    }
+
+    select(selected) {
+        if (selected) {
+            this.addClass('selected');
+        } else {
+            this.removeClass('selected');
+        }
+    }
 }
 
 class RcdDivElement extends RcdHtmlElement {

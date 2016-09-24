@@ -20,16 +20,11 @@ class RcdMaterialCheckbox extends RcdGoogleMaterialIcon {
         return this.addClass('rcd-material-checkbox');
     }
 
-    isSelected() {
-        return this.classes.indexOf('selected') != -1;
-    }
-
     select(selected) {
+        super.select(selected);
         if (selected) {
-            this.addClass('selected');
             this.setText('check_box');
         } else {
-            this.removeClass('selected');
             this.setText('check_box_outline_blank');
         }
     }
