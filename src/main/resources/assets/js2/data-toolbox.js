@@ -34,13 +34,40 @@ function createDumpsView(dumpsTable) {
 
     var dumpsCard = new RcdMaterialCard('Dumps').
         init().
-        addIcon('file_download').
-        addIcon('file_upload').
-        addIcon('delete');
+        addIcon('file_download', createDump).
+        addIcon('file_upload', () => {
+        }).
+        addIcon('delete', deleteDumps);
     dumpsView.addChild(dumpsCard);
     dumpsCard.addContent(dumpsTable);
 
     return dumpsView;
+}
+
+function createDump() {
+    var dumpName = 'dump-' + new Date().toISOString();
+    $.ajax({
+        method: 'POST',
+        url: '/api/system/dump',
+        data: JSON.stringify({name: dumpName}),
+        contentType: 'application/json; charset=utf-8'
+    });
+    setTimeout(function () {
+        router.setState('dumps');
+    }, 1000);
+}
+
+function deleteDumps() {
+    var dumpNames = dumpsTable.getSelectedRows().
+        map((row) => row.attributes['dump']);
+    $.ajax({
+        method: 'POST',
+        url: config.servicesUrl + '/dump-delete',
+        data: JSON.stringify({dumpNames: dumpNames}),
+        contentType: 'application/json; charset=utf-8'
+    }).always(function () {
+        router.setState('dumps');
+    });
 }
 
 function retrieveDumps() {
@@ -52,7 +79,8 @@ function retrieveDumps() {
             dumpsTable.body.createRow().
                 addCell(dump.name).
                 addCell(dump.size.toLocaleString()).
-                addCell(new Date(dump.timestamp).toISOString());
+                addCell(new Date(dump.timestamp).toISOString()).
+                setAttribute('dump', dump.name);
         });
     });
 }

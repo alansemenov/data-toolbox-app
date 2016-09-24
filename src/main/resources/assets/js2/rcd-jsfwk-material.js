@@ -171,12 +171,13 @@ class RcdMaterialCard extends RcdDivElement {
             addChild(this.content);
     }
 
-    addIcon(iconName) {
+    addIcon(iconName, callback) {
         var icon = new RcdGoogleMaterialIcon(iconName).init();
         var div = new RcdDivElement().
             init().
             addClass('rcd-material-card-action-icon').
-            addChild(icon);
+            addChild(icon).
+            onClick(callback);
         this.icons.addChild(div);
         return this;
     }
@@ -250,6 +251,7 @@ class RcdMaterialTableHeader extends RcdTheadElement {
 class RcdMaterialTableBody extends RcdTbodyElement {
     constructor() {
         super();
+        this.rows = [];
     }
 
     init() {
@@ -259,8 +261,14 @@ class RcdMaterialTableBody extends RcdTbodyElement {
     createRow() {
         var row = new RcdMaterialTableRow().
             init();
+        this.rows.push(row);
         this.addChild(row);
         return row;
+    }
+
+    clear() {
+        super.clear();
+        this.rows.length = 0;
     }
 }
 
@@ -275,5 +283,9 @@ class RcdMaterialTable extends RcdTableElement {
         return this.addClass('rcd-material-table').
             addChild(this.header).
             addChild(this.body);
+    }
+
+    getSelectedRows() {
+        return this.body.rows.filter((row) => row.isSelected());
     }
 }
