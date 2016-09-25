@@ -34,5 +34,6 @@ class RcdMaterialCard extends RcdDivElement {
 
     addContent(content) {
         this.content.addChild(content);
+        return this;
     }
 }

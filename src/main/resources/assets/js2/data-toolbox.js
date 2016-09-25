@@ -38,8 +38,9 @@ function createDumpsView(dumpsTable) {
         addIcon('file_upload', () => {
         }).
         addIcon('delete', deleteDumps);
-    dumpsView.addChild(dumpsCard);
     dumpsCard.addContent(dumpsTable);
+    
+    dumpsView.addChild(dumpsCard);
 
     return dumpsView;
 }
