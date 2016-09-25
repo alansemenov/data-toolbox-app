@@ -22,7 +22,7 @@ function createPresentationView() {
 
 function createDumpsTable() {
     var dumpsTable = new RcdMaterialTable().init();
-    dumpsTable.header.addCell('Dump name').addCell('Size').addCell('Timestamp');
+    dumpsTable.header.addCell('Dump name').addCell('Size (bytes)').addCell('Timestamp');
     return dumpsTable;
 }
 function createDumpsView(dumpsTable) {

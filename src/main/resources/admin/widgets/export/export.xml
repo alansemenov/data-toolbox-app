@@ -1,0 +1,6 @@
+<widget>
+  <display-name>Data Toolbox - Export</display-name>
+  <interfaces>
+    <interface>contentstudio.detailpanel</interface>
+  </interfaces>
+</widget>

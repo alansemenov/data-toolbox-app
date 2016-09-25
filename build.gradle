@@ -27,7 +27,6 @@ dependencies {
     include "com.enonic.xp:lib-content:${xpVersion}"
     include "com.enonic.xp:lib-portal:${xpVersion}"
     include "com.enonic.xp:lib-mustache:${xpVersion}"
-
     include "systems.rcd.fwk.core:rcd-fwk-core:7.0.0-SNAPSHOT"
 }
 
@@ -37,4 +36,11 @@ repositories {
     maven {
         url 'http://repo.enonic.com/public'
     }
+}
+
+//TODO Temporary fix
+exec {
+    executable 'lessc'
+    args 'src/main/resources/assets/style/main.less',
+         'src/main/resources/assets/style/main.css'
 }
