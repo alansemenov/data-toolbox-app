@@ -2,6 +2,10 @@ class RcdMaterialTableCell extends RcdTdElement {
     constructor() {
         super();
     }
+
+    init() {
+        return this.addClass('rcd-material-table-cell');
+    }
 }
 
 class RcdMaterialTableCheckbox extends RcdMaterialTableCell {
@@ -11,7 +15,8 @@ class RcdMaterialTableCheckbox extends RcdMaterialTableCell {
     }
 
     init() {
-        return this.addChild(this.checkbox).
+        return this.addClass('rcd-material-table-checkbox').
+            addChild(this.checkbox).
             onClick(() => this.checkbox.select(!this.checkbox.isSelected()));
     }
 }
