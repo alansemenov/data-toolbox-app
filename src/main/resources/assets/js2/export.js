@@ -11,7 +11,7 @@ var card = new RcdMaterialCard('Exports').
     }).
     addContent(exportsTable);
 
-
+//TODO Forgive me these 3 next lines
 setTimeout(() => {
     document.getElementById('exportWidgetContainer').appendChild(card.domElement);
 }, 300);
