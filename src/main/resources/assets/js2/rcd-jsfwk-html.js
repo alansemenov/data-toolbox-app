@@ -73,6 +73,7 @@ class RcdHtmlElement extends RcdDomElement {
     constructor(name) {
         super(name);
         this.classes = [];
+        this.clickListeners = []; //TODO Make it event generic
     }
 
     init() {
@@ -106,9 +107,23 @@ class RcdHtmlElement extends RcdDomElement {
         return this;
     }
 
-    onClick(listener) {
-        this.addEventListener('click', listener);
+    removeEventListener(type, listener) {
+        this.domElement.removeEventListener(type, listener);
         return this;
+    }
+
+    setClickListener(listener) {
+        this.clickListeners.forEach((clickListener) => this.removeClickListener(clickListener));
+        return this.addClickListener(listener);
+    }
+
+    addClickListener(listener) {
+        this.clickListeners.push(listener);
+        return this.addEventListener('click', listener);
+    }
+
+    removeClickListener(listener) {
+        this.removeEventListener('click', listener);
     }
 
     isSelected() {

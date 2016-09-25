@@ -32,7 +32,7 @@ class RcdMaterialNavLink extends RcdDivElement {
             addChild(this.text);
 
         if (this.callback) {
-            this.onClick(this.callback);
+            this.addClickListener(this.callback);
         }
         return this;
     }
