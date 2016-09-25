@@ -1,7 +1,7 @@
 var exportsTable = new RcdMaterialTable().init();
-exportsTable.header.addCell('Dump name');
+exportsTable.header.addCell('Export name');
 
-var card = new RcdMaterialCard('Export').
+var card = new RcdMaterialCard('Exports').
     init().
     addIcon('file_download', () => {
     }).
@@ -11,9 +11,10 @@ var card = new RcdMaterialCard('Export').
     }).
     addContent(exportsTable);
 
-var widgetBody = document.currentScript.parentElement;
-widgetBody.appendChild(card.domElement);
 
+setTimeout(() => {
+    document.getElementById('exportWidgetContainer').appendChild(card.domElement);
+}, 300);
 
 function retrieveExports() {
     return $.ajax({
@@ -23,9 +24,10 @@ function retrieveExports() {
         exports.forEach((anExport) => {
             exportsTable.body.createRow().
                 addCell(anExport.name).
-                setAttribute('dump', anExport.name);
+                setAttribute('export', anExport.name);
         });
     });
 }
+
 retrieveExports();
 
