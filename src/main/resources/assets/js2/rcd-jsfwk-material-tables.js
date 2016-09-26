@@ -16,8 +16,7 @@ class RcdMaterialTableCheckbox extends RcdMaterialTableCell {
 
     init() {
         return this.addClass('rcd-material-table-checkbox').
-            addChild(this.checkbox).
-            setClickListener(() => this.select(!this.checkbox.isSelected()));
+            addChild(this.checkbox);
     }
 
     select(selected) {
@@ -33,7 +32,7 @@ class RcdMaterialTableRow extends RcdTrElement {
     }
 
     init() {
-        this.checkbox.setClickListener(() => this.select(!this.isSelected()));
+        this.setClickListener(() => this.select(!this.isSelected()));
         return this.addClass('rcd-material-table-row').
             addChild(this.checkbox);
     }
@@ -104,7 +103,7 @@ class RcdMaterialTable extends RcdTableElement {
         this.header = new RcdMaterialTableHeader().init();
         this.body = new RcdMaterialTableBody().init();
 
-        this.header.row.checkbox.addClickListener(() => this.body.selectAllRows(this.header.row.checkbox.isSelected()));
+        this.header.row.addClickListener(() => this.body.selectAllRows(this.header.row.checkbox.isSelected()));
     }
 
     init() {
