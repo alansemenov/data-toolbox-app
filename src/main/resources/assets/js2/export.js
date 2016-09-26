@@ -3,8 +3,7 @@ exportsTable.header.addCell('Export name');
 
 var card = new RcdMaterialCard('Exports').
     init().
-    addIcon('file_download', () => {
-    }).
+    addIcon('file_download', createExport).
     addIcon('file_upload', () => {
     }).
     addIcon('delete', () => {
@@ -26,6 +25,20 @@ function retrieveExports() {
                 addCell(anExport.name).
                 setAttribute('export', anExport.name);
         });
+    });
+}
+
+function createExport() {
+    return $.ajax({
+        method: 'POST',
+        url: config.servicesUrl + '/export-create',
+        data: JSON.stringify({
+            contentPath: config.contentPath,
+            exportName: config.contentName + '-' + new Date().toISOString()
+        }),
+        contentType: 'application/json; charset=utf-8'
+    }).always(() => {
+        retrieveExports();
     });
 }
 
