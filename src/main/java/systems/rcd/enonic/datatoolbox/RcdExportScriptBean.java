@@ -10,10 +10,12 @@ import systems.rcd.fwk.core.io.file.RcdFileService;
 
 import com.enonic.xp.export.ExportNodesParams;
 import com.enonic.xp.export.ExportService;
+import com.enonic.xp.export.ImportNodesParams;
 import com.enonic.xp.home.HomeDir;
 import com.enonic.xp.node.NodePath;
 import com.enonic.xp.script.bean.BeanContext;
 import com.enonic.xp.script.bean.ScriptBean;
+import com.enonic.xp.vfs.VirtualFiles;
 
 public class RcdExportScriptBean
     implements ScriptBean
@@ -67,6 +69,36 @@ public class RcdExportScriptBean
         {
             return RcdJsonService.createJsonObject().put( "success", false );
         }
+    }
+
+    public RcdJsonObject load( String contentPath, String[] exportNames )
+    {
+        try
+        {
+            final NodePath nodePath = NodePath.create( "/content" + contentPath ).build();
+            for ( String exportName : exportNames )
+            {
+                load( nodePath, exportName );
+            }
+            return RcdJsonService.createJsonObject().put( "success", true );
+        }
+        catch ( Exception e )
+        {
+            return RcdJsonService.createJsonObject().put( "success", false );
+        }
+    }
+
+    public void load( NodePath nodePath, String exportName )
+    {
+        final ImportNodesParams importNodesParams = ImportNodesParams.create().
+            targetNodePath( nodePath ).
+            source( VirtualFiles.from( getExportDirectoryPath().resolve( exportName ) ) ).
+            dryRun( false ).
+            includeNodeIds( true ).
+            build();
+
+        exportServiceSupplier.get().
+            importNodes( importNodesParams );
     }
 
     public RcdJsonObject delete( final String... exportNames )

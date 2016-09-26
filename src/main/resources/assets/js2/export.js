@@ -4,8 +4,7 @@ exportsTable.header.addCell('Export name');
 var card = new RcdMaterialCard('Exports').
     init().
     addIcon('file_download', createExport).
-    addIcon('file_upload', () => {
-    }).
+    addIcon('file_upload', loadExports).
     addIcon('delete', deleteExports).
     addContent(exportsTable);
 
@@ -34,6 +33,22 @@ function createExport() {
         data: JSON.stringify({
             contentPath: config.contentPath,
             exportName: config.contentName + '-' + new Date().toISOString()
+        }),
+        contentType: 'application/json; charset=utf-8'
+    }).always(() => {
+        retrieveExports();
+    });
+}
+
+function loadExports() {
+    var exportNames = exportsTable.getSelectedRows().
+        map((row) => row.attributes['export']);
+    return $.ajax({
+        method: 'POST',
+        url: config.servicesUrl + '/export-load',
+        data: JSON.stringify({
+            contentPath: config.contentPath,
+            exportNames: exportNames
         }),
         contentType: 'application/json; charset=utf-8'
     }).always(() => {
