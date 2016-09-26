@@ -6,8 +6,7 @@ var card = new RcdMaterialCard('Exports').
     addIcon('file_download', createExport).
     addIcon('file_upload', () => {
     }).
-    addIcon('delete', () => {
-    }).
+    addIcon('delete', deleteExports).
     addContent(exportsTable);
 
 //TODO Forgive me these 3 next lines
@@ -36,6 +35,19 @@ function createExport() {
             contentPath: config.contentPath,
             exportName: config.contentName + '-' + new Date().toISOString()
         }),
+        contentType: 'application/json; charset=utf-8'
+    }).always(() => {
+        retrieveExports();
+    });
+}
+
+function deleteExports() {
+    var exportNames = exportsTable.getSelectedRows().
+        map((row) => row.attributes['export']);
+    return $.ajax({
+        method: 'POST',
+        url: config.servicesUrl + '/export-delete',
+        data: JSON.stringify({exportNames: exportNames}),
         contentType: 'application/json; charset=utf-8'
     }).always(() => {
         retrieveExports();
