@@ -8,10 +8,17 @@ var card = new RcdMaterialCard('Exports').
     addIcon('delete', deleteExports).
     addContent(exportsTable);
 
-//TODO Forgive me these 3 next lines
-setTimeout(() => {
-    document.getElementById('exportWidgetContainer').appendChild(card.domElement);
-}, 300);
+retrieveExports();
+
+var interval = setInterval(() => {
+    var exportWidgetContainer = document.getElementById('exportWidgetContainer');
+    console.log(exportWidgetContainer);
+    if (exportWidgetContainer) {
+        exportWidgetContainer.appendChild(card.domElement);
+        clearInterval(interval);
+    }
+}, 100);
+
 
 function retrieveExports() {
     return $.ajax({
@@ -69,5 +76,4 @@ function deleteExports() {
     });
 }
 
-retrieveExports();
 
