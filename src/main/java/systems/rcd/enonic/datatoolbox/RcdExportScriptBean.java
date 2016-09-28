@@ -14,11 +14,10 @@ import com.enonic.xp.export.ImportNodesParams;
 import com.enonic.xp.home.HomeDir;
 import com.enonic.xp.node.NodePath;
 import com.enonic.xp.script.bean.BeanContext;
-import com.enonic.xp.script.bean.ScriptBean;
 import com.enonic.xp.vfs.VirtualFiles;
 
 public class RcdExportScriptBean
-    implements ScriptBean
+    extends RcdScriptBean
 {
     private Supplier<ExportService> exportServiceSupplier;
 
@@ -30,29 +29,30 @@ public class RcdExportScriptBean
 
     public String list()
     {
-        final RcdJsonArray result = RcdJsonService.createJsonArray();
-        final Path exportDirectoryPath = getExportDirectoryPath();
+        return runSafely( () -> {
+            final RcdJsonArray exportJsonArray = RcdJsonService.createJsonArray();
 
-        if ( exportDirectoryPath.toFile().exists() )
-        {
-            RcdFileService.listSubPaths( exportDirectoryPath, exportPath -> {
-                if ( exportPath.toFile().isDirectory() )
-                {
-                    final RcdJsonObject export = RcdJsonService.createJsonObject().
-                        put( "name", exportPath.getFileName().toString() ).
-                        put( "timestamp", exportPath.toFile().lastModified() ).
-                        put( "size", RcdFileService.getDirectorySize( exportPath ) );
-                    result.add( export );
-                }
-            } );
-        }
-        return RcdJsonService.toString( result );
+            final Path exportDirectoryPath = getExportDirectoryPath();
+            if ( exportDirectoryPath.toFile().exists() )
+            {
+                RcdFileService.listSubPaths( exportDirectoryPath, exportPath -> {
+                    if ( exportPath.toFile().isDirectory() )
+                    {
+                        final RcdJsonObject export = RcdJsonService.createJsonObject().
+                            put( "name", exportPath.getFileName().toString() ).
+                            put( "timestamp", exportPath.toFile().lastModified() ).
+                            put( "size", RcdFileService.getDirectorySize( exportPath ) );
+                        exportJsonArray.add( export );
+                    }
+                } );
+            }
+            return createSuccessResult( exportJsonArray );
+        }, "Error while listing exports" );
     }
 
-    public RcdJsonObject create( String contentPath, String exportName )
+    public String create( String contentPath, String exportName )
     {
-        try
-        {
+        return runSafely( () -> {
             final NodePath nodePath = NodePath.create( "/content" + contentPath ).build();
             final ExportNodesParams exportNodesParams = ExportNodesParams.create().
                 sourceNodePath( nodePath ).
@@ -63,32 +63,35 @@ public class RcdExportScriptBean
 
             exportServiceSupplier.get().
                 exportNodes( exportNodesParams );
-            return RcdJsonService.createJsonObject().put( "success", true );
-        }
-        catch ( Exception e )
-        {
-            return RcdJsonService.createJsonObject().put( "success", false );
-        }
+            return createSuccessResult();
+        }, "Error while creating export" );
     }
 
-    public RcdJsonObject load( String contentPath, String[] exportNames )
+    public String load( String contentPath, String[] exportNames )
     {
-        try
-        {
+        return runSafely( () -> {
             final NodePath nodePath = NodePath.create( "/content" + contentPath ).build();
             for ( String exportName : exportNames )
             {
                 load( nodePath, exportName );
             }
-            return RcdJsonService.createJsonObject().put( "success", true );
-        }
-        catch ( Exception e )
-        {
-            return RcdJsonService.createJsonObject().put( "success", false );
-        }
+            return createSuccessResult();
+        }, "Error while loading export" );
     }
 
-    public void load( NodePath nodePath, String exportName )
+    public String delete( final String... exportNames )
+    {
+        return runSafely( () -> {
+            for ( String exportName : exportNames )
+            {
+                final Path exportPath = getExportDirectoryPath().resolve( exportName );
+                RcdFileService.deleteDirectory( exportPath );
+            }
+            return createSuccessResult();
+        }, "Error while deleting export" );
+    }
+
+    private void load( NodePath nodePath, String exportName )
     {
         final ImportNodesParams importNodesParams = ImportNodesParams.create().
             targetNodePath( nodePath ).
@@ -99,24 +102,6 @@ public class RcdExportScriptBean
 
         exportServiceSupplier.get().
             importNodes( importNodesParams );
-    }
-
-    public RcdJsonObject delete( final String... exportNames )
-    {
-        try
-        {
-            for ( String exportName : exportNames )
-            {
-                final Path exportPath = getExportDirectoryPath().resolve( exportName );
-                RcdFileService.deleteDirectory( exportPath );
-            }
-            return RcdJsonService.createJsonObject().put( "success", true );
-
-        }
-        catch ( Exception e )
-        {
-            return RcdJsonService.createJsonObject().put( "success", false );
-        }
     }
 
     private Path getExportDirectoryPath()

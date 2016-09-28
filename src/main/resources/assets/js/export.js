@@ -16,9 +16,9 @@ setTimeout(() => {
 function retrieveExports() {
     return $.ajax({
         url: config.servicesUrl + '/export-list'
-    }).done(function (exports) {
+    }).done(function (result) {
         exportsTable.body.clear();
-        exports.forEach((anExport) => {
+        result.success.forEach((anExport) => {
             exportsTable.body.createRow().
                 addCell(anExport.name).
                 setAttribute('export', anExport.name);

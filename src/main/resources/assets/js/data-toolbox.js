@@ -39,7 +39,7 @@ function createDumpsView(dumpsTable) {
         }).
         addIcon('delete', deleteDumps);
     dumpsCard.addContent(dumpsTable);
-    
+
     dumpsView.addChild(dumpsCard);
 
     return dumpsView;
@@ -67,6 +67,7 @@ function deleteDumps() {
         data: JSON.stringify({dumpNames: dumpNames}),
         contentType: 'application/json; charset=utf-8'
     }).always(function () {
+        //TODO Check success & error
         router.setState('dumps');
     });
 }
@@ -74,9 +75,10 @@ function deleteDumps() {
 function retrieveDumps() {
     return $.ajax({
         url: config.servicesUrl + '/dump-list'
-    }).done(function (dumps) {
+    }).done(function (result) {
         dumpsTable.body.clear();
-        dumps.forEach((dump) => {
+        //TODO Check success & error
+        result.success.forEach((dump) => {
             dumpsTable.body.createRow().
                 addCell(dump.name).
                 addCell(dump.size.toLocaleString()).
