@@ -13,10 +13,12 @@ import com.enonic.xp.context.ContextAccessor;
 import com.enonic.xp.context.ContextBuilder;
 import com.enonic.xp.export.ExportNodesParams;
 import com.enonic.xp.export.ExportService;
+import com.enonic.xp.export.ImportNodesParams;
 import com.enonic.xp.home.HomeDir;
 import com.enonic.xp.node.NodePath;
 import com.enonic.xp.repository.RepositoryId;
 import com.enonic.xp.script.bean.BeanContext;
+import com.enonic.xp.vfs.VirtualFiles;
 
 public class RcdDumpScriptBean
     extends RcdScriptBean
@@ -80,6 +82,46 @@ public class RcdDumpScriptBean
 
                 exportServiceSupplier.get().
                     exportNodes( exportNodesParams );
+                return null;
+            } );
+    }
+
+    public String load( final String[] dumpNames )
+    {
+        return runSafely( () -> {
+            for ( final String dumpName : dumpNames )
+            {
+                load( dumpName );
+            }
+            return createSuccessResult();
+        }, "Error while creating dump" );
+    }
+
+    private void load( final String dumpName )
+    {
+        load( dumpName, "cms-repo", "draft" );
+        load( dumpName, "cms-repo", "master" );
+        load( dumpName, "system-repo", "master" );
+    }
+
+    private void load( final String dumpName, final String repositoryName, final String branchName )
+    {
+        ContextBuilder.from( ContextAccessor.current() ).
+            repositoryId( RepositoryId.from( repositoryName ) ).
+            branch( Branch.from( branchName ) ).
+            build().
+            callWith( () -> {
+                final ImportNodesParams importNodesParams = ImportNodesParams.create().
+                    targetNodePath( NodePath.ROOT ).
+                    source(
+                        VirtualFiles.from( getDumpDirectoryPath().resolve( dumpName ).resolve( repositoryName ).resolve( branchName ) ) ).
+                    dryRun( false ).
+                    includeNodeIds( true ).
+                    includePermissions( true ).
+                    build();
+
+                exportServiceSupplier.get().
+                    importNodes( importNodesParams );
                 return null;
             } );
     }

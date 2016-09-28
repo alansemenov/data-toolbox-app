@@ -98,6 +98,7 @@ public class RcdExportScriptBean
             source( VirtualFiles.from( getExportDirectoryPath().resolve( exportName ) ) ).
             dryRun( false ).
             includeNodeIds( true ).
+            includePermissions( true ).
             build();
 
         exportServiceSupplier.get().

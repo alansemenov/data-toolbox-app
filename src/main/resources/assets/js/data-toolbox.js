@@ -35,8 +35,7 @@ function createDumpsView(dumpsTable) {
     var dumpsCard = new RcdMaterialCard('Dumps').
         init().
         addIcon('file_download', createDump).
-        addIcon('file_upload', () => {
-        }).
+        addIcon('file_upload', loadDumps).
         addIcon('delete', deleteDumps);
     dumpsCard.addContent(dumpsTable);
 
@@ -54,6 +53,20 @@ function createDump() {
         }),
         contentType: 'application/json; charset=utf-8'
     }).always(() => {
+        //TODO Check success & error
+        router.setState('dumps');
+    });
+}
+
+function loadDumps() {
+    var dumpNames = dumpsTable.getSelectedRows().
+        map((row) => row.attributes['dump']);
+    $.ajax({
+        method: 'POST',
+        url: config.servicesUrl + '/dump-load',
+        data: JSON.stringify({dumpNames: dumpNames}),
+        contentType: 'application/json; charset=utf-8'
+    }).always(function () {
         //TODO Check success & error
         router.setState('dumps');
     });
