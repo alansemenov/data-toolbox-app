@@ -6,8 +6,8 @@ function createMain() {
     var main = new RcdMaterialMain().init();
 
     //Fills the nav bar
-    main.nav.addLink('file_download', 'Dumps', () => router.setState('dumps')).
-        addLink('photo_camera', 'Snapshots');
+    main.nav.addLink('dumps', 'file_download', 'Dumps', () => router.setState('dumps')).
+        addLink('snapshots', 'photo_camera', 'Snapshots');
 
     return main;
 }
@@ -103,9 +103,13 @@ document.body.appendChild(main.getDomElement());
 
 //Sets up the router
 var router = new RcdHistoryRouter();
-router.addDefaultRoute(() => main.content.displayView(presentationView.viewId));
+router.addDefaultRoute(() => {
+    main.nav.selectLink();
+    main.content.displayView(presentationView.viewId)
+});
 router.addRoute(dumpsView.viewId, () => {
     retrieveDumps();
+    main.nav.selectLink('dumps');
     main.content.displayView(dumpsView.viewId);
 });
 router.setState(router.getCurrentState());

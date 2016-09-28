@@ -41,15 +41,27 @@ class RcdMaterialNavLink extends RcdDivElement {
 class RcdMaterialNav extends RcdNavElement {
     constructor() {
         super();
+        this.links = {};
     }
 
     init() {
         return this.addClass('rcd-material-nav');
     }
 
-    addLink(iconName, text, callback) {
+    addLink(linkId, iconName, text, callback) {
         var link = new RcdMaterialNavLink(iconName, text, callback).init();
+        this.links[linkId] = link;
         return this.addChild(link);
+    }
+
+    selectLink(linkId) {
+        Object.keys(this.links).forEach(function (key) {
+            if (linkId == key) {
+                this.links[key].select(true);
+            } else {
+                this.links[key].select(false);
+            }
+        }, this);
     }
 }
 
