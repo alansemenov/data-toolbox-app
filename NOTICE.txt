@@ -1,0 +1,15 @@
+Licenses used by Data Toolbox App
+
+    JQuery
+    MIT License
+    https://jquery.org/license/
+    
+Artwork licenses used by this product:
+    
+    Roboto
+    Apache License 2.0
+    https://fonts.google.com/specimen/Roboto
+    
+    Material Icons
+    Apache License 2.0
+    https://design.google.com/icons/
