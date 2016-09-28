@@ -38,9 +38,12 @@ repositories {
     }
 }
 
-//TODO Temporary fix
-exec {
-    executable 'lessc'
-    args 'src/main/resources/assets/style/main.less',
-         'src/main/resources/assets/style/main.css'
+//TODO Replace by proper plugin
+task lessc( dependsOn: processResources ) << {
+    exec {
+        executable 'lessc'
+        args 'src/main/resources/assets/style/main.less',
+             'build/resources/main/assets/style/main.css'
+    }
 }
+jar.dependsOn lessc
