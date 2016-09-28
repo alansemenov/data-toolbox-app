@@ -46,16 +46,17 @@ function createDumpsView(dumpsTable) {
 }
 
 function createDump() {
-    var dumpName = 'dump-' + new Date().toISOString();
-    $.ajax({
+    return $.ajax({
         method: 'POST',
-        url: '/api/system/dump',
-        data: JSON.stringify({name: dumpName}),
+        url: config.servicesUrl + '/dump-create',
+        data: JSON.stringify({
+            dumpName: 'dump-' + new Date().toISOString()
+        }),
         contentType: 'application/json; charset=utf-8'
-    });
-    setTimeout(function () {
+    }).always(() => {
+        //TODO Check success & error
         router.setState('dumps');
-    }, 1000);
+    });
 }
 
 function deleteDumps() {
