@@ -10,6 +10,31 @@ class RcdGoogleMaterialIcon extends RcdIElement {
     }
 }
 
+class RcdMaterialActionIcon extends RcdDivElement {
+    constructor(iconName, callback) {
+        super();
+        this.icon = new RcdGoogleMaterialIcon(iconName).init();
+        this.callback = callback;
+    }
+
+    init() {
+        return super.init().
+            addClass('rcd-material-action-icon').
+            addClickListener(this.callback).
+            addChild(this.icon);
+    }
+
+    enable(enabled) {
+        if (enabled) {
+            return this.removeClass('disabled').
+                addClickListener(this.callback);
+        } else {
+            return this.addClass('disabled').
+                removeClickListener(this.callback);
+        }
+    }
+}
+
 class RcdMaterialCheckbox extends RcdGoogleMaterialIcon {
     constructor() {
         super('check_box_outline_blank');

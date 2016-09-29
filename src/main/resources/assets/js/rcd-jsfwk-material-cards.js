@@ -21,14 +21,9 @@ class RcdMaterialCard extends RcdDivElement {
             addChild(this.content);
     }
 
-    addIcon(iconName, callback) {
-        var icon = new RcdGoogleMaterialIcon(iconName).init();
-        var div = new RcdDivElement().
-            init().
-            addClass('rcd-material-card-action-icon').
-            addChild(icon).
-            addClickListener(callback);
-        this.icons.addChild(div);
+    addIcon(icon) {
+        icon.addClass('rcd-material-card-action-icon'); //TODO
+        this.icons.addChild(icon);
         return this;
     }
 

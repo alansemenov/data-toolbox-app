@@ -123,7 +123,11 @@ class RcdHtmlElement extends RcdDomElement {
     }
 
     removeClickListener(listener) {
-        this.removeEventListener('click', listener);
+        var index = this.clickListeners.indexOf(listener);
+        if (index > -1) {
+            this.clickListeners.splice(index, 1);
+        }
+        return this.removeEventListener('click', listener);
     }
 
     isSelected() {
