@@ -11,6 +11,7 @@ import systems.rcd.fwk.core.exc.RcdException;
 import systems.rcd.fwk.core.format.json.RcdJsonService;
 import systems.rcd.fwk.core.format.json.data.RcdJsonArray;
 import systems.rcd.fwk.core.format.json.data.RcdJsonObject;
+import systems.rcd.fwk.core.format.json.data.RcdJsonString;
 import systems.rcd.fwk.core.io.file.RcdFileService;
 import systems.rcd.fwk.core.util.zip.RcdZipService;
 
@@ -141,28 +142,6 @@ public class RcdDumpScriptBean
                 RcdFileService.deleteDirectory( dumpPath );
             }
             return createSuccessResult();
-        }, "Error while deleting dumps" );
-    }
-
-
-    public String archive( final String... dumpNames )
-    {
-        return runSafely( () -> {
-
-            try
-            {
-                final Path dumpArchivePath = Files.createTempFile( "dump-archive-" + Instant.now().toString(), ".zip" );
-                final Path[] dumpPaths = Arrays.stream( dumpNames ).
-                    map( dumpName -> getDumpDirectoryPath().resolve( dumpName ) ).
-                    toArray( size -> new Path[size] );
-                System.out.println( "Creating dump archive: " + dumpArchivePath );
-                RcdZipService.zipDirectory( dumpArchivePath, dumpPaths );
-                return createSuccessResult();
-            }
-            catch ( IOException e )
-            {
-                throw new RcdException( "Error while creating temporary zip file", e );
-            }
         }, "Error while deleting dumps" );
     }
 

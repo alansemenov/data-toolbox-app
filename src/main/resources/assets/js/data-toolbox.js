@@ -118,15 +118,18 @@ function retrieveDumps() {
 function archiveDumps() {
     var dumpNames = dumpsTable.getSelectedRows().
         map((row) => row.attributes['dump']);
-    $.ajax({
-        method: 'POST',
-        url: config.servicesUrl + '/dump-archive',
-        data: JSON.stringify({dumpNames: dumpNames}),
-        contentType: 'application/json; charset=utf-8'
-    }).always(function () {
-        //TODO Check success & error
-        router.setState('dumps');
-    });
+
+    //TODO Create proper elements in framework
+    var form = $('<form></form>').
+        attr('action', '/admin/rest/datatoolbox/dump/archive').
+        attr('method', 'post');
+    form.append($("<input></input>").
+        attr('type', 'hidden').
+        attr('name', 'dumpNames').
+        attr('value', dumpNames));
+    form.appendTo('body').
+        submit().
+        remove();
 }
 
 //Create the static part
