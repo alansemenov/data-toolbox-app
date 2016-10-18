@@ -6,8 +6,11 @@ var main = createMain();
 var presentationView = createPresentationView();
 var dumpsTable = createDumpsTable();
 var dumpsView = createDumpsView(dumpsTable);
+var snapshotsTable = createSnapshotsTable();
+var snapshotsView = createSnapshotsView(snapshotsTable);
 main.content.addView(presentationView).
-    addView(dumpsView);
+    addView(dumpsView).
+    addView(snapshotsView);
 
 //Appends the header and main elements
 document.body.appendChild(header.getDomElement());
@@ -24,5 +27,11 @@ router.addRoute(dumpsView.viewId, () => {
     main.nav.selectLink('dumps');
 
     main.content.displayView(dumpsView.viewId);
+});
+router.addRoute(snapshotsView.viewId, () => {
+    retrieveSnapshots();
+    main.nav.selectLink('snapshots');
+
+    main.content.displayView(snapshotsView.viewId);
 });
 router.setState(router.getCurrentState());
