@@ -7,6 +7,7 @@ import systems.rcd.fwk.core.format.json.data.RcdJsonArray;
 import systems.rcd.fwk.core.format.json.data.RcdJsonObject;
 
 import com.enonic.xp.node.NodeService;
+import com.enonic.xp.node.RestoreParams;
 import com.enonic.xp.node.SnapshotParams;
 import com.enonic.xp.node.SnapshotResult;
 import com.enonic.xp.script.bean.BeanContext;
@@ -51,5 +52,18 @@ public class RcdSnapshotScriptBean
 
             return createSuccessResult();
         }, "Error while creating export" );
+    }
+
+    public String load( String snapshotName )
+    {
+        return runSafely( () -> {
+
+            final RestoreParams restoreParams = RestoreParams.create().
+                snapshotName( snapshotName ).
+                build();
+            nodeServiceSupplier.get().
+                restore( restoreParams );
+            return createSuccessResult();
+        }, "Error while loading export" );
     }
 }

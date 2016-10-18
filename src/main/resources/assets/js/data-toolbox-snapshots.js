@@ -44,16 +44,16 @@ function createSnapshot() {
 }
 
 function restoreSnapshot() {
-    var dumpNames = dumpsTable.getSelectedRows().
-        map((row) => row.attributes['dump']);
+    var snapshotName = snapshotsTable.getSelectedRows().
+        map((row) => row.attributes['snapshot'])[0];
     $.ajax({
         method: 'POST',
         url: config.servicesUrl + '/snapshot-restore',
-        data: JSON.stringify({snap: dumpNames}),
+        data: JSON.stringify({snapshotName: snapshotName}),
         contentType: 'application/json; charset=utf-8'
     }).always(function () {
         //TODO Check success & error
-        router.setState('dumps');
+        router.setState('snapshots');
     });
 }
 
