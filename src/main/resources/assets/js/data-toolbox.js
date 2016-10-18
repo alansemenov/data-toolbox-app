@@ -32,23 +32,23 @@ function createDumpsView(dumpsTable) {
                                'This dump includes all the current versions of your content, users, groups and roles.';
     var dumpsView = new RcdMaterialView('dumps', dumpsViewPathElements, dumpsViewDescription).init();
 
-    var createDumpIcon = new RcdMaterialActionIcon('file_download', createDump).init();
-    var loadDumpIcon = new RcdMaterialActionIcon('file_upload', loadDumps).init().enable(false);
+    var createDumpIcon = new RcdMaterialActionIcon('add', createDump).init();
     var deleteDumpIcon = new RcdMaterialActionIcon('delete', deleteDumps).init().enable(false);
-    var archiveDumpIcon = new RcdMaterialActionIcon('archive', archiveDumps).init().enable(false);
+    var loadDumpIcon = new RcdMaterialActionIcon('refresh', loadDumps).init().enable(false);
+    var archiveDumpIcon = new RcdMaterialActionIcon('file_download', archiveDumps).init().enable(false);
 
     dumpsTable.addSelectionListener((nbRowsSelected) => {
         createDumpIcon.enable(nbRowsSelected == 0);
-        loadDumpIcon.enable(nbRowsSelected > 0);
         deleteDumpIcon.enable(nbRowsSelected > 0);
+        loadDumpIcon.enable(nbRowsSelected > 0);
         archiveDumpIcon.enable(nbRowsSelected > 0);
     });
 
     var dumpsCard = new RcdMaterialCard('Dumps').
         init().
         addIcon(createDumpIcon).
-        addIcon(loadDumpIcon).
         addIcon(deleteDumpIcon).
+        addIcon(loadDumpIcon).
         addIcon(archiveDumpIcon).
         addContent(dumpsTable);
 
