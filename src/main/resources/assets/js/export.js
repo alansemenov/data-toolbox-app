@@ -1,21 +1,21 @@
 var exportsTable = new RcdMaterialTable().init();
 exportsTable.header.addCell('Export name');
 
-var createExportIcon = new RcdMaterialActionIcon('file_download', createExport).init();
-var loadExportsIcon = new RcdMaterialActionIcon('file_upload', loadExports).init().enable(false);
+var createExportIcon = new RcdMaterialActionIcon('add', createExport).init();
 var deleteExportsIcon = new RcdMaterialActionIcon('delete', deleteExports).init().enable(false);
+var loadExportsIcon = new RcdMaterialActionIcon('refresh', loadExports).init().enable(false);
 
 exportsTable.addSelectionListener((nbRowsSelected) => {
     createExportIcon.enable(nbRowsSelected == 0);
-    loadExportsIcon.enable(nbRowsSelected > 0);
     deleteExportsIcon.enable(nbRowsSelected > 0);
+    loadExportsIcon.enable(nbRowsSelected > 0);
 });
 
 var card = new RcdMaterialCard('Exports').
     init().
     addIcon(createExportIcon).
-    addIcon(loadExportsIcon).
     addIcon(deleteExportsIcon).
+    addIcon(loadExportsIcon).
     addContent(exportsTable);
 
 retrieveExports();
