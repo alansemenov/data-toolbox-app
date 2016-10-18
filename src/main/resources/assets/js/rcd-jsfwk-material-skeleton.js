@@ -85,7 +85,12 @@ class RcdMaterialBreadcrumbs extends RcdDivElement {
         if (this.breadcrumbs.length > 1) {
             this.addChild(new RcdTextElement(' / ').init());
         }
-        var breadcrumb = new RcdTextDivElement(pathElement.name).init().addClass('rcd-material-breadcrumb');
+        var breadcrumb = new RcdTextDivElement(pathElement.name).init().
+            addClass('rcd-material-breadcrumb');
+
+        if (pathElement.callback) {
+            breadcrumb.addClickListener(pathElement.callback);
+        }
         return this.addChild(breadcrumb);
     }
 }

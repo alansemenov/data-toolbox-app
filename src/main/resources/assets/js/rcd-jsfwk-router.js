@@ -25,6 +25,7 @@ class RcdHistoryRouter {
             this.routes[state]();
         } else {
             this.defaultRoute();
+            history.pushState(state, null, '#');
         }
 
         return this;

@@ -6,7 +6,7 @@ function createSnapshotsTable() {
 
 function createSnapshotsView(snapshotsTable) {
     //Creates the snapshot view
-    var snapshotsViewPathElements = [{name: 'Data Toolbox'}, {name: 'Snapshots', link: '#snapshots'}];
+    var snapshotsViewPathElements = [{name: 'Data Toolbox', callback: () => router.setState()}, {name: 'Snapshots'}];
     var snapshotsViewDescription = 'A snapshot is a record of a fixed state of your installation data. TODO description';
     var snapshotsView = new RcdMaterialView('snapshots', snapshotsViewPathElements, snapshotsViewDescription).init();
 

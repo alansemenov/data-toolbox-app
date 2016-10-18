@@ -6,7 +6,7 @@ function createDumpsTable() {
 
 function createDumpsView(dumpsTable) {
     //Creates the dump view
-    var dumpsViewPathElements = [{name: 'Data Toolbox'}, {name: 'Dumps', link: '#dumps'}];
+    var dumpsViewPathElements = [{name: 'Data Toolbox', callback: () => router.setState()}, {name: 'Dumps'}];
     var dumpsViewDescription = 'To secure your data or migrate it to another installation, a dump of your installation can be made. ' +
                                'This dump includes all the current versions of your content, users, groups and roles.';
     var dumpsView = new RcdMaterialView('dumps', dumpsViewPathElements, dumpsViewDescription).init();
