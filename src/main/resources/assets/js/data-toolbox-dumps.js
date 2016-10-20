@@ -14,13 +14,15 @@ function createDumpsView(dumpsTable) {
     var createDumpIcon = new RcdMaterialActionIcon('add', createDump).init();
     var deleteDumpIcon = new RcdMaterialActionIcon('delete', deleteDumps).init().enable(false);
     var loadDumpIcon = new RcdMaterialActionIcon('refresh', loadDumps).init().enable(false);
-    var archiveDumpIcon = new RcdMaterialActionIcon('file_download', archiveDumps).init().enable(false);
+    var downloadDumpIcon = new RcdMaterialActionIcon('file_download', dowloadDumps).init().enable(false);
+    var uploadDumpIcon = new RcdMaterialActionIcon('file_upload', uploadDump).init().enable(false);
 
     dumpsTable.addSelectionListener((nbRowsSelected) => {
         createDumpIcon.enable(nbRowsSelected == 0);
         deleteDumpIcon.enable(nbRowsSelected > 0);
         loadDumpIcon.enable(nbRowsSelected > 0);
-        archiveDumpIcon.enable(nbRowsSelected > 0);
+        downloadDumpIcon.enable(nbRowsSelected > 0);
+        uploadDumpIcon.enable(nbRowsSelected == 0);
     });
 
     var dumpsCard = new RcdMaterialCard('Dumps').
@@ -28,7 +30,8 @@ function createDumpsView(dumpsTable) {
         addIcon(createDumpIcon).
         addIcon(deleteDumpIcon).
         addIcon(loadDumpIcon).
-        addIcon(archiveDumpIcon).
+        addIcon(downloadDumpIcon).
+        addIcon(uploadDumpIcon).
         addContent(dumpsTable);
 
     dumpsView.addChild(dumpsCard);
@@ -94,7 +97,7 @@ function retrieveDumps() {
     });
 }
 
-function archiveDumps() {
+function dowloadDumps() {
     var dumpNames = dumpsTable.getSelectedRows().
         map((row) => row.attributes['dump']);
 
@@ -107,6 +110,28 @@ function archiveDumps() {
         attr('name', 'dumpNames').
         attr('value', dumpNames));
     form.appendTo('body').
+        submit().
+        remove();
+}
+
+
+var uploadForm;
+function uploadDump() {
+    //TODO Create proper elements in framework
+    uploadForm = $('<form></form>').
+        attr('action', config.servicesUrl + '/dump-upload').
+        attr('method', 'post').
+        attr('enctype', 'multipart/form-data');
+    var input = $("<input></input>").
+        attr('type', 'file').
+        attr('name', 'uploadFile').
+        attr('onChange', 'doUploadDump()');
+    uploadForm.append(input);
+    input.click();
+}
+
+function doUploadDump() {
+    uploadForm.appendTo('body').
         submit().
         remove();
 }

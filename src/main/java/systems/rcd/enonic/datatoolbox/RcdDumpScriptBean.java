@@ -1,19 +1,19 @@
 package systems.rcd.enonic.datatoolbox;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.Instant;
-import java.util.Arrays;
 import java.util.function.Supplier;
 
-import systems.rcd.fwk.core.exc.RcdException;
+import com.google.common.io.ByteSource;
+
 import systems.rcd.fwk.core.format.json.RcdJsonService;
 import systems.rcd.fwk.core.format.json.data.RcdJsonArray;
 import systems.rcd.fwk.core.format.json.data.RcdJsonObject;
-import systems.rcd.fwk.core.format.json.data.RcdJsonString;
 import systems.rcd.fwk.core.io.file.RcdFileService;
-import systems.rcd.fwk.core.util.zip.RcdZipService;
 
 import com.enonic.xp.branch.Branch;
 import com.enonic.xp.context.ContextAccessor;
@@ -145,11 +145,42 @@ public class RcdDumpScriptBean
         }, "Error while deleting dumps" );
     }
 
+    public void upload( String filename, ByteSource dumpArchiveByteSource )
+        throws IOException
+    {
+        final java.nio.file.Path dumpArchivePath = Files.createTempFile( filename, ".tmp" );
+        System.out.println( dumpArchivePath );
+        dumpArchiveByteSource.copyTo( new TemporaryFileOutputStream( dumpArchivePath.toFile() ) );
+
+    }
+
     private Path getDumpDirectoryPath()
     {
         return HomeDir.get().
             toFile().
             toPath().
             resolve( "data/dump" );
+    }
+
+    private class TemporaryFileOutputStream
+        extends FileOutputStream
+    {
+
+        private final File file;
+
+        public TemporaryFileOutputStream( File file )
+            throws FileNotFoundException
+        {
+            super( file );
+            this.file = file;
+        }
+
+        @Override
+        public void close()
+            throws IOException
+        {
+            super.close();
+            file.delete();
+        }
     }
 }
