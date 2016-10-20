@@ -14,6 +14,7 @@ import systems.rcd.fwk.core.format.json.RcdJsonService;
 import systems.rcd.fwk.core.format.json.data.RcdJsonArray;
 import systems.rcd.fwk.core.format.json.data.RcdJsonObject;
 import systems.rcd.fwk.core.io.file.RcdFileService;
+import systems.rcd.fwk.core.util.zip.RcdZipService;
 
 import com.enonic.xp.branch.Branch;
 import com.enonic.xp.context.ContextAccessor;
@@ -153,6 +154,8 @@ public class RcdDumpScriptBean
         try (TemporaryFileOutputStream tmp = new TemporaryFileOutputStream( dumpArchivePath.toFile() ))
         {
             dumpArchiveByteSource.copyTo( tmp );
+
+            RcdZipService.unzipDirectory( dumpArchivePath, getDumpDirectoryPath() );
         }
 
     }
