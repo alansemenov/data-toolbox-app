@@ -150,7 +150,10 @@ public class RcdDumpScriptBean
     {
         final java.nio.file.Path dumpArchivePath = Files.createTempFile( filename, ".tmp" );
         System.out.println( dumpArchivePath );
-        dumpArchiveByteSource.copyTo( new TemporaryFileOutputStream( dumpArchivePath.toFile() ) );
+        try (TemporaryFileOutputStream tmp = new TemporaryFileOutputStream( dumpArchivePath.toFile() ))
+        {
+            dumpArchiveByteSource.copyTo( tmp );
+        }
 
     }
 
