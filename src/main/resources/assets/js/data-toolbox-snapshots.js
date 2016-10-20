@@ -7,7 +7,9 @@ function createSnapshotsTable() {
 function createSnapshotsView(snapshotsTable) {
     //Creates the snapshot view
     var snapshotsViewPathElements = [{name: 'Data Toolbox', callback: () => router.setState()}, {name: 'Snapshots'}];
-    var snapshotsViewDescription = 'A snapshot is a record of a fixed state of your installation data. TODO description';
+    var snapshotsViewDescription = 'To save the state of your entire data at a given time, a snapshot can be made.' +
+                                   'A snapshot is a record or the indexes at a given time or a record of the modifications since the previous snapshot. ' +
+                                   'Thus snapshots are optimized for repetitive save and allow to quickly rollback to a previous state.';
     var snapshotsView = new RcdMaterialView('snapshots', snapshotsViewPathElements, snapshotsViewDescription).init();
 
     var createSnapshotIcon = new RcdMaterialActionIcon('add', createSnapshot).init();
