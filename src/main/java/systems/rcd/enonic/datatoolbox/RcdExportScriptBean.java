@@ -1,12 +1,17 @@
 package systems.rcd.enonic.datatoolbox;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.function.Supplier;
+
+import com.google.common.io.ByteSource;
 
 import systems.rcd.fwk.core.format.json.RcdJsonService;
 import systems.rcd.fwk.core.format.json.data.RcdJsonArray;
 import systems.rcd.fwk.core.format.json.data.RcdJsonObject;
 import systems.rcd.fwk.core.io.file.RcdFileService;
+import systems.rcd.fwk.core.util.zip.RcdZipService;
 
 import com.enonic.xp.export.ExportNodesParams;
 import com.enonic.xp.export.ExportService;
@@ -89,6 +94,17 @@ public class RcdExportScriptBean
             }
             return createSuccessResult();
         }, "Error while deleting export" );
+    }
+
+    public void upload( String filename, ByteSource exportArchiveByteSource )
+        throws IOException
+    {
+        final java.nio.file.Path exportArchivePath = Files.createTempFile( filename, ".tmp" );
+        try (TemporaryFileOutputStream tmp = new TemporaryFileOutputStream( exportArchivePath.toFile() ))
+        {
+            exportArchiveByteSource.copyTo( tmp );
+            RcdZipService.unzip( exportArchivePath, getExportDirectoryPath() );
+        }
     }
 
     private void load( NodePath nodePath, String exportName )

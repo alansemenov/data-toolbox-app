@@ -146,15 +146,12 @@ public class RcdDumpScriptBean
     public void upload( String filename, ByteSource dumpArchiveByteSource )
         throws IOException
     {
-        final java.nio.file.Path dumpArchivePath = Files.createTempFile( filename, ".tmp" );
-        System.out.println( dumpArchivePath );
-        try (TemporaryFileOutputStream tmp = new TemporaryFileOutputStream( dumpArchivePath.toFile() ))
+        final java.nio.file.Path exportArchivePath = Files.createTempFile( filename, ".tmp" );
+        try (TemporaryFileOutputStream tmp = new TemporaryFileOutputStream( exportArchivePath.toFile() ))
         {
             dumpArchiveByteSource.copyTo( tmp );
-
-            RcdZipService.unzip( dumpArchivePath, getDumpDirectoryPath() );
+            RcdZipService.unzip( exportArchivePath, getDumpDirectoryPath() );
         }
-
     }
 
     private Path getDumpDirectoryPath()

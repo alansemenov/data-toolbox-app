@@ -29,7 +29,7 @@ public final class DtbRsComponent
     @POST
     @Path("dump/download")
     @Consumes("application/x-www-form-urlencoded")
-    public Response download( @FormParam("dumpNames") String dumpNamesFormParam )
+    public Response downloadDumps( @FormParam("dumpNames") String dumpNamesFormParam )
         throws Exception
     {
         final String[] dumpNames = dumpNamesFormParam.split( "," );
@@ -44,12 +44,38 @@ public final class DtbRsComponent
             build();
     }
 
+    @POST
+    @Path("export/download")
+    @Consumes("application/x-www-form-urlencoded")
+    public Response downloadExports( @FormParam("exportNames") String exportNamesFormParam )
+        throws Exception
+    {
+        final String[] exportNames = exportNamesFormParam.split( "," );
+        final java.nio.file.Path[] exportPaths = Arrays.stream( exportNames ).
+            map( exportName -> getExportDirectoryPath().resolve( exportName ) ).
+            toArray( size -> new java.nio.file.Path[size] );
+
+        final java.nio.file.Path exportArchivePath = Files.createTempFile( "export-archive", ".zip" );
+        RcdZipService.zip( exportArchivePath, exportPaths );
+        return Response.ok( new TemporaryFileInputStream( exportArchivePath.toFile() ), MediaType.APPLICATION_OCTET_STREAM ).
+            header( "Content-Disposition", "attachment; filename=\"" + exportArchivePath.getFileName().toString() + "\"" ).
+            build();
+    }
+
     private java.nio.file.Path getDumpDirectoryPath()
     {
         return HomeDir.get().
             toFile().
             toPath().
             resolve( "data/dump" );
+    }
+
+    private java.nio.file.Path getExportDirectoryPath()
+    {
+        return HomeDir.get().
+            toFile().
+            toPath().
+            resolve( "data/export" );
     }
 }
 
