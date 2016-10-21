@@ -44,7 +44,7 @@ function createDump() {
         method: 'POST',
         url: config.servicesUrl + '/dump-create',
         data: JSON.stringify({
-            dumpName: 'dump-' + new Date().toISOString()
+            dumpName: 'dump-' + toRcdDateTimeFormat(new Date())
         }),
         contentType: 'application/json; charset=utf-8'
     }).always(() => {
@@ -91,7 +91,7 @@ function retrieveDumps() {
             dumpsTable.body.createRow().
                 addCell(dump.name).
                 addCell(dump.size.toLocaleString()).
-                addCell(new Date(dump.timestamp).toISOString()).
+                addCell(toRcdDateTimeFormat(new Date(dump.timestamp))).
                 setAttribute('dump', dump.name);
         });
     });

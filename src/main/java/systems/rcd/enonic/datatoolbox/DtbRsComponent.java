@@ -37,7 +37,8 @@ public final class DtbRsComponent
             map( dumpName -> getDumpDirectoryPath().resolve( dumpName ) ).
             toArray( size -> new java.nio.file.Path[size] );
 
-        final java.nio.file.Path dumpArchivePath = Files.createTempFile( "dump-archive", ".zip" );
+        final String dumpArchiveName = ( dumpNames.length == 1 ? dumpNames[0] : "dump-archive" ) + "-";
+        final java.nio.file.Path dumpArchivePath = Files.createTempFile( dumpArchiveName, ".zip" );
         RcdZipService.zip( dumpArchivePath, dumpPaths );
         return Response.ok( new TemporaryFileInputStream( dumpArchivePath.toFile() ), MediaType.APPLICATION_OCTET_STREAM ).
             header( "Content-Disposition", "attachment; filename=\"" + dumpArchivePath.getFileName().toString() + "\"" ).
@@ -56,7 +57,8 @@ public final class DtbRsComponent
             map( exportName -> getExportDirectoryPath().resolve( exportName ) ).
             toArray( size -> new java.nio.file.Path[size] );
 
-        final java.nio.file.Path exportArchivePath = Files.createTempFile( "export-archive", ".zip" );
+        final String exportArchiveName = ( exportNames.length == 1 ? exportNames[0] : "dump-archive" ) + "-";
+        final java.nio.file.Path exportArchivePath = Files.createTempFile( exportArchiveName, ".zip" );
         RcdZipService.zip( exportArchivePath, exportPaths );
         return Response.ok( new TemporaryFileInputStream( exportArchivePath.toFile() ), MediaType.APPLICATION_OCTET_STREAM ).
             header( "Content-Disposition", "attachment; filename=\"" + exportArchivePath.getFileName().toString() + "\"" ).

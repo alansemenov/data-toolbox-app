@@ -56,7 +56,7 @@ function createExport() {
         url: config.servicesUrl + '/export-create',
         data: JSON.stringify({
             contentPath: config.contentPath,
-            exportName: config.contentName + '-' + new Date().toISOString()
+            exportName: config.contentName + '-' + toRcdDateTimeFormat(new Date())
         }),
         contentType: 'application/json; charset=utf-8'
     }).always(() => {
