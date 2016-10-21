@@ -125,16 +125,21 @@ function uploadDump() {
         setAttribute('onChange', 'doUploadDump()');
 
     uploadForm = new RcdFormElement().init().
-        setAttribute('action', config.servicesUrl + '/dump-upload').
-        setAttribute('method', 'post').
-        setAttribute('enctype', 'multipart/form-data').
         addChild(uploadFileInput);
 
     uploadFileInput.click();
 }
 
 function doUploadDump() {
-    document.body.appendChild(uploadForm.getDomElement());
-    uploadForm.submit();
-    document.body.removeChild(uploadForm.getDomElement());
+    var formData = new FormData(uploadForm.getDomElement());
+    $.ajax({
+        method: 'POST',
+        url: config.servicesUrl + '/dump-upload',
+        data: formData,
+        contentType: false,
+        processData: false
+    }).always(function () {
+        //TODO Check success & error
+        router.setState('dumps');
+    });
 }

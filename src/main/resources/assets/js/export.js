@@ -121,18 +121,23 @@ function uploadExports() {
         setAttribute('onChange', 'doUploadExports()');
 
     uploadForm = new RcdFormElement().init().
-        setAttribute('action', config.servicesUrl + '/export-upload').
-        setAttribute('method', 'post').
-        setAttribute('enctype', 'multipart/form-data').
         addChild(uploadFileInput);
 
     uploadFileInput.click();
 }
 
 function doUploadExports() {
-    exportWidgetContainer.appendChild(uploadForm.getDomElement());
-    uploadForm.submit();
-    exportWidgetContainer.removeChild(uploadForm.getDomElement());
+    var formData = new FormData(uploadForm.getDomElement());
+    $.ajax({
+        method: 'POST',
+        url: config.servicesUrl + '/export-upload',
+        data: formData,
+        contentType: false,
+        processData: false
+    }).always(function () {
+        //TODO Check success & error
+        retrieveExports();
+    });
 }
 
 
