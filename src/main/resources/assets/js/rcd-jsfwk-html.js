@@ -141,6 +141,10 @@ class RcdHtmlElement extends RcdDomElement {
             this.removeClass('selected');
         }
     }
+
+    click() {
+        this.getDomElement().click();
+    }
 }
 
 class RcdDivElement extends RcdHtmlElement {

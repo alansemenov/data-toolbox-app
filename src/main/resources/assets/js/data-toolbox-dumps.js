@@ -114,27 +114,27 @@ function dowloadDumps() {
     document.body.appendChild(downloadForm.getDomElement());
     downloadForm.submit();
     document.body.removeChild(downloadForm.getDomElement());
-
 }
 
 
 var uploadForm;
 function uploadDump() {
-    //TODO Create proper elements in framework
-    uploadForm = $('<form></form>').
-        attr('action', config.servicesUrl + '/dump-upload').
-        attr('method', 'post').
-        attr('enctype', 'multipart/form-data');
-    var input = $("<input></input>").
-        attr('type', 'file').
-        attr('name', 'uploadFile').
-        attr('onChange', 'doUploadDump()');
-    uploadForm.append(input);
-    input.click();
+    var uploadFileInput = new RcdInputElement().init().
+        setAttribute('type', 'file').
+        setAttribute('name', 'uploadFile').
+        setAttribute('onChange', 'doUploadDump()');
+
+    uploadForm = new RcdFormElement().init().
+        setAttribute('action', config.servicesUrl + '/dump-upload').
+        setAttribute('method', 'post').
+        setAttribute('enctype', 'multipart/form-data').
+        addChild(uploadFileInput);
+
+    uploadFileInput.click();
 }
 
 function doUploadDump() {
-    uploadForm.appendTo('body').
-        submit().
-        remove();
+    document.body.appendChild(uploadForm.getDomElement());
+    uploadForm.submit();
+    document.body.removeChild(uploadForm.getDomElement());
 }
