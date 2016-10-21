@@ -221,5 +221,21 @@ class RcdTdElement extends RcdHtmlElement {
     }
 }
 
+class RcdFormElement extends RcdHtmlElement {
+    constructor() {
+        super('form');
+    }
+
+    submit() {
+        this.getDomElement().submit();
+    }
+}
+
+class RcdInputElement extends RcdHtmlElement {
+    constructor() {
+        super('input');
+    }
+}
+
 
 

@@ -101,17 +101,20 @@ function dowloadDumps() {
     var dumpNames = dumpsTable.getSelectedRows().
         map((row) => row.attributes['dump']);
 
-    //TODO Create proper elements in framework
-    var form = $('<form></form>').
-        attr('action', '/admin/rest/datatoolbox/dump/download').
-        attr('method', 'post');
-    form.append($("<input></input>").
-        attr('type', 'hidden').
-        attr('name', 'dumpNames').
-        attr('value', dumpNames));
-    form.appendTo('body').
-        submit().
-        remove();
+    var dumpNamesInput = new RcdInputElement().init().
+        setAttribute('type', 'hidden').
+        setAttribute('name', 'dumpNames').
+        setAttribute('value', dumpNames);
+
+    var downloadForm = new RcdFormElement().init().
+        setAttribute('action', '/admin/rest/datatoolbox/dump/download').
+        setAttribute('method', 'post').
+        addChild(dumpNamesInput);
+
+    document.body.appendChild(downloadForm.getDomElement());
+    downloadForm.submit();
+    document.body.removeChild(downloadForm.getDomElement());
+
 }
 
 
