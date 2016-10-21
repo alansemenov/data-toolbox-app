@@ -103,7 +103,7 @@ function dowloadDumps() {
 
     //TODO Create proper elements in framework
     var form = $('<form></form>').
-        attr('action', '/admin/rest/datatoolbox/dump/archive').
+        attr('action', '/admin/rest/datatoolbox/dump/download').
         attr('method', 'post');
     form.append($("<input></input>").
         attr('type', 'hidden').

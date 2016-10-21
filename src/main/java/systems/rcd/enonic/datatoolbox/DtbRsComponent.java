@@ -31,9 +31,9 @@ public final class DtbRsComponent
     implements JaxRsComponent
 {
     @POST
-    @Path("dump/archive")
+    @Path("dump/download")
     @Consumes("application/x-www-form-urlencoded")
-    public Response getContentIcon( @FormParam("dumpNames") String dumpNamesFormParam ) //TODO REfactor
+    public Response download( @FormParam("dumpNames") String dumpNamesFormParam )
         throws Exception
     {
         final String[] dumpNames = dumpNamesFormParam.split( "," );
@@ -42,7 +42,7 @@ public final class DtbRsComponent
             map( dumpName -> getDumpDirectoryPath().resolve( dumpName ) ).
             toArray( size -> new java.nio.file.Path[size] );
         System.out.println( "Creating dump archive: " + dumpArchivePath );
-        RcdZipService.zipDirectory( dumpArchivePath, dumpPaths );
+        RcdZipService.zip( dumpArchivePath, dumpPaths );
         final Response response =
             Response.ok( new TemporaryFileInputStream( dumpArchivePath.toFile() ), MediaType.APPLICATION_OCTET_STREAM ).
                 header( "Content-Disposition", "attachment; filename=\"" + dumpArchivePath.getFileName().toString() + "\"" ).

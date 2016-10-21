@@ -53,7 +53,7 @@ public class RcdDumpScriptBean
                         final RcdJsonObject dump = RcdJsonService.createJsonObject().
                             put( "name", dumpPath.getFileName().toString() ).
                             put( "timestamp", dumpPath.toFile().lastModified() ).
-                            put( "size", RcdFileService.getDirectorySize( dumpPath ) );
+                            put( "size", RcdFileService.getSize( dumpPath ) );
                         dumpsJsonArray.add( dump );
                     }
                 } );
@@ -140,7 +140,7 @@ public class RcdDumpScriptBean
             for ( String dumpName : dumpNames )
             {
                 final Path dumpPath = getDumpDirectoryPath().resolve( dumpName );
-                RcdFileService.deleteDirectory( dumpPath );
+                RcdFileService.delete( dumpPath );
             }
             return createSuccessResult();
         }, "Error while deleting dumps" );
@@ -155,7 +155,7 @@ public class RcdDumpScriptBean
         {
             dumpArchiveByteSource.copyTo( tmp );
 
-            RcdZipService.unzipDirectory( dumpArchivePath, getDumpDirectoryPath() );
+            RcdZipService.unzip( dumpArchivePath, getDumpDirectoryPath() );
         }
 
     }

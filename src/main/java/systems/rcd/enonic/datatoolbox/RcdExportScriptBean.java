@@ -41,7 +41,7 @@ public class RcdExportScriptBean
                         final RcdJsonObject export = RcdJsonService.createJsonObject().
                             put( "name", exportPath.getFileName().toString() ).
                             put( "timestamp", exportPath.toFile().lastModified() ).
-                            put( "size", RcdFileService.getDirectorySize( exportPath ) );
+                            put( "size", RcdFileService.getSize( exportPath ) );
                         exportJsonArray.add( export );
                     }
                 } );
@@ -85,7 +85,7 @@ public class RcdExportScriptBean
             for ( String exportName : exportNames )
             {
                 final Path exportPath = getExportDirectoryPath().resolve( exportName );
-                RcdFileService.deleteDirectory( exportPath );
+                RcdFileService.delete( exportPath );
             }
             return createSuccessResult();
         }, "Error while deleting export" );
