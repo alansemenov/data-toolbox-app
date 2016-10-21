@@ -1,10 +1,6 @@
 package systems.rcd.enonic.datatoolbox;
 
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Arrays;
 
@@ -37,17 +33,15 @@ public final class DtbRsComponent
         throws Exception
     {
         final String[] dumpNames = dumpNamesFormParam.split( "," );
-        final java.nio.file.Path dumpArchivePath = Files.createTempFile( "dump-archive", ".zip" );
         final java.nio.file.Path[] dumpPaths = Arrays.stream( dumpNames ).
             map( dumpName -> getDumpDirectoryPath().resolve( dumpName ) ).
             toArray( size -> new java.nio.file.Path[size] );
-        System.out.println( "Creating dump archive: " + dumpArchivePath );
+
+        final java.nio.file.Path dumpArchivePath = Files.createTempFile( "dump-archive", ".zip" );
         RcdZipService.zip( dumpArchivePath, dumpPaths );
-        final Response response =
-            Response.ok( new TemporaryFileInputStream( dumpArchivePath.toFile() ), MediaType.APPLICATION_OCTET_STREAM ).
-                header( "Content-Disposition", "attachment; filename=\"" + dumpArchivePath.getFileName().toString() + "\"" ).
-                build();
-        return response;
+        return Response.ok( new TemporaryFileInputStream( dumpArchivePath.toFile() ), MediaType.APPLICATION_OCTET_STREAM ).
+            header( "Content-Disposition", "attachment; filename=\"" + dumpArchivePath.getFileName().toString() + "\"" ).
+            build();
     }
 
     private java.nio.file.Path getDumpDirectoryPath()
@@ -57,28 +51,5 @@ public final class DtbRsComponent
             toPath().
             resolve( "data/dump" );
     }
-
-    private class TemporaryFileInputStream
-        extends FileInputStream
-    {
-
-        private final File file;
-
-        public TemporaryFileInputStream( File file )
-            throws FileNotFoundException
-        {
-            super( file );
-            this.file = file;
-        }
-
-        @Override
-        public void close()
-            throws IOException
-        {
-            super.close();
-            file.delete();
-        }
-    }
-
 }
 
