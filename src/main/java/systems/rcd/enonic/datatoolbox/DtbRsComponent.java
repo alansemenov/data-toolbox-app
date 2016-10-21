@@ -41,6 +41,7 @@ public final class DtbRsComponent
         RcdZipService.zip( dumpArchivePath, dumpPaths );
         return Response.ok( new TemporaryFileInputStream( dumpArchivePath.toFile() ), MediaType.APPLICATION_OCTET_STREAM ).
             header( "Content-Disposition", "attachment; filename=\"" + dumpArchivePath.getFileName().toString() + "\"" ).
+            header( "Access-Control-Allow-Origin", "*" ).
             build();
     }
 
@@ -59,6 +60,7 @@ public final class DtbRsComponent
         RcdZipService.zip( exportArchivePath, exportPaths );
         return Response.ok( new TemporaryFileInputStream( exportArchivePath.toFile() ), MediaType.APPLICATION_OCTET_STREAM ).
             header( "Content-Disposition", "attachment; filename=\"" + exportArchivePath.getFileName().toString() + "\"" ).
+            header( "Access-Control-Allow-Origin", "*" ).
             build();
     }
 
