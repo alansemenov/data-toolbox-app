@@ -40,3 +40,20 @@ class RcdMaterialDialog extends RcdDivElement {
         return this;
     }
 }
+
+class RcdMaterialModalDialog extends RcdDivElement {
+    constructor(content, title) {
+        super();
+        this.dialog = new RcdMaterialDialog(content, title).init();
+    }
+
+    init() {
+        return this.addClass('rcd-material-cache').
+            addChild(this.dialog);
+    }
+
+    addAction(action) {
+        this.dialog.addAction(action);
+        return this;
+    }
+}
