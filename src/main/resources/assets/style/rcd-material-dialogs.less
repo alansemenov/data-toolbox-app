@@ -1,0 +1,36 @@
+.rcd-material-dialog :extend(.rcd-flex-vbox, .rcd-material-shadow, .rcd-flex-unshrinkable) {
+  background-color: #fff;
+}
+
+.rcd-material-dialog-content :extend(.rcd-flex-vbox) {
+  //Material design metrics
+  padding: 24px;
+}
+
+.rcd-material-dialog-content-title :extend(.rcd-flex-vbox) {
+  //Material design metrics
+  margin-bottom: 20px;
+}
+
+.rcd-material-dialog-content-body :extend(.rcd-flex-hbox) {
+  color: rgba(0, 0, 0, 0.54);
+}
+
+.rcd-material-dialog-actions :extend(.rcd-flex-hbox) {
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.rcd-material-dialog-action :extend(.rcd-flex-hbox, .rcd-material-button) {
+  margin-left: 24px;
+  //Material design metrics
+  color: @rcd-accent-color;
+  margin: 8px;
+  padding-left: 8px;
+  padding-right: 8px;
+  height: 36px;
+}
+
+.rcd-material-card-action-icon.disabled {
+  color: rgba(0, 0, 0, 0.26);
+}

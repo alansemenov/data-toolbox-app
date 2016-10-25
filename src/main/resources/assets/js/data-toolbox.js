@@ -14,7 +14,7 @@ main.content.addView(presentationView).
 
 //Appends the header and main elements
 document.body.appendChild(header.getDomElement());
-document.body.appendChild(main.getDomElement());
+//document.body.appendChild(main.getDomElement());
 
 //Sets up the router
 var router = new RcdHistoryRouter();
@@ -35,3 +35,10 @@ router.addRoute(snapshotsView.viewId, () => {
     main.content.displayView(snapshotsView.viewId);
 });
 router.setState(router.getCurrentState());
+
+
+//TODO Remove
+var cancelAction = new RcdMaterialActionText("Cancel", () => alert("testcancel")).init();
+var okAction = new RcdMaterialActionText("Ok", () => alert("testok")).init();
+var dialog = new RcdMaterialDialog("Delete this dump?").init().addAction(cancelAction).addAction(okAction);
+document.body.appendChild(dialog.getDomElement());

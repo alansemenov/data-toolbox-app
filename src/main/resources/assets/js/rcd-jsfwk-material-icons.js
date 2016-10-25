@@ -10,18 +10,15 @@ class RcdGoogleMaterialIcon extends RcdIElement {
     }
 }
 
-class RcdMaterialActionIcon extends RcdDivElement {
-    constructor(iconName, callback) {
+class RcdMaterialAction extends RcdDivElement {
+    constructor(callback) {
         super();
-        this.icon = new RcdGoogleMaterialIcon(iconName).init();
         this.callback = callback;
     }
 
     init() {
         return super.init().
-            addClass('rcd-material-action-icon').
-            addClickListener(this.callback).
-            addChild(this.icon);
+            addClickListener(this.callback);
     }
 
     enable(enabled) {
@@ -32,6 +29,32 @@ class RcdMaterialActionIcon extends RcdDivElement {
             return this.addClass('disabled').
                 removeClickListener(this.callback);
         }
+    }
+}
+
+class RcdMaterialActionIcon extends RcdMaterialAction {
+    constructor(iconName, callback) {
+        super(callback);
+        this.icon = new RcdGoogleMaterialIcon(iconName).init();
+    }
+
+    init() {
+        return super.init().
+            addClass('rcd-material-action-icon').
+            addChild(this.icon);
+    }
+}
+
+class RcdMaterialActionText extends RcdMaterialAction {
+    constructor(text, callback) {
+        super(callback);
+        this.tmp2 = new RcdTextElement(text).init(); //TODO
+    }
+
+    init() {
+        return super.init().
+            addClass('rcd-material-action-text').
+            addChild(this.tmp2);
     }
 }
 
