@@ -51,6 +51,7 @@ function retrieveExports() {
 }
 
 function createExport() {
+    showInfoDialog("Creating export...");
     return $.ajax({
         method: 'POST',
         url: config.servicesUrl + '/export-create',
@@ -60,11 +61,13 @@ function createExport() {
         }),
         contentType: 'application/json; charset=utf-8'
     }).always(() => {
+        hideDialog();
         retrieveExports();
     });
 }
 
 function loadExports() {
+    showInfoDialog("Loading export...");
     var exportNames = exportsTable.getSelectedRows().
         map((row) => row.attributes['export']);
     return $.ajax({
@@ -76,11 +79,13 @@ function loadExports() {
         }),
         contentType: 'application/json; charset=utf-8'
     }).always(() => {
+        hideDialog();
         retrieveExports();
     });
 }
 
 function deleteExports() {
+    showInfoDialog("Deleting export...");
     var exportNames = exportsTable.getSelectedRows().
         map((row) => row.attributes['export']);
     return $.ajax({
@@ -89,6 +94,7 @@ function deleteExports() {
         data: JSON.stringify({exportNames: exportNames}),
         contentType: 'application/json; charset=utf-8'
     }).always(() => {
+        hideDialog();
         retrieveExports();
     });
 }
@@ -127,6 +133,7 @@ function uploadExports() {
 }
 
 function doUploadExports() {
+    showInfoDialog("Uploading export...");
     var formData = new FormData(uploadForm.getDomElement());
     $.ajax({
         method: 'POST',
@@ -135,6 +142,7 @@ function doUploadExports() {
         contentType: false,
         processData: false
     }).always(function () {
+        hideDialog();
         //TODO Check success & error
         retrieveExports();
     });
