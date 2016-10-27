@@ -61,7 +61,10 @@ class RcdMaterialModalDialog extends RcdDivElement {
 var currentRcdDialog;
 function showConfirmationDialog(text, callback) {
     var cancelAction = new RcdMaterialActionText("Cancel", hideDialog).init();
-    var okAction = new RcdMaterialActionText("Ok").init();
+    var okAction = new RcdMaterialActionText("Ok", () => {
+        hideDialog();
+        callback();
+    }).init();
     currentRcdDialog = new RcdMaterialModalDialog(text).
         init().
         addAction(cancelAction).

@@ -156,10 +156,17 @@ class RcdHtmlElement extends RcdDomElement {
         } else {
             this.removeClass('selected');
         }
+        return this;
     }
 
     click() {
         this.getDomElement().click();
+        return this;
+    }
+
+    setTooltip(tooltip) {
+        this.setAttribute('title', tooltip);
+        return this;
     }
 }
 

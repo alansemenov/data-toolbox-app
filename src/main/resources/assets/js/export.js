@@ -1,11 +1,11 @@
 var exportsTable = new RcdMaterialTable().init();
 exportsTable.header.addCell('Export name');
 
-var createExportIcon = new RcdMaterialActionIcon('add', createExport).init();
-var deleteExportsIcon = new RcdMaterialActionIcon('delete', deleteExports).init().enable(false);
-var loadExportsIcon = new RcdMaterialActionIcon('refresh', loadExports).init().enable(false);
-var downloadExportsIcon = new RcdMaterialActionIcon('file_download', dowloadExports).init().enable(false);
-var uploadExportsIcon = new RcdMaterialActionIcon('file_upload', uploadExports).init().enable(false);
+var createExportIcon = new RcdMaterialActionIcon('add', createExport).init().setTooltip('Create export');
+var deleteExportsIcon = new RcdMaterialActionIcon('delete', deleteExports).init().setTooltip('Delete export').enable(false);
+var loadExportsIcon = new RcdMaterialActionIcon('refresh', loadExports).init().setTooltip('Load export').enable(false);
+var downloadExportsIcon = new RcdMaterialActionIcon('file_download', dowloadExports).init().setTooltip('Dowload export').enable(false);
+var uploadExportsIcon = new RcdMaterialActionIcon('file_upload', uploadExports).init().setTooltip('Upload export').enable(false);
 
 exportsTable.addSelectionListener((nbRowsSelected) => {
     createExportIcon.enable(nbRowsSelected == 0);
@@ -83,8 +83,11 @@ function loadExports() {
         retrieveExports();
     });
 }
-
 function deleteExports() {
+    showConfirmationDialog("Delete selected exports?", doDeleteExports);
+}
+
+function doDeleteExports() {
     showInfoDialog("Deleting export...");
     var exportNames = exportsTable.getSelectedRows().
         map((row) => row.attributes['export']);

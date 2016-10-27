@@ -11,11 +11,11 @@ function createDumpsView(dumpsTable) {
                                'This dump includes all the current versions of your content, users, groups and roles.';
     var dumpsView = new RcdMaterialView('dumps', dumpsViewPathElements, dumpsViewDescription).init();
 
-    var createDumpIcon = new RcdMaterialActionIcon('add', createDump).init();
-    var deleteDumpIcon = new RcdMaterialActionIcon('delete', deleteDumps).init().enable(false);
-    var loadDumpIcon = new RcdMaterialActionIcon('refresh', loadDumps).init().enable(false);
-    var downloadDumpIcon = new RcdMaterialActionIcon('file_download', dowloadDumps).init().enable(false);
-    var uploadDumpIcon = new RcdMaterialActionIcon('file_upload', uploadDump).init().enable(false);
+    var createDumpIcon = new RcdMaterialActionIcon('add', createDump).init().setTooltip('Create dump');
+    var deleteDumpIcon = new RcdMaterialActionIcon('delete', deleteDumps).init().setTooltip('Delete dump').enable(false);
+    var loadDumpIcon = new RcdMaterialActionIcon('refresh', loadDumps).init().setTooltip('Load dump').enable(false);
+    var downloadDumpIcon = new RcdMaterialActionIcon('file_download', dowloadDumps).init().setTooltip('Download dump').enable(false);
+    var uploadDumpIcon = new RcdMaterialActionIcon('file_upload', uploadDump).init().setTooltip('Upload dump').enable(false);
 
     dumpsTable.addSelectionListener((nbRowsSelected) => {
         createDumpIcon.enable(nbRowsSelected == 0);
@@ -71,6 +71,10 @@ function loadDumps() {
 }
 
 function deleteDumps() {
+    showConfirmationDialog("Delete selected dumps?", doDeleteDumps);
+}
+
+function doDeleteDumps() {
     showInfoDialog("Deleting dump...");
     var dumpNames = dumpsTable.getSelectedRows().map((row) => row.attributes['dump']);
     $.ajax({
