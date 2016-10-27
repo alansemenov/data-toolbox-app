@@ -40,7 +40,8 @@ function createDumpsView(dumpsTable) {
 }
 
 function createDump() {
-    return $.ajax({
+    showInfoDialog("Creating dump...");
+    $.ajax({
         method: 'POST',
         url: config.servicesUrl + '/dump-create',
         data: JSON.stringify({
@@ -48,34 +49,37 @@ function createDump() {
         }),
         contentType: 'application/json; charset=utf-8'
     }).always(() => {
+        hideDialog();
         //TODO Check success & error
         router.setState('dumps');
     });
 }
 
 function loadDumps() {
-    var dumpNames = dumpsTable.getSelectedRows().
-        map((row) => row.attributes['dump']);
+    showInfoDialog("Loading dump...");
+    var dumpNames = dumpsTable.getSelectedRows().map((row) => row.attributes['dump']);
     $.ajax({
         method: 'POST',
         url: config.servicesUrl + '/dump-load',
         data: JSON.stringify({dumpNames: dumpNames}),
         contentType: 'application/json; charset=utf-8'
     }).always(function () {
+        hideDialog();
         //TODO Check success & error
         router.setState('dumps');
     });
 }
 
 function deleteDumps() {
-    var dumpNames = dumpsTable.getSelectedRows().
-        map((row) => row.attributes['dump']);
+    showInfoDialog("Deleting dump...");
+    var dumpNames = dumpsTable.getSelectedRows().map((row) => row.attributes['dump']);
     $.ajax({
         method: 'POST',
         url: config.servicesUrl + '/dump-delete',
         data: JSON.stringify({dumpNames: dumpNames}),
         contentType: 'application/json; charset=utf-8'
     }).always(function () {
+        hideDialog();
         //TODO Check success & error
         router.setState('dumps');
     });
@@ -131,6 +135,7 @@ function uploadDump() {
 }
 
 function doUploadDump() {
+    showInfoDialog("Uploading dump...");
     var formData = new FormData(uploadForm.getDomElement());
     $.ajax({
         method: 'POST',
@@ -139,6 +144,7 @@ function doUploadDump() {
         contentType: false,
         processData: false
     }).always(function () {
+        hideDialog();
         //TODO Check success & error
         router.setState('dumps');
     });

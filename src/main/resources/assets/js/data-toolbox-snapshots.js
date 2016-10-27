@@ -32,7 +32,8 @@ function createSnapshotsView(snapshotsTable) {
 }
 
 function createSnapshot() {
-    return $.ajax({
+    showInfoDialog("Creating snapshot...");
+    $.ajax({
         method: 'POST',
         url: config.servicesUrl + '/snapshot-create',
         data: JSON.stringify({
@@ -40,12 +41,14 @@ function createSnapshot() {
         }),
         contentType: 'application/json; charset=utf-8'
     }).always(() => {
+        hideDialog();
         //TODO Check success & error
         router.setState('snapshots');
     });
 }
 
 function restoreSnapshot() {
+    showInfoDialog("Restoring snapshot...");
     var snapshotName = snapshotsTable.getSelectedRows().
         map((row) => row.attributes['snapshot'])[0];
     $.ajax({
@@ -54,6 +57,7 @@ function restoreSnapshot() {
         data: JSON.stringify({snapshotName: snapshotName}),
         contentType: 'application/json; charset=utf-8'
     }).always(function () {
+        hideDialog();
         //TODO Check success & error
         router.setState('snapshots');
     });

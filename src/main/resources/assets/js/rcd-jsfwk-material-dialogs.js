@@ -35,7 +35,7 @@ class RcdMaterialDialog extends RcdDivElement {
     }
 
     addAction(action) {
-        action.addClass('rcd-material-dialog-action'); //TODO
+        action.addClass('rcd-material-dialog-action');
         this.actions.addChild(action);
         return this;
     }
@@ -56,4 +56,22 @@ class RcdMaterialModalDialog extends RcdDivElement {
         this.dialog.addAction(action);
         return this;
     }
+}
+
+var currentRcdDialog;
+function showConfirmationDialog(text, callback) {
+    var cancelAction = new RcdMaterialActionText("Cancel", hideDialog).init();
+    var okAction = new RcdMaterialActionText("Ok").init();
+    currentRcdDialog = new RcdMaterialModalDialog(text).
+        init().
+        addAction(cancelAction).
+        addAction(okAction);
+    currentRcdDialog.show(document.body);
+}
+function showInfoDialog(text) {
+    currentRcdDialog = new RcdMaterialModalDialog(text).init();
+    currentRcdDialog.show(document.body);
+}
+function hideDialog() {
+    currentRcdDialog.hide(document.body);
 }

@@ -13,8 +13,8 @@ main.content.addView(presentationView).
     addView(snapshotsView);
 
 //Appends the header and main elements
-document.body.appendChild(header.getDomElement());
-document.body.appendChild(main.getDomElement());
+header.show(document.body);
+main.show(document.body);
 
 //Sets up the router
 var router = new RcdHistoryRouter();
@@ -35,10 +35,3 @@ router.addRoute(snapshotsView.viewId, () => {
     main.content.displayView(snapshotsView.viewId);
 });
 router.setState(router.getCurrentState());
-
-
-//TODO Remove
-var cancelAction = new RcdMaterialActionText("Cancel").init();
-var okAction = new RcdMaterialActionText("Ok", () => document.body.removeChild(dialog.getDomElement())).init();
-var dialog = new RcdMaterialModalDialog("Test dialog feature").init().addAction(cancelAction).addAction(okAction);
-document.body.appendChild(dialog.getDomElement());
