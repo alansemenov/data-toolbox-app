@@ -38,7 +38,7 @@ function createSnapshot() {
         method: 'POST',
         url: config.servicesUrl + '/snapshot-create',
         data: JSON.stringify({
-            snapshotName: 'snapshot-' + new Date().toISOString()
+            snapshotName: 'snapshot-' + toRcdDateTimeFormat(new Date())
         }),
         contentType: 'application/json; charset=utf-8'
     }).always(() => {
@@ -73,7 +73,7 @@ function retrieveSnapshots() {
         result.success.forEach((snapshot) => {
             snapshotsTable.body.createRow().
                 addCell(snapshot.name).
-                addCell(new Date(snapshot.timestamp).toISOString()).
+                addCell(toRcdDateTimeFormat(new Date(snapshot.timestamp))).
                 setAttribute('snapshot', snapshot.name);
         });
     });
