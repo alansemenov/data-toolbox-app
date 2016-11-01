@@ -16,6 +16,24 @@ function createSnapshotsView(snapshotsTable) {
     var loadSnapshotIcon = new RcdMaterialActionIcon('refresh', restoreSnapshot).init().enable(false);
 
     snapshotsTable.addSelectionListener((rowSelected) => {
+        if (rowSelected) {
+            var snapshotSelectedTimestamp = rowSelected.attributes['timestamp'];
+            var isSelected = rowSelected.hasClass('selected');
+            console.log("test");
+            snapshotsTable.body.rows.forEach(row => {
+                if (isSelected) {
+                    if (row.attributes['timestamp'] < snapshotSelectedTimestamp) {
+                        row.select(true, true);
+                    }
+                } else {
+                    if (row.attributes['timestamp'] > snapshotSelectedTimestamp) {
+                        row.select(false, true);
+                    }
+                }
+
+            });
+        }
+
         var nbRowsSelected = snapshotsTable.getSelectedRows().length;
         createSnapshotIcon.enable(nbRowsSelected == 0);
         loadSnapshotIcon.enable(nbRowsSelected > 0);
@@ -71,10 +89,12 @@ function retrieveSnapshots() {
         snapshotsTable.body.clear();
         //TODO Check success & error
         result.success.forEach((snapshot) => {
+            var timestamp = toRcdDateTimeFormat(new Date(snapshot.timestamp));
             snapshotsTable.body.createRow().
                 addCell(snapshot.name).
-                addCell(toRcdDateTimeFormat(new Date(snapshot.timestamp))).
-                setAttribute('snapshot', snapshot.name);
+                addCell(timestamp).
+                setAttribute('snapshot', snapshot.name).
+                setAttribute('timestamp', timestamp);
         });
     });
 }
