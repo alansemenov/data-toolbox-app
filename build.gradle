@@ -23,6 +23,7 @@ app {
 
 configurations {
     rcdjsfwkcore
+    rcdjsfwkmaterial
 }
 
 dependencies {
@@ -35,6 +36,7 @@ dependencies {
     include "com.enonic.xp:lib-io:${xpVersion}"
     include "systems.rcd.fwk.core:rcd-fwk-core:7.0.0-SNAPSHOT"
     rcdjsfwkcore "systems.rcd.js.fwk.core:rcd-jsfwk-core:1.0.0-SNAPSHOT"
+    rcdjsfwkmaterial "systems.rcd.js.fwk.material:rcd-jsfwk-material:1.0.0-SNAPSHOT"
 }
 
 repositories {
@@ -45,12 +47,13 @@ repositories {
     }
 }
 
-task extractApi( type: Copy ) {
+task extractRcdJsFwk( type: Copy ) {
     from { configurations.rcdjsfwkcore.collect { zipTree( it ); } }
+    from { configurations.rcdjsfwkmaterial.collect { zipTree( it ); } }
     into "${rootProject.buildDir}/resources/main/"
     exclude 'META-INF/**'
 }
-processResources.dependsOn extractApi
+processResources.dependsOn extractRcdJsFwk
 
 //TODO Replace by proper plugin
 task lessc( dependsOn: processResources ) << {
