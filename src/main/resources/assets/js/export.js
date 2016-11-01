@@ -7,7 +7,8 @@ var loadExportsIcon = new RcdMaterialActionIcon('refresh', loadExports).init().s
 var downloadExportsIcon = new RcdMaterialActionIcon('file_download', dowloadExports).init().setTooltip('Dowload export').enable(false);
 var uploadExportsIcon = new RcdMaterialActionIcon('file_upload', uploadExports).init().setTooltip('Upload export').enable(false);
 
-exportsTable.addSelectionListener((nbRowsSelected) => {
+exportsTable.addSelectionListener(() => {
+    var nbRowsSelected = exportsTable.getSelectedRows().length;
     createExportIcon.enable(nbRowsSelected == 0);
     deleteExportsIcon.enable(nbRowsSelected > 0);
     loadExportsIcon.enable(nbRowsSelected > 0);
