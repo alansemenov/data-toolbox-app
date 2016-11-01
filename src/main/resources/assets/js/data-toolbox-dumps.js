@@ -17,7 +17,8 @@ function createDumpsView(dumpsTable) {
     var downloadDumpIcon = new RcdMaterialActionIcon('file_download', dowloadDumps).init().setTooltip('Download dump').enable(false);
     var uploadDumpIcon = new RcdMaterialActionIcon('file_upload', uploadDump).init().setTooltip('Upload dump').enable(false);
 
-    dumpsTable.addSelectionListener((nbRowsSelected) => {
+    dumpsTable.addSelectionListener((rowSelected) => {
+        var nbRowsSelected = dumpsTable.getSelectedRows().length;
         createDumpIcon.enable(nbRowsSelected == 0);
         deleteDumpIcon.enable(nbRowsSelected > 0);
         loadDumpIcon.enable(nbRowsSelected > 0);

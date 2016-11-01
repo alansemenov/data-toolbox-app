@@ -15,9 +15,10 @@ function createSnapshotsView(snapshotsTable) {
     var createSnapshotIcon = new RcdMaterialActionIcon('add', createSnapshot).init();
     var loadSnapshotIcon = new RcdMaterialActionIcon('refresh', restoreSnapshot).init().enable(false);
 
-    snapshotsTable.addSelectionListener((nbRowsSelected) => {
+    snapshotsTable.addSelectionListener((rowSelected) => {
+        var nbRowsSelected = snapshotsTable.getSelectedRows().length;
         createSnapshotIcon.enable(nbRowsSelected == 0);
-        loadSnapshotIcon.enable(nbRowsSelected == 1);
+        loadSnapshotIcon.enable(nbRowsSelected > 0);
     });
 
     var snapshotsCard = new RcdMaterialCard('Snapshots').
