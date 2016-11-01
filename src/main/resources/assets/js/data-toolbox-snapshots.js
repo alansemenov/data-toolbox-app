@@ -13,35 +13,20 @@ function createSnapshotsView(snapshotsTable) {
     var snapshotsView = new RcdMaterialView('snapshots', snapshotsViewPathElements, snapshotsViewDescription).init();
 
     var createSnapshotIcon = new RcdMaterialActionIcon('add', createSnapshot).init();
+    var deleteSnapshotsIcon = new RcdMaterialActionIcon('delete', deleteSnapshots).init();
     var loadSnapshotIcon = new RcdMaterialActionIcon('refresh', restoreSnapshot).init().enable(false);
 
-    snapshotsTable.addSelectionListener((rowSelected) => {
-        if (rowSelected) {
-            var snapshotSelectedTimestamp = rowSelected.attributes['timestamp'];
-            var isSelected = rowSelected.hasClass('selected');
-            console.log("test");
-            snapshotsTable.body.rows.forEach(row => {
-                if (isSelected) {
-                    if (row.attributes['timestamp'] < snapshotSelectedTimestamp) {
-                        row.select(true, true);
-                    }
-                } else {
-                    if (row.attributes['timestamp'] > snapshotSelectedTimestamp) {
-                        row.select(false, true);
-                    }
-                }
-
-            });
-        }
-
+    snapshotsTable.addSelectionListener(() => {
         var nbRowsSelected = snapshotsTable.getSelectedRows().length;
         createSnapshotIcon.enable(nbRowsSelected == 0);
-        loadSnapshotIcon.enable(nbRowsSelected > 0);
+        deleteSnapshotsIcon.enable(nbRowsSelected > 0);
+        loadSnapshotIcon.enable(nbRowsSelected == 1);
     });
 
     var snapshotsCard = new RcdMaterialCard('Snapshots').
         init().
         addIcon(createSnapshotIcon).
+        addIcon(deleteSnapshotsIcon).
         addIcon(loadSnapshotIcon).
         addContent(snapshotsTable);
 
@@ -60,6 +45,26 @@ function createSnapshot() {
         }),
         contentType: 'application/json; charset=utf-8'
     }).always(() => {
+        hideDialog();
+        //TODO Check success & error
+        router.setState('snapshots');
+    });
+}
+
+function deleteSnapshots() {
+    showConfirmationDialog("Delete selected snapshots?", doDeleteSnapshots);
+}
+
+function doDeleteSnapshots() {
+    showInfoDialog("Deleting snapshot...");
+    var snapshotNames = snapshotsTable.getSelectedRows().
+        map((row) => row.attributes['snapshot']);
+    $.ajax({
+        method: 'POST',
+        url: config.servicesUrl + '/snapshot-delete',
+        data: JSON.stringify({snapshotNames: snapshotNames}),
+        contentType: 'application/json; charset=utf-8'
+    }).always(function () {
         hideDialog();
         //TODO Check success & error
         router.setState('snapshots');

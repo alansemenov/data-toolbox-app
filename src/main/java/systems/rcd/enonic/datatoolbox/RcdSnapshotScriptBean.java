@@ -1,11 +1,13 @@
 package systems.rcd.enonic.datatoolbox;
 
+import java.util.Arrays;
 import java.util.function.Supplier;
 
 import systems.rcd.fwk.core.format.json.RcdJsonService;
 import systems.rcd.fwk.core.format.json.data.RcdJsonArray;
 import systems.rcd.fwk.core.format.json.data.RcdJsonObject;
 
+import com.enonic.xp.node.DeleteSnapshotParams;
 import com.enonic.xp.node.NodeService;
 import com.enonic.xp.node.RestoreParams;
 import com.enonic.xp.node.SnapshotParams;
@@ -52,6 +54,20 @@ public class RcdSnapshotScriptBean
 
             return createSuccessResult();
         }, "Error while creating export" );
+    }
+
+    public String delete( final String... snapshotNames )
+    {
+        return runSafely( () -> {
+            final DeleteSnapshotParams deleteSnapshotParams = DeleteSnapshotParams.create().
+                addAll( Arrays.asList( snapshotNames ) ).
+                build();
+
+            nodeServiceSupplier.get().
+                deleteSnapshot( deleteSnapshotParams );
+
+            return createSuccessResult();
+        }, "Error while deleting snapshots" );
     }
 
     public String load( String snapshotName )
