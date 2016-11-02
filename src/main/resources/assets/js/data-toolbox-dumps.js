@@ -116,7 +116,7 @@ function dowloadDumps() {
         setAttribute('value', dumpNames);
 
     var downloadForm = new RcdFormElement().init().
-        setAttribute('action', '/admin/rest/datatoolbox/dump/download').
+        setAttribute('action', config.servicesUrl + '/dump-download').
         setAttribute('method', 'post').
         addChild(dumpNamesInput);
 

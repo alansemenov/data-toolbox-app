@@ -3,6 +3,7 @@ package systems.rcd.enonic.datatoolbox;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.function.Supplier;
 
 import com.google.common.io.ByteSource;
@@ -141,6 +142,20 @@ public class RcdDumpScriptBean
             }
             return createSuccessResult();
         }, "Error while deleting dumps" );
+    }
+
+    public TemporaryFileByteSource download( final String... dumpNames )
+        throws IOException
+    {
+        final java.nio.file.Path[] dumpPaths = Arrays.stream( dumpNames ).
+            map( dumpName -> getDumpDirectoryPath().resolve( dumpName ) ).
+            toArray( size -> new java.nio.file.Path[size] );
+
+        final String dumpArchiveName = ( dumpNames.length == 1 ? dumpNames[0] : "dump-archive" ) + "-";
+        final java.nio.file.Path dumpArchivePath = Files.createTempFile( dumpArchiveName, ".zip" );
+        RcdZipService.zip( dumpArchivePath, dumpPaths );
+
+        return new TemporaryFileByteSource( dumpArchivePath.toFile() );
     }
 
     public void upload( String filename, ByteSource dumpArchiveByteSource )

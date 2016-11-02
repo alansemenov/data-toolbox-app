@@ -3,6 +3,7 @@ package systems.rcd.enonic.datatoolbox;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.function.Supplier;
 
 import com.google.common.io.ByteSource;
@@ -95,6 +96,20 @@ public class RcdExportScriptBean
             return createSuccessResult();
         }, "Error while deleting export" );
     }
+
+    public TemporaryFileByteSource download( final String... exportNames )
+        throws IOException
+    {
+        final java.nio.file.Path[] exportPaths = Arrays.stream( exportNames ).
+            map( exportName -> getExportDirectoryPath().resolve( exportName ) ).
+            toArray( size -> new java.nio.file.Path[size] );
+
+        final String exportArchiveName = ( exportNames.length == 1 ? exportNames[0] : "export-archive" ) + "-";
+        final java.nio.file.Path exportArchivePath = Files.createTempFile( exportArchiveName, ".zip" );
+        RcdZipService.zip( exportArchivePath, exportPaths );
+        return new TemporaryFileByteSource( exportArchivePath.toFile() );
+    }
+
 
     public void upload( String filename, ByteSource exportArchiveByteSource )
         throws IOException

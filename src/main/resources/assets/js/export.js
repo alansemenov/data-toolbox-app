@@ -113,7 +113,7 @@ function dowloadExports() {
         setAttribute('value', exportNames);
 
     var downloadForm = new RcdFormElement().init().
-        setAttribute('action', '/admin/rest/datatoolbox/export/download').
+        setAttribute('action', config.servicesUrl + '/export-download').
         setAttribute('method', 'post').
         addChild(exportNamesInput);
 
