@@ -30,7 +30,6 @@ retrieveExports();
 var exportWidgetContainer;
 var interval = setInterval(() => {
     exportWidgetContainer = document.getElementById('exportWidgetContainer');
-    console.log(exportWidgetContainer);
     if (exportWidgetContainer) {
         exportWidgetContainer.appendChild(card.domElement);
         clearInterval(interval);
@@ -39,6 +38,7 @@ var interval = setInterval(() => {
 
 
 function retrieveExports() {
+    showInfoDialog("Retrieving exports...");
     return $.ajax({
         url: config.servicesUrl + '/export-list'
     }).done(function (result) {
@@ -48,6 +48,9 @@ function retrieveExports() {
                 addCell(anExport.name).
                 setAttribute('export', anExport.name);
         });
+    }).always(function () {
+        hideDialog();
+        //TODO Check success & error
     });
 }
 

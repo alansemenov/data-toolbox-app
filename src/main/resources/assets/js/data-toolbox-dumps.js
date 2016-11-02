@@ -91,6 +91,7 @@ function doDeleteDumps() {
 }
 
 function retrieveDumps() {
+    showInfoDialog("Retrieving dumps...");
     return $.ajax({
         url: config.servicesUrl + '/dump-list'
     }).done(function (result) {
@@ -103,6 +104,9 @@ function retrieveDumps() {
                 addCell(toRcdDateTimeFormat(new Date(dump.timestamp))).
                 setAttribute('dump', dump.name);
         });
+    }).always(function () {
+        hideDialog();
+        //TODO Check success & error
     });
 }
 

@@ -88,6 +88,7 @@ function restoreSnapshot() {
 }
 
 function retrieveSnapshots() {
+    showInfoDialog("Retrieving snapshots...");
     return $.ajax({
         url: config.servicesUrl + '/snapshot-list'
     }).done(function (result) {
@@ -101,5 +102,7 @@ function retrieveSnapshots() {
                 setAttribute('snapshot', snapshot.name).
                 setAttribute('timestamp', timestamp);
         });
+    }).always(function () {
+        hideDialog();
     });
 }
