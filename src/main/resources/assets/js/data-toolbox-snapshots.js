@@ -12,7 +12,7 @@ function createSnapshotsView(snapshotsTable) {
                                    'Thus snapshots are optimized for repetitive save and allow to quickly rollback to a previous state.';
     var snapshotsView = new RcdMaterialView('snapshots', snapshotsViewPathElements, snapshotsViewDescription).init();
 
-    var createSnapshotIcon = new RcdMaterialActionIcon('add', createSnapshot).init();
+    var createSnapshotIcon = new RcdMaterialActionIcon('add_circle', createSnapshot).init();
     var deleteSnapshotsIcon = new RcdMaterialActionIcon('delete', deleteSnapshots).init();
     var loadSnapshotIcon = new RcdMaterialActionIcon('refresh', restoreSnapshot).init().enable(false);
 

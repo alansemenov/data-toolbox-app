@@ -1,7 +1,7 @@
 var exportsTable = new RcdMaterialTable().init();
 exportsTable.header.addCell('Export name');
 
-var createExportIcon = new RcdMaterialActionIcon('add', createExport).init().setTooltip('Create export');
+var createExportIcon = new RcdMaterialActionIcon('add_circle', createExport).init().setTooltip('Create export');
 var deleteExportsIcon = new RcdMaterialActionIcon('delete', deleteExports).init().setTooltip('Delete export').enable(false);
 var loadExportsIcon = new RcdMaterialActionIcon('refresh', loadExports).init().setTooltip('Load export').enable(false);
 var downloadExportsIcon = new RcdMaterialActionIcon('file_download', dowloadExports).init().setTooltip('Dowload export').enable(false);

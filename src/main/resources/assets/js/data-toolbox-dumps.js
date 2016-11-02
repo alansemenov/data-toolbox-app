@@ -11,7 +11,7 @@ function createDumpsView(dumpsTable) {
                                'This dump includes all the current versions of your content, users, groups and roles.';
     var dumpsView = new RcdMaterialView('dumps', dumpsViewPathElements, dumpsViewDescription).init();
 
-    var createDumpIcon = new RcdMaterialActionIcon('add', createDump).init().setTooltip('Create dump');
+    var createDumpIcon = new RcdMaterialActionIcon('add_circle', createDump).init().setTooltip('Create dump');
     var deleteDumpIcon = new RcdMaterialActionIcon('delete', deleteDumps).init().setTooltip('Delete dump').enable(false);
     var loadDumpIcon = new RcdMaterialActionIcon('refresh', loadDumps).init().setTooltip('Load dump').enable(false);
     var downloadDumpIcon = new RcdMaterialActionIcon('file_download', dowloadDumps).init().setTooltip('Download dump').enable(false);
