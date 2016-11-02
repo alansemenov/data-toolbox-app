@@ -68,8 +68,8 @@ task lessc( dependsOn: processResources ) << {
 jar.dependsOn lessc
 
 bintray {
-    user = project.property( 'user' )
-    key = project.property( 'key' )
+    user = project.hasProperty( 'user' ) ? project.property( 'user' ) : "user"
+    key = project.hasProperty( 'key' ) ? project.property( 'key' ) : "key"
     configurations = ['archives']
     pkg {
         repo = 'rcd-repo'
