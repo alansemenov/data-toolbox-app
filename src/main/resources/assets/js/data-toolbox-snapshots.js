@@ -41,7 +41,7 @@ function createSnapshot() {
         method: 'POST',
         url: config.servicesUrl + '/snapshot-create',
         data: JSON.stringify({
-            snapshotName: 'snapshot-' + toRcdDateTimeFormat(new Date())
+            snapshotName: 'snapshot-' + toLocalDateTimeFormat(new Date(), '-', '-')
         }),
         contentType: 'application/json; charset=utf-8'
     }).always(() => {
@@ -95,12 +95,10 @@ function retrieveSnapshots() {
         snapshotsTable.body.clear();
         //TODO Check success & error
         result.success.forEach((snapshot) => {
-            var timestamp = toRcdDateTimeFormat(new Date(snapshot.timestamp));
             snapshotsTable.body.createRow().
                 addCell(snapshot.name).
-                addCell(timestamp).
-                setAttribute('snapshot', snapshot.name).
-                setAttribute('timestamp', timestamp);
+                addCell(toLocalDateTimeFormat(new Date(snapshot.timestamp))).
+                setAttribute('snapshot', snapshot.name);
         });
     }).always(function () {
         hideDialog();

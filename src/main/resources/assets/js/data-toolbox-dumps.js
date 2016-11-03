@@ -46,7 +46,7 @@ function createDump() {
         method: 'POST',
         url: config.servicesUrl + '/dump-create',
         data: JSON.stringify({
-            dumpName: 'dump-' + toRcdDateTimeFormat(new Date())
+            dumpName: 'dump-' + toLocalDateTimeFormat(new Date(), '-', '-')
         }),
         contentType: 'application/json; charset=utf-8'
     }).always(() => {
@@ -97,13 +97,15 @@ function retrieveDumps() {
     }).done(function (result) {
         dumpsTable.body.clear();
         //TODO Check success & error
-        result.success.forEach((dump) => {
-            dumpsTable.body.createRow().
-                addCell(dump.name).
-                addCell(dump.size.toLocaleString()).
-                addCell(toRcdDateTimeFormat(new Date(dump.timestamp))).
-                setAttribute('dump', dump.name);
-        });
+        result.success.
+            sort((dump1, dump2) => dump1.timestamp - dump2.timestamp).
+            forEach((dump) => {
+                dumpsTable.body.createRow().
+                    addCell(dump.name).
+                    addCell(dump.size.toLocaleString()).
+                    addCell(toLocalDateTimeFormat(new Date(dump.timestamp))).
+                    setAttribute('dump', dump.name);
+            });
     }).always(function () {
         hideDialog();
         //TODO Check success & error
