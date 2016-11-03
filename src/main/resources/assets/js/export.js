@@ -25,37 +25,39 @@ var card = new RcdMaterialCard('').
     addIcon(uploadExportsIcon).
     addContent(exportsTable);
 
-retrieveExports();
 
 var exportWidgetContainer;
 var interval = setInterval(() => {
     exportWidgetContainer = document.getElementById('exportWidgetContainer');
     if (exportWidgetContainer) {
-        exportWidgetContainer.appendChild(card.domElement);
+        retrieveExports();
+        card.show(exportWidgetContainer);
         clearInterval(interval);
     }
 }, 100);
 
 
 function retrieveExports() {
-    showInfoDialog("Retrieving exports...");
+    showInfoDialog("Retrieving exports...", exportWidgetContainer);
     return $.ajax({
         url: config.servicesUrl + '/export-list'
     }).done(function (result) {
         exportsTable.body.clear();
-        result.success.forEach((anExport) => {
-            exportsTable.body.createRow().
-                addCell(anExport.name).
-                setAttribute('export', anExport.name);
-        });
+        result.success.
+            sort((export1, export2) => export1.timestamp - export2.timestamp).
+            forEach((anExport) => {
+                exportsTable.body.createRow().
+                    addCell(anExport.name).
+                    setAttribute('export', anExport.name);
+            });
     }).always(function () {
-        hideDialog();
+        hideDialog(exportWidgetContainer);
         //TODO Check success & error
     });
 }
 
 function createExport() {
-    showInfoDialog("Creating export...");
+    showInfoDialog("Creating export...", exportWidgetContainer);
     return $.ajax({
         method: 'POST',
         url: config.servicesUrl + '/export-create',
@@ -65,13 +67,13 @@ function createExport() {
         }),
         contentType: 'application/json; charset=utf-8'
     }).always(() => {
-        hideDialog();
+        hideDialog(exportWidgetContainer);
         retrieveExports();
     });
 }
 
 function loadExports() {
-    showInfoDialog("Loading export...");
+    showInfoDialog("Loading export...", exportWidgetContainer);
     var exportNames = exportsTable.getSelectedRows().
         map((row) => row.attributes['export']);
     return $.ajax({
@@ -84,7 +86,7 @@ function loadExports() {
         contentType: 'application/json; charset=utf-8'
     }).always(() => {
         hideDialog();
-        retrieveExports();
+        retrieveExports(exportWidgetContainer);
     });
 }
 function deleteExports() {
@@ -92,7 +94,7 @@ function deleteExports() {
 }
 
 function doDeleteExports() {
-    showInfoDialog("Deleting export...");
+    showInfoDialog("Deleting export...", exportWidgetContainer);
     var exportNames = exportsTable.getSelectedRows().
         map((row) => row.attributes['export']);
     return $.ajax({
@@ -101,7 +103,7 @@ function doDeleteExports() {
         data: JSON.stringify({exportNames: exportNames}),
         contentType: 'application/json; charset=utf-8'
     }).always(() => {
-        hideDialog();
+        hideDialog(exportWidgetContainer);
         retrieveExports();
     });
 }
@@ -140,7 +142,7 @@ function uploadExports() {
 }
 
 function doUploadExports() {
-    showInfoDialog("Uploading export...");
+    showInfoDialog("Uploading export...", exportWidgetContainer);
     var formData = new FormData(uploadForm.getDomElement());
     $.ajax({
         method: 'POST',
@@ -149,7 +151,7 @@ function doUploadExports() {
         contentType: false,
         processData: false
     }).always(function () {
-        hideDialog();
+        hideDialog(exportWidgetContainer);
         //TODO Check success & error
         retrieveExports();
     });
