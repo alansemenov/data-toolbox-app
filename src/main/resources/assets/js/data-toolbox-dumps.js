@@ -41,12 +41,23 @@ function createDumpsView(dumpsTable) {
 }
 
 function createDump() {
+    var defaultDumpName = 'dump-' + toLocalDateTimeFormat(new Date(), '-', '-');
+    showInputDialog({
+        title: "Create dump",
+        ok: "CREATE",
+        label: "Dump name",
+        placeholder: defaultDumpName,
+        callback: (value) => doCreateDump(value || defaultDumpName)
+    });
+}
+
+function doCreateDump(dumpName) {
     showInfoDialog("Creating dump...");
     $.ajax({
         method: 'POST',
         url: config.servicesUrl + '/dump-create',
         data: JSON.stringify({
-            dumpName: 'dump-' + toLocalDateTimeFormat(new Date(), '-', '-')
+            dumpName: dumpName || ('dump-' + toLocalDateTimeFormat(new Date(), '-', '-'))
         }),
         contentType: 'application/json; charset=utf-8'
     }).always(() => {

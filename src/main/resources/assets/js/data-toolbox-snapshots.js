@@ -36,12 +36,23 @@ function createSnapshotsView(snapshotsTable) {
 }
 
 function createSnapshot() {
+    var defaultSnapshotName = 'snapshot-' + toLocalDateTimeFormat(new Date(), '-', '-');
+    showInputDialog({
+        title: "Create snapshot",
+        ok: "CREATE",
+        label: "Snapshot name",
+        placeholder: defaultSnapshotName,
+        callback: (value) => doCreateSnapshot(value || defaultSnapshotName)
+    });
+}
+
+function doCreateSnapshot(snapshotName) {
     showInfoDialog("Creating snapshot...");
     $.ajax({
         method: 'POST',
         url: config.servicesUrl + '/snapshot-create',
         data: JSON.stringify({
-            snapshotName: 'snapshot-' + toLocalDateTimeFormat(new Date(), '-', '-')
+            snapshotName: snapshotName
         }),
         contentType: 'application/json; charset=utf-8'
     }).always(() => {

@@ -57,13 +57,24 @@ function retrieveExports() {
 }
 
 function createExport() {
+    var defaultExportName = config.contentName + '-' + toLocalDateTimeFormat(new Date(), '-', '-');
+    showInputDialog({
+        title: "Create export",
+        ok: "CREATE",
+        label: "Export name",
+        placeholder: defaultExportName,
+        callback: (value) => doCreateExport(value || defaultExportName)
+    });
+}
+
+function doCreateExport(exportName) {
     showInfoDialog("Creating export...", exportWidgetContainer);
     return $.ajax({
         method: 'POST',
         url: config.servicesUrl + '/export-create',
         data: JSON.stringify({
             contentPath: config.contentPath,
-            exportName: config.contentName + '-' + toLocalDateTimeFormat(new Date(), '-', '-')
+            exportName: exportName
         }),
         contentType: 'application/json; charset=utf-8'
     }).always(() => {
@@ -85,7 +96,7 @@ function loadExports() {
         }),
         contentType: 'application/json; charset=utf-8'
     }).always(() => {
-        hideDialog();
+        hideDialog(exportWidgetContainer);
         retrieveExports(exportWidgetContainer);
     });
 }
