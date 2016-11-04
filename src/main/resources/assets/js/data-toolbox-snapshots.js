@@ -7,9 +7,9 @@ function createSnapshotsTable() {
 function createSnapshotsView(snapshotsTable) {
     //Creates the snapshot view
     var snapshotsViewPathElements = [{name: 'Data Toolbox', callback: () => router.setState()}, {name: 'Snapshots'}];
-    var snapshotsViewDescription = 'To save the state of your entire data at a given time, a snapshot can be made. ' +
-                                   'A snapshot is a record of the indexes at a given time or a record of the modifications since the previous snapshot. ' +
-                                   'Thus snapshots are optimized for repetitive save and allow to quickly rollback to a previous state.';
+    var snapshotsViewDescription = 'A snapshot is a record of the state of your entire data at a particular point in time. ' +
+                                   'Technically, a snapshot is a record of the indexes or your repositories or a record of the modifications since the previous snapshot. ' +
+                                   'This makes snapshots optimized for repetitive save and allow to quickly rollback to a previous state in one click.';
     var snapshotsView = new RcdMaterialView('snapshots', snapshotsViewPathElements, snapshotsViewDescription).init();
 
     var createSnapshotIcon = new RcdMaterialActionIcon('add_circle', createSnapshot).init().setTooltip('Create snapshot');
