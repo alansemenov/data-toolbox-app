@@ -10,7 +10,7 @@ function createDumpsView(dumpsTable) {
     //Creates the dump view
     var dumpsViewPathElements = [{name: 'Data Toolbox', callback: () => router.setState()}, {name: 'Dumps'}];
     var dumpsViewDescription = 'A dump is a record of all the current versions of your data (content, users, groups and roles) exported from your system to your disk.' +
-                               'This makes dumps suited to migrate your data to another installation or to secure your data to another storage. ' +
+                               'This makes dumps well suited for migrating your data to another installation or securing your data to another storage. ' +
                                'Warning: As mentioned above, the current dump mechanism does not export old versions of your data. You will loose the version history of your content.';
     var dumpsView = new RcdMaterialView('dumps', dumpsViewPathElements, dumpsViewDescription).init();
 
