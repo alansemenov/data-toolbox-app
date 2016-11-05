@@ -49,6 +49,7 @@ function createDump() {
         title: "Create dump",
         ok: "CREATE",
         label: "Dump name",
+        placeholder: defaultDumpName,
         value: defaultDumpName,
         callback: (value) => doCreateDump(value || defaultDumpName)
     });

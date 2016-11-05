@@ -41,6 +41,7 @@ function createSnapshot() {
         title: "Create snapshot",
         ok: "CREATE",
         label: "Snapshot name",
+        placeholder: defaultSnapshotName,
         value: defaultSnapshotName,
         callback: (value) => doCreateSnapshot(value || defaultSnapshotName)
     });
