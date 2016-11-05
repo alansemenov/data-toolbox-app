@@ -46,8 +46,8 @@ public class RcdExportScriptBean
                     {
                         final RcdJsonObject export = RcdJsonService.createJsonObject().
                             put( "name", exportPath.getFileName().toString() ).
-                            put( "timestamp", exportPath.toFile().lastModified() ).
-                            put( "size", RcdFileService.getSize( exportPath ) );
+                            put( "timestamp", exportPath.toFile().lastModified() );
+                        //put( "size", RcdFileService.getSize( exportPath ) );
                         exportJsonArray.add( export );
                     }
                 } );

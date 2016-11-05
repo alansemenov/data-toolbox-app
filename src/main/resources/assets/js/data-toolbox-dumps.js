@@ -1,6 +1,8 @@
 function createDumpsTable() {
     var dumpsTable = new RcdMaterialTable().init();
-    dumpsTable.header.addCell('Dump name').addCell('Size (bytes)').addCell('Timestamp');
+    dumpsTable.header.addCell('Dump name').
+        //addCell('Size (bytes)').
+        addCell('Timestamp');
     return dumpsTable;
 }
 
@@ -114,7 +116,7 @@ function retrieveDumps() {
             forEach((dump) => {
                 dumpsTable.body.createRow().
                     addCell(dump.name).
-                    addCell(dump.size.toLocaleString()).
+                    //addCell(dump.size.toLocaleString()).
                     addCell(toLocalDateTimeFormat(new Date(dump.timestamp))).
                     setAttribute('dump', dump.name);
             });

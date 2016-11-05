@@ -62,7 +62,7 @@ function createExport() {
         title: "Create export",
         ok: "CREATE",
         label: "Export name",
-        placeholder: defaultExportName,
+        value: defaultExportName,
         callback: (value) => doCreateExport(value || defaultExportName)
     });
 }

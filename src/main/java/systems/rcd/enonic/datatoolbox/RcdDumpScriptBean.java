@@ -50,8 +50,8 @@ public class RcdDumpScriptBean
                     {
                         final RcdJsonObject dump = RcdJsonService.createJsonObject().
                             put( "name", dumpPath.getFileName().toString() ).
-                            put( "timestamp", dumpPath.toFile().lastModified() ).
-                            put( "size", RcdFileService.getSize( dumpPath ) );
+                            put( "timestamp", dumpPath.toFile().lastModified() );
+                        //put( "size", RcdFileService.getSize( dumpPath ) );
                         dumpsJsonArray.add( dump );
                     }
                 } );
