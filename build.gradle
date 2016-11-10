@@ -10,11 +10,13 @@ buildscript {
     dependencies {
         classpath "com.enonic.xp:gradle-plugin:${xpVersion}"
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7'
+        classpath "com.eriwen:gradle-js-plugin:2.12.0"
     }
 }
 
 apply plugin: 'com.enonic.xp.app'
 apply plugin: 'com.jfrog.bintray'
+apply plugin: "com.eriwen.gradle.js"
 
 app {
     name = project.appName
@@ -57,6 +59,34 @@ task extractRcdJsFwk( type: Copy ) {
 }
 processResources.dependsOn extractRcdJsFwk
 
+
+task mergeJsFwk( type: com.eriwen.gradle.js.tasks.CombineJsTask ) {
+    source = ["${rootProject.buildDir}/resources/main/assets/js/rcd-jsfwk-html.js",
+              "${rootProject.buildDir}/resources/main/assets/js/rcd-jsfwk-html-util.js",
+              "${rootProject.buildDir}/resources/main/assets/js/rcd-jsfwk-material-icons.js",
+              "${rootProject.buildDir}/resources/main/assets/js/rcd-jsfwk-material-skeleton.js",
+              "${rootProject.buildDir}/resources/main/assets/js/rcd-jsfwk-material-inputs.js",
+              "${rootProject.buildDir}/resources/main/assets/js/rcd-jsfwk-material-tables.js",
+              "${rootProject.buildDir}/resources/main/assets/js/rcd-jsfwk-material-cards.js",
+              "${rootProject.buildDir}/resources/main/assets/js/rcd-jsfwk-material-dialogs.js",
+              "${rootProject.buildDir}/resources/main/assets/js/rcd-jsfwk-router.js",
+              "${rootProject.buildDir}/resources/main/assets/js/rcd-jsfwk-time.js"]
+    dest = file( "${rootProject.buildDir}/resources/main/assets/js/rcd-jsfwk.js" )
+}
+
+//TODO Learn how to write Gradle builds
+//TODO Replace this dirty workaround
+task dirtyWidgetWorkaround( type: Copy, dependsOn: mergeJsFwk ) {
+    def jsFwkFile = file( "${rootProject.buildDir}/resources/main/assets/js/rcd-jsfwk.js" )
+    def jsFwkContent = jsFwkFile.exists() ? jsFwkFile.getText( "UTF-8" ) : "error"
+    from "${rootProject.buildDir}/resources/main/assets/js"
+    into "${rootProject.buildDir}/resources/main/assets/js"
+    include 'export-template.js'
+    rename( 'export-template.js', 'export.js' )
+    filter( org.apache.tools.ant.filters.ReplaceTokens,
+            tokens: [widgetWorkAround: jsFwkContent] )
+}
+
 //TODO Replace by proper plugin
 task lessc( dependsOn: processResources ) << {
     exec {
@@ -66,6 +96,10 @@ task lessc( dependsOn: processResources ) << {
     }
 }
 jar.dependsOn lessc
+jar.dependsOn dirtyWidgetWorkaround
+
+
+
 
 bintray {
     user = project.hasProperty( 'user' ) ? project.property( 'user' ) : "user"
