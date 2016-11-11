@@ -48,7 +48,7 @@ function createSnapshot() {
 }
 
 function doCreateSnapshot(snapshotName) {
-    showInfoDialog("Creating snapshot...");
+    var infoDialog = showInfoDialog("Creating snapshot...");
     $.ajax({
         method: 'POST',
         url: config.servicesUrl + '/snapshot-create',
@@ -57,7 +57,7 @@ function doCreateSnapshot(snapshotName) {
         }),
         contentType: 'application/json; charset=utf-8'
     }).always(() => {
-        hideDialog();
+        hideDialog(infoDialog);
         //TODO Check success & error
         router.setState('snapshots');
     });
@@ -68,7 +68,7 @@ function deleteSnapshots() {
 }
 
 function doDeleteSnapshots() {
-    showInfoDialog("Deleting snapshot...");
+    var infoDialog = showInfoDialog("Deleting snapshot...");
     var snapshotNames = snapshotsTable.getSelectedRows().
         map((row) => row.attributes['snapshot']);
     $.ajax({
@@ -77,14 +77,14 @@ function doDeleteSnapshots() {
         data: JSON.stringify({snapshotNames: snapshotNames}),
         contentType: 'application/json; charset=utf-8'
     }).always(function () {
-        hideDialog();
+        hideDialog(infoDialog);
         //TODO Check success & error
         router.setState('snapshots');
     });
 }
 
 function restoreSnapshot() {
-    showInfoDialog("Restoring snapshot...");
+    var infoDialog = showInfoDialog("Restoring snapshot...");
     var snapshotName = snapshotsTable.getSelectedRows().
         map((row) => row.attributes['snapshot'])[0];
     $.ajax({
@@ -93,14 +93,14 @@ function restoreSnapshot() {
         data: JSON.stringify({snapshotName: snapshotName}),
         contentType: 'application/json; charset=utf-8'
     }).always(function () {
-        hideDialog();
+        hideDialog(infoDialog);
         //TODO Check success & error
         router.setState('snapshots');
     });
 }
 
 function retrieveSnapshots() {
-    showInfoDialog("Retrieving snapshots...");
+    var infoDialog = showInfoDialog("Retrieving snapshots...");
     return $.ajax({
         url: config.servicesUrl + '/snapshot-list'
     }).done(function (result) {
@@ -113,6 +113,6 @@ function retrieveSnapshots() {
                 setAttribute('snapshot', snapshot.name);
         });
     }).always(function () {
-        hideDialog();
+        hideDialog(infoDialog);
     });
 }

@@ -41,7 +41,7 @@
 
 
     function retrieveExports() {
-        showInfoDialog("Retrieving exports...", exportWidgetContainer);
+        var infoDialog = showInfoDialog("Retrieving exports...", exportWidgetContainer);
         return $.ajax({
             url: config.servicesUrl + '/export-list'
         }).done(function (result) {
@@ -54,7 +54,7 @@
                         setAttribute('export', anExport.name);
                 });
         }).always(function () {
-            hideDialog(exportWidgetContainer);
+            hideDialog(infoDialog, exportWidgetContainer);
             //TODO Check success & error
         });
     }
@@ -72,7 +72,7 @@
     }
 
     function doCreateExport(exportName) {
-        showInfoDialog("Creating export...", exportWidgetContainer);
+        var infoDialog = showInfoDialog("Creating export...", exportWidgetContainer);
         return $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/export-create',
@@ -82,13 +82,13 @@
             }),
             contentType: 'application/json; charset=utf-8'
         }).always(() => {
-            hideDialog(exportWidgetContainer);
+            hideDialog(infoDialog, exportWidgetContainer);
             retrieveExports();
         });
     }
 
     function loadExports() {
-        showInfoDialog("Loading export...", exportWidgetContainer);
+        var infoDialog = showInfoDialog("Loading export...", exportWidgetContainer);
         var exportNames = exportsTable.getSelectedRows().
             map((row) => row.attributes['export']);
         return $.ajax({
@@ -100,7 +100,7 @@
             }),
             contentType: 'application/json; charset=utf-8'
         }).always(() => {
-            hideDialog(exportWidgetContainer);
+            hideDialog(infoDialog, exportWidgetContainer);
             retrieveExports(exportWidgetContainer);
         });
     }
@@ -110,7 +110,7 @@
     }
 
     function doDeleteExports() {
-        showInfoDialog("Deleting export...", exportWidgetContainer);
+        var infoDialog = showInfoDialog("Deleting export...", exportWidgetContainer);
         var exportNames = exportsTable.getSelectedRows().
             map((row) => row.attributes['export']);
         return $.ajax({
@@ -119,7 +119,7 @@
             data: JSON.stringify({exportNames: exportNames}),
             contentType: 'application/json; charset=utf-8'
         }).always(() => {
-            hideDialog(exportWidgetContainer);
+            hideDialog(infoDialog, exportWidgetContainer);
             retrieveExports();
         });
     }
@@ -159,7 +159,7 @@
     }
 
     function doUploadExports() {
-        showInfoDialog("Uploading export...", exportWidgetContainer);
+        var infoDialog = showInfoDialog("Uploading export...", exportWidgetContainer);
         var formData = new FormData(uploadForm.getDomElement());
         $.ajax({
             method: 'POST',
@@ -168,7 +168,7 @@
             contentType: false,
             processData: false
         }).always(function () {
-            hideDialog(exportWidgetContainer);
+            hideDialog(infoDialog, exportWidgetContainer);
             //TODO Check success & error
             retrieveExports();
         });

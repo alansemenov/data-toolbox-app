@@ -56,7 +56,7 @@ function createDump() {
 }
 
 function doCreateDump(dumpName) {
-    showInfoDialog("Creating dump...");
+    var infoDialog = showInfoDialog("Creating dump...");
     $.ajax({
         method: 'POST',
         url: config.servicesUrl + '/dump-create',
@@ -65,14 +65,14 @@ function doCreateDump(dumpName) {
         }),
         contentType: 'application/json; charset=utf-8'
     }).always(() => {
-        hideDialog();
+        hideDialog(infoDialog);
         //TODO Check success & error
         router.setState('dumps');
     });
 }
 
 function loadDumps() {
-    showInfoDialog("Loading dump...");
+    var infoDialog = showInfoDialog("Loading dump...");
     var dumpNames = dumpsTable.getSelectedRows().map((row) => row.attributes['dump']);
     $.ajax({
         method: 'POST',
@@ -80,7 +80,7 @@ function loadDumps() {
         data: JSON.stringify({dumpNames: dumpNames}),
         contentType: 'application/json; charset=utf-8'
     }).always(function () {
-        hideDialog();
+        hideDialog(infoDialog);
         //TODO Check success & error
         router.setState('dumps');
     });
@@ -91,7 +91,7 @@ function deleteDumps() {
 }
 
 function doDeleteDumps() {
-    showInfoDialog("Deleting dump...");
+    var infoDialog = showInfoDialog("Deleting dump...");
     var dumpNames = dumpsTable.getSelectedRows().map((row) => row.attributes['dump']);
     $.ajax({
         method: 'POST',
@@ -99,14 +99,14 @@ function doDeleteDumps() {
         data: JSON.stringify({dumpNames: dumpNames}),
         contentType: 'application/json; charset=utf-8'
     }).always(function () {
-        hideDialog();
+        hideDialog(infoDialog);
         //TODO Check success & error
         router.setState('dumps');
     });
 }
 
 function retrieveDumps() {
-    showInfoDialog("Retrieving dumps...");
+    var infoDialog = showInfoDialog("Retrieving dumps...");
     return $.ajax({
         url: config.servicesUrl + '/dump-list'
     }).done(function (result) {
@@ -122,7 +122,7 @@ function retrieveDumps() {
                     setAttribute('dump', dump.name);
             });
     }).always(function () {
-        hideDialog();
+        hideDialog(infoDialog);
         //TODO Check success & error
     });
 }
@@ -160,7 +160,7 @@ function uploadDump() {
 }
 
 function doUploadDump() {
-    showInfoDialog("Uploading dump...");
+    var infoDialog = showInfoDialog("Uploading dump...");
     var formData = new FormData(uploadForm.getDomElement());
     $.ajax({
         method: 'POST',
@@ -169,7 +169,7 @@ function doUploadDump() {
         contentType: false,
         processData: false
     }).always(function () {
-        hideDialog();
+        hideDialog(infoDialog);
         //TODO Check success & error
         router.setState('dumps');
     });
