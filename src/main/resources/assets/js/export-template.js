@@ -150,7 +150,7 @@
         var uploadFileInput = new RcdInputElement().init().
             setAttribute('type', 'file').
             setAttribute('name', 'uploadFile').
-            setAttribute('onChange', 'doUploadExports()');
+            addChangeListener(doUploadExports);
 
         uploadForm = new RcdFormElement().init().
             addChild(uploadFileInput);
