@@ -2,6 +2,9 @@ package systems.rcd.enonic.datatoolbox;
 
 import java.util.function.Supplier;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import systems.rcd.fwk.core.format.json.RcdJsonService;
 import systems.rcd.fwk.core.format.json.data.RcdJsonValue;
 
@@ -11,6 +14,8 @@ import com.enonic.xp.script.bean.ScriptBean;
 public class RcdScriptBean
     implements ScriptBean
 {
+    private final Logger LOGGER = LoggerFactory.getLogger( RcdScriptBean.class );
+
     @Override
     public void initialize( final BeanContext context )
     {
@@ -24,6 +29,7 @@ public class RcdScriptBean
         }
         catch ( Exception e )
         {
+            LOGGER.error( errorMessage, e );
             return RcdJsonService.toString( createErrorResult( errorMessage ) );
         }
     }

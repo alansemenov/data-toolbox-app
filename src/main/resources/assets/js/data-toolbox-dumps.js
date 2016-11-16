@@ -65,9 +65,8 @@ function doCreateDump(dumpName) {
             dumpName: dumpName || ('dump-' + toLocalDateTimeFormat(new Date(), '-', '-'))
         }),
         contentType: 'application/json; charset=utf-8'
-    }).always(() => {
+    }).fail(handleAjaxError).always(() => {
         hideDialog(infoDialog);
-        //TODO Check success & error
         router.setState('dumps');
     });
 }
@@ -80,9 +79,8 @@ function loadDumps() {
         url: config.servicesUrl + '/dump-load',
         data: JSON.stringify({dumpNames: dumpNames}),
         contentType: 'application/json; charset=utf-8'
-    }).always(function () {
+    }).fail(handleAjaxError).always(() => {
         hideDialog(infoDialog);
-        //TODO Check success & error
         router.setState('dumps');
     });
 }
@@ -99,9 +97,8 @@ function doDeleteDumps() {
         url: config.servicesUrl + '/dump-delete',
         data: JSON.stringify({dumpNames: dumpNames}),
         contentType: 'application/json; charset=utf-8'
-    }).always(function () {
+    }).fail(handleAjaxError).always(() => {
         hideDialog(infoDialog);
-        //TODO Check success & error
         router.setState('dumps');
     });
 }
@@ -122,9 +119,8 @@ function retrieveDumps() {
                     addCell(toLocalDateTimeFormat(new Date(dump.timestamp))).
                     setAttribute('dump', dump.name);
             });
-    }).always(function () {
+    }).fail(handleAjaxError).always(() => {
         hideDialog(infoDialog);
-        //TODO Check success & error
     });
 }
 
@@ -169,9 +165,20 @@ function doUploadDump() {
         data: formData,
         contentType: false,
         processData: false
-    }).always(function () {
+    }).fail(handleAjaxError).always(() => {
         hideDialog(infoDialog);
-        //TODO Check success & error
         router.setState('dumps');
     });
+}
+
+function handleAjaxError(jqXHR, textStatus, errorThrown) {
+    console.log(jqXHR);
+    console.log(textStatus);
+    console.log(errorThrown);
+
+    if (jqXHR.status) {
+        showSnackbar('Error ' + jqXHR.status + ': ' + jqXHR.statusText);
+    } else {
+        showSnackbar('Connection refused');
+    }
 }

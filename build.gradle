@@ -41,7 +41,7 @@ dependencies {
     include "com.enonic.xp:lib-io:${xpVersion}"
     include "systems.rcd.fwk.core:rcd-fwk-core:7.0.0"
     rcdjsfwkcore "systems.rcd.js.fwk.core:rcd-jsfwk-core:1.0.1"
-    rcdjsfwkmaterial "systems.rcd.js.fwk.material:rcd-jsfwk-material:1.0.1"
+    rcdjsfwkmaterial "systems.rcd.js.fwk.material:rcd-jsfwk-material:1.0.2"
 }
 
 repositories {
@@ -70,6 +70,7 @@ task mergeJsFwk( type: com.eriwen.gradle.js.tasks.CombineJsTask ) {
               "${rootProject.buildDir}/resources/main/assets/js/rcd-jsfwk-material-tables.js",
               "${rootProject.buildDir}/resources/main/assets/js/rcd-jsfwk-material-cards.js",
               "${rootProject.buildDir}/resources/main/assets/js/rcd-jsfwk-material-dialogs.js",
+              "${rootProject.buildDir}/resources/main/assets/js/rcd-jsfwk-material-snackbars.js",
               "${rootProject.buildDir}/resources/main/assets/js/rcd-jsfwk-router.js",
               "${rootProject.buildDir}/resources/main/assets/js/rcd-jsfwk-time.js"]
     dest = file( "${rootProject.buildDir}/resources/main/assets/js/rcd-jsfwk.js" )
