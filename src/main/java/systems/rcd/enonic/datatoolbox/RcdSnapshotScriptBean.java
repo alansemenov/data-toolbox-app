@@ -38,7 +38,7 @@ public class RcdSnapshotScriptBean
                 snapshotJsonArray.add( snapshot );
             }
             return createSuccessResult( snapshotJsonArray );
-        }, "Error while listing exports" );
+        }, "Error while listing snapshots" );
     }
 
     public String create( String snapshotName )
@@ -53,7 +53,7 @@ public class RcdSnapshotScriptBean
                 snapshot( snapshotParams );
 
             return createSuccessResult();
-        }, "Error while creating export" );
+        }, "Error while creating snapshot" );
     }
 
     public String delete( final String... snapshotNames )
@@ -80,6 +80,6 @@ public class RcdSnapshotScriptBean
             nodeServiceSupplier.get().
                 restore( restoreParams );
             return createSuccessResult();
-        }, "Error while loading export" );
+        }, "Error while loading snapshot" );
     }
 }
