@@ -1,5 +1,5 @@
 (function () {
-    @widgetWorkAround@
+    //@widgetWorkAround@
 
     var exportsTable = new RcdMaterialTable().init();
     exportsTable.header.addCell('Export name');
@@ -46,16 +46,17 @@
             url: config.servicesUrl + '/export-list'
         }).done(function (result) {
             exportsTable.body.clear();
-            result.success.
-                sort((export1, export2) => export1.timestamp - export2.timestamp).
-                forEach((anExport) => {
-                    exportsTable.body.createRow().
-                        addCell(anExport.name).
-                        setAttribute('export', anExport.name);
-                });
-        }).always(function () {
+            if (handleResultError(result)) {
+                result.success.
+                    sort((export1, export2) => export1.timestamp - export2.timestamp).
+                    forEach((anExport) => {
+                        exportsTable.body.createRow().
+                            addCell(anExport.name).
+                            setAttribute('export', anExport.name);
+                    });
+            }
+        }).fail(handleAjaxError).always(function () {
             hideDialog(infoDialog, exportWidgetContainer);
-            //TODO Check success & error
         });
     }
 
@@ -81,7 +82,7 @@
                 exportName: exportName
             }),
             contentType: 'application/json; charset=utf-8'
-        }).always(() => {
+        }).done(handleResultError).fail(handleAjaxError).always(() => {
             hideDialog(infoDialog, exportWidgetContainer);
             retrieveExports();
         });
@@ -99,7 +100,7 @@
                 exportNames: exportNames
             }),
             contentType: 'application/json; charset=utf-8'
-        }).always(() => {
+        }).done(handleResultError).fail(handleAjaxError).always(() => {
             hideDialog(infoDialog, exportWidgetContainer);
             retrieveExports(exportWidgetContainer);
         });
@@ -118,7 +119,7 @@
             url: config.servicesUrl + '/export-delete',
             data: JSON.stringify({exportNames: exportNames}),
             contentType: 'application/json; charset=utf-8'
-        }).always(() => {
+        }).done(handleResultError).fail(handleAjaxError).always(() => {
             hideDialog(infoDialog, exportWidgetContainer);
             retrieveExports();
         });
@@ -167,10 +168,27 @@
             data: formData,
             contentType: false,
             processData: false
-        }).always(function () {
+        }).done(handleResultError).fail(handleAjaxError).always(function () {
             hideDialog(infoDialog, exportWidgetContainer);
-            //TODO Check success & error
             retrieveExports();
         });
     }
+
+    function handleResultError(result) {
+        if (result.error) {
+            showSnackbar(result.error, exportWidgetContainer);
+            return false;
+        }
+        return true;
+    }
+
+    function handleAjaxError(jqXHR) {
+        if (jqXHR.status) {
+            showSnackbar('Error ' + jqXHR.status + ': ' + jqXHR.statusText, exportWidgetContainer);
+        } else {
+            showSnackbar('Connection refused', exportWidgetContainer);
+        }
+    }
 }());
+
+

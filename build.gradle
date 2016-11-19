@@ -80,7 +80,7 @@ task mergeJsFwk( type: com.eriwen.gradle.js.tasks.CombineJsTask ) {
 //TODO Replace this dirty workaround
 task dirtyWidgetWorkaround( type: Copy, dependsOn: mergeJsFwk ) {
     def jsFwkFile = file( "${rootProject.buildDir}/resources/main/assets/js/rcd-jsfwk.js" )
-    def jsFwkContent = jsFwkFile.exists() ? jsFwkFile.getText( "UTF-8" ) : "error"
+    def jsFwkContent = jsFwkFile.exists() ? "\n" + jsFwkFile.getText( "UTF-8" ) : "error"
     from "${rootProject.buildDir}/resources/main/assets/js"
     into "${rootProject.buildDir}/resources/main/assets/js"
     include 'export-template.js'
