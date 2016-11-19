@@ -35,3 +35,19 @@ router.addRoute(snapshotsView.viewId, () => {
     main.content.displayView(snapshotsView.viewId);
 });
 router.setState(router.getCurrentState());
+
+function handleResultError(result) {
+    if (result.error) {
+        showSnackbar(result.error, main.content);
+        return false;
+    }
+    return true;
+}
+
+function handleAjaxError(jqXHR) {
+    if (jqXHR.status) {
+        showSnackbar('Error ' + jqXHR.status + ': ' + jqXHR.statusText, main.content);
+    } else {
+        showSnackbar('Connection refused', main.content);
+    }
+}

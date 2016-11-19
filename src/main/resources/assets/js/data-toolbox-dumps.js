@@ -65,7 +65,7 @@ function doCreateDump(dumpName) {
             dumpName: dumpName || ('dump-' + toLocalDateTimeFormat(new Date(), '-', '-'))
         }),
         contentType: 'application/json; charset=utf-8'
-    }).fail(handleAjaxError).always(() => {
+    }).done(handleResultError).fail(handleAjaxError).always(() => {
         hideDialog(infoDialog);
         router.setState('dumps');
     });
@@ -79,7 +79,7 @@ function loadDumps() {
         url: config.servicesUrl + '/dump-load',
         data: JSON.stringify({dumpNames: dumpNames}),
         contentType: 'application/json; charset=utf-8'
-    }).fail(handleAjaxError).always(() => {
+    }).done(handleResultError).fail(handleAjaxError).always(() => {
         hideDialog(infoDialog);
         router.setState('dumps');
     });
@@ -97,7 +97,7 @@ function doDeleteDumps() {
         url: config.servicesUrl + '/dump-delete',
         data: JSON.stringify({dumpNames: dumpNames}),
         contentType: 'application/json; charset=utf-8'
-    }).fail(handleAjaxError).always(() => {
+    }).done(handleResultError).fail(handleAjaxError).always(() => {
         hideDialog(infoDialog);
         router.setState('dumps');
     });
@@ -109,16 +109,17 @@ function retrieveDumps() {
         url: config.servicesUrl + '/dump-list'
     }).done(function (result) {
         dumpsTable.body.clear();
-        //TODO Check success & error
-        result.success.
-            sort((dump1, dump2) => dump1.timestamp - dump2.timestamp).
-            forEach((dump) => {
-                dumpsTable.body.createRow().
-                    addCell(dump.name).
-                    //addCell(dump.size.toLocaleString()).
-                    addCell(toLocalDateTimeFormat(new Date(dump.timestamp))).
-                    setAttribute('dump', dump.name);
-            });
+        if (handleResultError(result)) {
+            result.success.
+                sort((dump1, dump2) => dump1.timestamp - dump2.timestamp).
+                forEach((dump) => {
+                    dumpsTable.body.createRow().
+                        addCell(dump.name).
+                        //addCell(dump.size.toLocaleString()).
+                        addCell(toLocalDateTimeFormat(new Date(dump.timestamp))).
+                        setAttribute('dump', dump.name);
+                });
+        }
     }).fail(handleAjaxError).always(() => {
         hideDialog(infoDialog);
     });
@@ -165,20 +166,8 @@ function doUploadDump() {
         data: formData,
         contentType: false,
         processData: false
-    }).fail(handleAjaxError).always(() => {
+    }).done(handleResultError).fail(handleAjaxError).always(() => {
         hideDialog(infoDialog);
         router.setState('dumps');
     });
-}
-
-function handleAjaxError(jqXHR, textStatus, errorThrown) {
-    console.log(jqXHR);
-    console.log(textStatus);
-    console.log(errorThrown);
-
-    if (jqXHR.status) {
-        showSnackbar('Error ' + jqXHR.status + ': ' + jqXHR.statusText);
-    } else {
-        showSnackbar('Connection refused');
-    }
 }

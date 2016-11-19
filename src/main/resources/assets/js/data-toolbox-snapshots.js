@@ -57,9 +57,8 @@ function doCreateSnapshot(snapshotName) {
             snapshotName: snapshotName
         }),
         contentType: 'application/json; charset=utf-8'
-    }).always(() => {
+    }).done(handleResultError).fail(handleAjaxError).always(() => {
         hideDialog(infoDialog);
-        //TODO Check success & error
         router.setState('snapshots');
     });
 }
@@ -77,9 +76,8 @@ function doDeleteSnapshots() {
         url: config.servicesUrl + '/snapshot-delete',
         data: JSON.stringify({snapshotNames: snapshotNames}),
         contentType: 'application/json; charset=utf-8'
-    }).always(function () {
+    }).done(handleResultError).fail(handleAjaxError).always(function () {
         hideDialog(infoDialog);
-        //TODO Check success & error
         router.setState('snapshots');
     });
 }
@@ -93,9 +91,8 @@ function restoreSnapshot() {
         url: config.servicesUrl + '/snapshot-restore',
         data: JSON.stringify({snapshotName: snapshotName}),
         contentType: 'application/json; charset=utf-8'
-    }).always(function () {
+    }).done(handleResultError).fail(handleAjaxError).always(function () {
         hideDialog(infoDialog);
-        //TODO Check success & error
         router.setState('snapshots');
     });
 }
@@ -106,14 +103,15 @@ function retrieveSnapshots() {
         url: config.servicesUrl + '/snapshot-list'
     }).done(function (result) {
         snapshotsTable.body.clear();
-        //TODO Check success & error
-        result.success.forEach((snapshot) => {
-            snapshotsTable.body.createRow().
-                addCell(snapshot.name).
-                addCell(toLocalDateTimeFormat(new Date(snapshot.timestamp))).
-                setAttribute('snapshot', snapshot.name);
-        });
-    }).always(function () {
+        if (handleResultError(result)) {
+            result.success.forEach((snapshot) => {
+                snapshotsTable.body.createRow().
+                    addCell(snapshot.name).
+                    addCell(toLocalDateTimeFormat(new Date(snapshot.timestamp))).
+                    setAttribute('snapshot', snapshot.name);
+            });
+        }
+    }).fail(handleAjaxError).always(function () {
         hideDialog(infoDialog);
     });
 }
