@@ -13,3 +13,4 @@ A widget is also included to allow to export content directly from the Content s
 | 1.0.1 | 6.7.3 | [Download](https://dl.bintray.com/rcd-systems/rcd-repo/systems/rcd/enonic/datatoolbox/1.0.1/datatoolbox-1.0.1.jar) |
 | 1.0.2 | 6.7.3 | [Download](https://dl.bintray.com/rcd-systems/rcd-repo/systems/rcd/enonic/datatoolbox/1.0.2/datatoolbox-1.0.2.jar) |
 | 1.0.3 | 6.7.3 | [Download](https://dl.bintray.com/rcd-systems/rcd-repo/systems/rcd/enonic/datatoolbox/1.0.3/datatoolbox-1.0.3.jar) |
+| 1.0.4 | 6.7.3 | [Download](https://dl.bintray.com/rcd-systems/rcd-repo/systems/rcd/enonic/datatoolbox/1.0.4/datatoolbox-1.0.4.jar) |
