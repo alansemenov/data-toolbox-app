@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.zip.ZipEntry;
 
 import com.google.common.io.ByteSource;
 
@@ -165,7 +167,9 @@ public class RcdDumpScriptBean
         try (TemporaryFileOutputStream tmp = new TemporaryFileOutputStream( exportArchivePath.toFile() ))
         {
             dumpArchiveByteSource.copyTo( tmp );
-            RcdZipService.unzip( exportArchivePath, getDumpDirectoryPath() );
+
+            Predicate<ZipEntry> filter = zipEntry -> !zipEntry.getName().startsWith( "__MACOSX/" );
+            RcdZipService.unzip( exportArchivePath, getDumpDirectoryPath(), filter );
         }
     }
 
