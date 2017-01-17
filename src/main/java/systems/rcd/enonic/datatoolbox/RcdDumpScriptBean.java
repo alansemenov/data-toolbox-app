@@ -24,10 +24,13 @@ import com.enonic.xp.export.ExportService;
 import com.enonic.xp.export.ImportNodesParams;
 import com.enonic.xp.home.HomeDir;
 import com.enonic.xp.node.NodePath;
+import com.enonic.xp.repository.CreateRepositoryParams;
+import com.enonic.xp.repository.NodeRepositoryService;
 import com.enonic.xp.repository.Repository;
 import com.enonic.xp.repository.RepositoryId;
 import com.enonic.xp.repository.RepositoryService;
 import com.enonic.xp.script.bean.BeanContext;
+import com.enonic.xp.security.SystemConstants;
 import com.enonic.xp.vfs.VirtualFiles;
 
 public class RcdDumpScriptBean
@@ -37,11 +40,14 @@ public class RcdDumpScriptBean
 
     private Supplier<RepositoryService> repositoryServiceSupplier;
 
+    private Supplier<NodeRepositoryService> nodeRepositoryServiceSupplier;
+
     @Override
     public void initialize( final BeanContext context )
     {
         exportServiceSupplier = context.getService( ExportService.class );
         repositoryServiceSupplier = context.getService( RepositoryService.class );
+        nodeRepositoryServiceSupplier = context.getService( NodeRepositoryService.class );
     }
 
     public String list()
@@ -120,22 +126,53 @@ public class RcdDumpScriptBean
 
     private void load( final String dumpName )
     {
-        load( dumpName, "cms-repo", "draft" );
-        load( dumpName, "cms-repo", "master" );
-        load( dumpName, "system-repo", "master" );
+        load( dumpName, SystemConstants.SYSTEM_REPO.getId(), SystemConstants.BRANCH_SYSTEM );
+        this.repositoryServiceSupplier.get().invalidateAll();
+
+        for ( Repository repository : repositoryServiceSupplier.get().list() )
+        {
+            initializeRepo( repository );
+            for ( Branch branch : repository.getBranches() )
+            {
+                if ( !isSystemRepoMaster( repository, branch ) )
+                {
+                    load( dumpName, repository.getId(), branch );
+                }
+            }
+        }
     }
 
-    private void load( final String dumpName, final String repositoryName, final String branchName )
+    private void initializeRepo( final Repository repository )
+    {
+        if ( !this.nodeRepositoryServiceSupplier.get().isInitialized( repository.getId() ) )
+        {
+            final CreateRepositoryParams createRepositoryParams = CreateRepositoryParams.create().
+                repositoryId( repository.getId() ).
+                repositorySettings( repository.getSettings() ).
+                build();
+            this.nodeRepositoryServiceSupplier.get().create( createRepositoryParams );
+        }
+    }
+
+    private boolean isSystemRepoMaster( final Repository repository, final Branch branch )
+    {
+        return SystemConstants.SYSTEM_REPO.equals( repository ) && SystemConstants.BRANCH_SYSTEM.equals( branch );
+    }
+
+    private void load( final String dumpName, final RepositoryId repositoryId, final Branch branch )
     {
         ContextBuilder.from( ContextAccessor.current() ).
-            repositoryId( RepositoryId.from( repositoryName ) ).
-            branch( Branch.from( branchName ) ).
+            repositoryId( repositoryId ).
+            branch( branch ).
             build().
             callWith( () -> {
+                final Path sourcePath = getDumpDirectoryPath().
+                    resolve( dumpName ).
+                    resolve( repositoryId.toString() ).
+                    resolve( branch.getValue() );
                 final ImportNodesParams importNodesParams = ImportNodesParams.create().
                     targetNodePath( NodePath.ROOT ).
-                    source(
-                        VirtualFiles.from( getDumpDirectoryPath().resolve( dumpName ).resolve( repositoryName ).resolve( branchName ) ) ).
+                    source( VirtualFiles.from( sourcePath ) ).
                     dryRun( false ).
                     includeNodeIds( true ).
                     includePermissions( true ).
