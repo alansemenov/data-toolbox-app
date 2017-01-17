@@ -24,7 +24,9 @@ import com.enonic.xp.export.ExportService;
 import com.enonic.xp.export.ImportNodesParams;
 import com.enonic.xp.home.HomeDir;
 import com.enonic.xp.node.NodePath;
+import com.enonic.xp.repository.Repository;
 import com.enonic.xp.repository.RepositoryId;
+import com.enonic.xp.repository.RepositoryService;
 import com.enonic.xp.script.bean.BeanContext;
 import com.enonic.xp.vfs.VirtualFiles;
 
@@ -33,10 +35,13 @@ public class RcdDumpScriptBean
 {
     private Supplier<ExportService> exportServiceSupplier;
 
+    private Supplier<RepositoryService> repositoryServiceSupplier;
+
     @Override
     public void initialize( final BeanContext context )
     {
         exportServiceSupplier = context.getService( ExportService.class );
+        repositoryServiceSupplier = context.getService( RepositoryService.class );
     }
 
     public String list()
@@ -65,25 +70,33 @@ public class RcdDumpScriptBean
     public String create( final String dumpName )
     {
         return runSafely( () -> {
-            create( dumpName, "cms-repo", "draft" );
-            create( dumpName, "cms-repo", "master" );
-            create( dumpName, "system-repo", "master" );
+            for ( Repository repository : repositoryServiceSupplier.get().list() )
+            {
+                for ( Branch branch : repository.getBranches() )
+                {
+                    create( dumpName, repository.getId(), branch );
+                }
+            }
             return createSuccessResult();
         }, "Error while creating dump" );
     }
 
-    private void create( final String dumpName, final String repositoryName, final String branchName )
+    private void create( final String dumpName, final RepositoryId repositoryId, final Branch branch )
     {
         ContextBuilder.from( ContextAccessor.current() ).
-            repositoryId( RepositoryId.from( repositoryName ) ).
-            branch( Branch.from( branchName ) ).
+            repositoryId( repositoryId ).
+            branch( branch ).
             build().
             callWith( () -> {
+                final String targetDirectoryPath = getDumpDirectoryPath().
+                    resolve( dumpName ).
+                    resolve( repositoryId.toString() ).
+                    resolve( branch.getValue() ).
+                    toString();
                 final ExportNodesParams exportNodesParams = ExportNodesParams.create().
                     sourceNodePath( NodePath.ROOT ).
                     rootDirectory( getDumpDirectoryPath().resolve( dumpName ).toString() ).
-                    targetDirectory(
-                        getDumpDirectoryPath().resolve( dumpName ).resolve( repositoryName ).resolve( branchName ).toString() ).
+                    targetDirectory( targetDirectoryPath ).
                     dryRun( false ).
                     includeNodeIds( true ).
                     build();
