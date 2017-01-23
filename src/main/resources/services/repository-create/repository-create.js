@@ -1,10 +1,30 @@
-exports.post = function (req) {
-    var bean = __.newBean('systems.rcd.enonic.datatoolbox.RcdRepositoryScriptBean');
-    var body = JSON.parse(req.body);
-    var repositoryName = body.repositoryName;
+var repoLib = require('/lib/xp/repo');
 
+exports.post = function (req) {
+    var repositoryName = JSON.parse(req.body).repositoryName;
+
+    var result = runSafely(createRepository, repositoryName);
     return {
         contentType: 'application/json',
-        body: bean.create(repositoryName)
-    }
+        body: result
+    };
 };
+
+function createRepository(repositoryName) {
+    repoLib.create({
+        id: repositoryName
+    });
+    return {
+        success: true
+    };
+}
+
+function runSafely(runnable, parameter) {
+    try {
+        return runnable(parameter);
+    } catch (e) {
+        return {
+            error: 'Error while creating repository: ' + e.message
+        }
+    }
+}

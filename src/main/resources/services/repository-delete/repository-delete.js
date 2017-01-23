@@ -14,13 +14,7 @@ exports.post = function (req) {
     return {
         contentType: 'application/json',
         body: result
-    }
-
-
-    return {
-        contentType: 'application/json',
-        body: bean.delete(repositoryNames)
-    }
+    };
 };
 
 function isProtectedAgainstDeletion(repositoryName) {
@@ -43,7 +37,7 @@ function runSafely(runnable, parameter) {
         return runnable(parameter);
     } catch (e) {
         return {
-            error: 'Error while deleting repositories'
+            error: 'Error while deleting repositories: ' + e.message
         }
     }
 }

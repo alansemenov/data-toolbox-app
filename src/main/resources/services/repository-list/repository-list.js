@@ -24,7 +24,7 @@ function runSafely(runnable) {
         return runnable();
     } catch (e) {
         return {
-            error: 'Error while listing repositories'
+            error: 'Error while listing repositories: ' + e.message
         }
     }
 }
