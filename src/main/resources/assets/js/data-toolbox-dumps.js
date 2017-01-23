@@ -9,7 +9,8 @@ function createDumpsTable() {
 function createDumpsView(dumpsTable) {
     //Creates the dump view
     var dumpsViewPathElements = [{name: 'Data Toolbox', callback: () => router.setState()}, {name: 'Dumps'}];
-    var dumpsViewDescription = 'A dump is an export of your data (contents, users, groups and roles) from your Enonic XP server to a serialized format.' +
+    var dumpsViewDescription = 'A dump is an export of your data (contents, users, groups and roles) from your Enonic XP server to a serialized format. ' +
+                               'While the export/import focuses on a given content, the dump/load is used to export an entire system (all repositories and branches). ' +
                                'This makes dumps well suited for migrating your data to another installation. ' +
                                'Warning: The current dump mechanism does not export old versions of your data. You will loose the version history of your contents. ' +
                                'See <a href="http://xp.readthedocs.io/en/stable/operations/export.html">Export and Import</a> for more information.';
