@@ -1,17 +1,20 @@
 package systems.rcd.enonic.datatoolbox;
 
+import java.util.Arrays;
 import java.util.function.Supplier;
 
 import systems.rcd.fwk.core.format.json.RcdJsonService;
 import systems.rcd.fwk.core.format.json.data.RcdJsonArray;
 import systems.rcd.fwk.core.format.json.data.RcdJsonObject;
 
+import com.enonic.xp.content.ContentConstants;
 import com.enonic.xp.repository.CreateRepositoryParams;
 import com.enonic.xp.repository.DeleteRepositoryParams;
 import com.enonic.xp.repository.Repository;
 import com.enonic.xp.repository.RepositoryId;
 import com.enonic.xp.repository.RepositoryService;
 import com.enonic.xp.script.bean.BeanContext;
+import com.enonic.xp.security.SystemConstants;
 
 public class RcdRepositoryScriptBean
     extends RcdScriptBean
@@ -56,15 +59,27 @@ public class RcdRepositoryScriptBean
     public String delete( final String... repositoryNames )
     {
         return runSafely( () -> {
-            for ( String repositoryId : repositoryNames )
+
+            if ( containsProtectedRepository( repositoryNames ) )
             {
-                final DeleteRepositoryParams deleteRepositoryParams = DeleteRepositoryParams.from( repositoryId );
+                return createErrorResult( "The repositories [" + SystemConstants.SYSTEM_REPO.getId() + "] and [" +
+                                              ContentConstants.CONTENT_REPO.getId() + "] cannot be deleted" );
+            }
+            for ( String repositoryName : repositoryNames )
+            {
+                final DeleteRepositoryParams deleteRepositoryParams = DeleteRepositoryParams.from( repositoryName );
                 repositoryServiceSupplier.get().
                     deleteRepository( deleteRepositoryParams );
-
             }
 
             return createSuccessResult();
         }, "Error while deleting repositories" );
+    }
+
+    private boolean containsProtectedRepository( String[] repositoryNames )
+    {
+        return Arrays.stream( repositoryNames ).
+            anyMatch( ( repositoryName ) -> SystemConstants.SYSTEM_REPO.getId().toString().equals( repositoryName ) ||
+                ContentConstants.CONTENT_REPO.getId().toString().equals( repositoryName ) );
     }
 }
