@@ -1,8 +1,30 @@
-exports.get = function () {
-    var bean = __.newBean('systems.rcd.enonic.datatoolbox.RcdRepositoryScriptBean');
+var repoLib = require('/lib/xp/repo');
 
+exports.get = function () {
+    var result = runSafely(listRepositories);
     return {
         contentType: 'application/json',
-        body: bean.list()
+        body: result
     }
 };
+
+function listRepositories() {
+    return {
+        success: repoLib.list().
+            map(function (repo) {
+                return {
+                    name: repo.id
+                };
+            })
+    };
+}
+
+function runSafely(runnable) {
+    try {
+        return runnable();
+    } catch (e) {
+        return {
+            error: 'Error while listing repositories'
+        }
+    }
+}
