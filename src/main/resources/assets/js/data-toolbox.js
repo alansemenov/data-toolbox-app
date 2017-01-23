@@ -10,10 +10,13 @@ var exportsTable = createExportsTable();
 var exportsView = createExportsView(exportsTable);
 var snapshotsTable = createSnapshotsTable();
 var snapshotsView = createSnapshotsView(snapshotsTable);
+var repositoriesTable = createRepositoriesTable();
+var repositoriesView = createRepositoriesView(repositoriesTable);
 main.content.addView(presentationView).
     addView(dumpsView).
     addView(exportsView).
-    addView(snapshotsView);
+    addView(snapshotsView).
+    addView(repositoriesView);
 
 //Appends the header and main elements
 header.show(document.body);
@@ -42,6 +45,12 @@ router.addRoute(snapshotsView.viewId, () => {
     main.nav.selectLink('snapshots');
 
     main.content.displayView(snapshotsView.viewId);
+});
+router.addRoute(repositoriesView.viewId, () => {
+    retrieveRepositories();
+    main.nav.selectLink('repositories');
+
+    main.content.displayView(repositoriesView.viewId);
 });
 router.setState(router.getCurrentState());
 
