@@ -10,7 +10,7 @@ function createExportsView(exportsTable) {
     var exportsViewPathElements = [{name: 'Data Toolbox', callback: () => router.setState()}, {name: 'Exports'}];
     var exportsViewDescription = 'An export is a serialization of a given content/node. ' +
                                  'While the export/import focuses on a given content, the dump/load is used to export an entire system (all repositories and branches). ' +
-                                 'This makes exports well suited for transfering a specific to another installation. ' +
+                                 'This makes exports well suited for transfering a specific content to another installation. ' +
                                  'Warning: The current export mechanism does not export old versions of your data. You will loose the version history of your contents. ' +
                                  'See <a href="http://xp.readthedocs.io/en/stable/operations/export.html">Export and Import</a> for more information.';
     var exportsView = new RcdMaterialView('exports', exportsViewPathElements, exportsViewDescription).init();
