@@ -111,5 +111,6 @@ function retrieveBranches() {
 
 function refreshBranchesViewTitle(view) {
     var repositoryName = router.getParameters().repo;
-    view.setPathElements([{name: 'Data Toolbox', callback: () => router.setState()}, {name: repositoryName}]);
+    view.setPathElements([{name: 'Data Toolbox', callback: () => router.setState()},
+        {name: 'Repositories', callback: () => router.setState('repositories')}, {name: repositoryName}]);
 }
