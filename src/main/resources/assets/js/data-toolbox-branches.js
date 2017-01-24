@@ -69,7 +69,10 @@ function doDeleteBranches() {
     $.ajax({
         method: 'POST',
         url: config.servicesUrl + '/branch-delete',
-        data: JSON.stringify({branchNames: branchNames}),
+        data: JSON.stringify({
+            repositoryName: router.getParameters().repo,
+            branchNames: branchNames
+        }),
         contentType: 'application/json; charset=utf-8'
     }).done(handleResultError).fail(handleAjaxError).always(() => {
         hideDialog(infoDialog);
