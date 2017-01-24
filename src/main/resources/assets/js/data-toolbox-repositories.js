@@ -91,7 +91,7 @@ function retrieveRepositories() {
                         setAttribute('repository', repository.name).
                         addClass('clickable').
                         setClickListener(() => {
-                            router.setState('branches');
+                            router.setState('branches?repo=' + repository.name);
                         });
                     row.checkbox.addClickListener((event) => event.stopPropagation());
                 });
