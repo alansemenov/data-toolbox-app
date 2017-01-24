@@ -86,9 +86,14 @@ function retrieveRepositories() {
             result.success.
                 sort((repository1, repository2) => repository1.name - repository2.name).
                 forEach((repository) => {
-                    repositoriesTable.body.createRow().
+                    var row = repositoriesTable.body.createRow().
                         addCell(repository.name).
-                        setAttribute('repository', repository.name);
+                        setAttribute('repository', repository.name).
+                        addClass('clickable').
+                        setClickListener(() => {
+                            router.setState('branches');
+                        });
+                    row.checkbox.addClickListener((event) => event.stopPropagation());
                 });
         }
     }).fail(handleAjaxError).always(() => {
