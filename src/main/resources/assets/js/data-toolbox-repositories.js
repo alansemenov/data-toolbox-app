@@ -7,8 +7,7 @@ function createRepositoriesTable() {
 function createRepositoriesView(repositoriesTable) {
     //Creates the node view
     var repositoriesViewPathElements = [{name: 'Data Toolbox', callback: () => router.setState()}, {name: 'Repositories'}];
-    var repositoriesViewDescription = 'TBD.' +
-                                      'See <a href="http://xp.readthedocs.io/en/stable/developer/node-domain/index.html">Export and Import</a> for more information.';
+    var repositoriesViewDescription = 'TODO: Define repositories.';
     var repositoriesView = new RcdMaterialView('repositories', repositoriesViewPathElements, repositoriesViewDescription).init();
 
     var createRepositoryIcon = new RcdMaterialActionIcon('add_circle', createRepository).init().setTooltip('Create repository');

@@ -7,8 +7,7 @@ function createBranchesTable() {
 function createBranchesView(branchesTable) {
     //Creates the node view
     var branchesViewPathElements = [{name: 'Data Toolbox', callback: () => router.setState()}, {name: 'Branches'}];
-    var branchesViewDescription = 'TBD.' +
-                                  'See <a href="http://xp.readthedocs.io/en/stable/developer/node-domain/index.html">Export and Import</a> for more information.';
+    var branchesViewDescription = 'TODO: Define branches.';
     var branchesView = new RcdMaterialView('branches', branchesViewPathElements, branchesViewDescription).init();
 
     var createBranchIcon = new RcdMaterialActionIcon('add_circle', createBranch).init().setTooltip('Create branch');
