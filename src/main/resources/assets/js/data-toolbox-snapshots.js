@@ -59,7 +59,7 @@ function doCreateSnapshot(snapshotName) {
         contentType: 'application/json; charset=utf-8'
     }).done(handleResultError).fail(handleAjaxError).always(() => {
         hideDialog(infoDialog);
-        router.setState('snapshots');
+        router.refreshState();
     });
 }
 
@@ -78,7 +78,7 @@ function doDeleteSnapshots() {
         contentType: 'application/json; charset=utf-8'
     }).done(handleResultError).fail(handleAjaxError).always(function () {
         hideDialog(infoDialog);
-        router.setState('snapshots');
+        router.refreshState();
     });
 }
 
@@ -93,7 +93,7 @@ function restoreSnapshot() {
         contentType: 'application/json; charset=utf-8'
     }).done(handleResultError).fail(handleAjaxError).always(function () {
         hideDialog(infoDialog);
-        router.setState('snapshots');
+        router.refreshState();
     });
 }
 

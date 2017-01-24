@@ -32,7 +32,7 @@ function createBranchesView(branchesTable) {
 }
 
 function createBranch() {
-    var defaultBranchName = '-' + toLocalDateTimeFormat(new Date(), '-', '-').toLowerCase();
+    var defaultBranchName = 'branch-' + toLocalDateTimeFormat(new Date(), '-', '-').toLowerCase();
     showInputDialog({
         title: "Create branch",
         ok: "CREATE",
@@ -49,12 +49,13 @@ function doCreateBranch(branchName) {
         method: 'POST',
         url: config.servicesUrl + '/branch-create',
         data: JSON.stringify({
+            repositoryName: router.getParameters().repo,
             branchName: branchName || ('branch-' + toLocalDateTimeFormat(new Date(), '-', '-').toLowerCase())
         }),
         contentType: 'application/json; charset=utf-8'
     }).done(handleResultError).fail(handleAjaxError).always(() => {
         hideDialog(infoDialog);
-        router.setState('branches');
+        router.refreshState();
     });
 }
 
@@ -72,7 +73,7 @@ function doDeleteBranches() {
         contentType: 'application/json; charset=utf-8'
     }).done(handleResultError).fail(handleAjaxError).always(() => {
         hideDialog(infoDialog);
-        router.setState('branches');
+        router.refreshState();
     });
 }
 

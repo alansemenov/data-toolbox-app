@@ -52,7 +52,7 @@ function doDeleteExports() {
         contentType: 'application/json; charset=utf-8'
     }).done(handleResultError).fail(handleAjaxError).always(() => {
         hideDialog(infoDialog);
-        router.setState('exports');
+        router.refreshState();
     });
 }
 
@@ -121,6 +121,6 @@ function doUploadExport() {
         processData: false
     }).done(handleResultError).fail(handleAjaxError).always(() => {
         hideDialog(infoDialog);
-        router.setState('exports');
+        router.refreshState();
     });
 }

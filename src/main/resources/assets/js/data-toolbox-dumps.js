@@ -68,7 +68,7 @@ function doCreateDump(dumpName) {
         contentType: 'application/json; charset=utf-8'
     }).done(handleResultError).fail(handleAjaxError).always(() => {
         hideDialog(infoDialog);
-        router.setState('dumps');
+        router.refreshState();
     });
 }
 
@@ -82,7 +82,7 @@ function loadDumps() {
         contentType: 'application/json; charset=utf-8'
     }).done(handleResultError).fail(handleAjaxError).always(() => {
         hideDialog(infoDialog);
-        router.setState('dumps');
+        router.refreshState();
     });
 }
 
@@ -100,7 +100,7 @@ function doDeleteDumps() {
         contentType: 'application/json; charset=utf-8'
     }).done(handleResultError).fail(handleAjaxError).always(() => {
         hideDialog(infoDialog);
-        router.setState('dumps');
+        router.refreshState();
     });
 }
 
@@ -169,6 +169,6 @@ function doUploadDump() {
         processData: false
     }).done(handleResultError).fail(handleAjaxError).always(() => {
         hideDialog(infoDialog);
-        router.setState('dumps');
+        router.refreshState();
     });
 }

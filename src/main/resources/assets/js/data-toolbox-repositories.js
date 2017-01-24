@@ -54,7 +54,7 @@ function doCreateRepository(repositoryName) {
         contentType: 'application/json; charset=utf-8'
     }).done(handleResultError).fail(handleAjaxError).always(() => {
         hideDialog(infoDialog);
-        router.setState('repositories');
+        router.refreshState();
     });
 }
 
@@ -72,7 +72,7 @@ function doDeleteRepositories() {
         contentType: 'application/json; charset=utf-8'
     }).done(handleResultError).fail(handleAjaxError).always(() => {
         hideDialog(infoDialog);
-        router.setState('repositories');
+        router.refreshState();
     });
 }
 
