@@ -108,3 +108,8 @@ function retrieveBranches() {
         hideDialog(infoDialog);
     });
 }
+
+function refreshBranchesViewTitle(view) {
+    var repositoryName = router.getParameters().repo;
+    view.setPathElements([{name: 'Data Toolbox', callback: () => router.setState()}, {name: repositoryName}]);
+}

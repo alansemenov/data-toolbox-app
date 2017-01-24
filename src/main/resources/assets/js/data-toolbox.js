@@ -53,6 +53,7 @@ router.addRoute(repositoriesView.viewId, () => {
 });
 router.addRoute(branchesView.viewId, () => {
     retrieveBranches();
+    refreshBranchesViewTitle(branchesView);
     main.content.displayView(branchesView.viewId);
 });
 router.setState(router.getCurrentState());
