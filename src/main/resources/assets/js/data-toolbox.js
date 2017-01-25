@@ -12,14 +12,17 @@ var snapshotsTable = createSnapshotsTable();
 var snapshotsView = createSnapshotsView(snapshotsTable);
 var repositoriesTable = createRepositoriesTable();
 var repositoriesView = createRepositoriesView(repositoriesTable);
-var branchesTable = createBranchesTable()
+var branchesTable = createBranchesTable();
 var branchesView = createBranchesView(branchesTable);
+var nodesTable = createNodesTable();
+var nodesView = createNodesView(nodesTable);
 main.content.addView(presentationView).
     addView(dumpsView).
     addView(exportsView).
     addView(snapshotsView).
     addView(repositoriesView).
-    addView(branchesView);
+    addView(branchesView).
+    addView(nodesView);
 
 //Appends the header and main elements
 header.show(document.body);
@@ -55,6 +58,11 @@ router.addRoute(branchesView.viewId, () => {
     retrieveBranches();
     refreshBranchesViewTitle(branchesView);
     main.content.displayView(branchesView.viewId);
+});
+router.addRoute(nodesView.viewId, () => {
+    retrieveNodes();
+    refreshNodesViewTitle(nodesView);
+    main.content.displayView(nodesView.viewId);
 });
 router.setState(router.getCurrentState());
 
