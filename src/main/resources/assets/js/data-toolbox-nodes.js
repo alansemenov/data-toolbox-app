@@ -1,6 +1,7 @@
 function createNodesTable() {
     var nodesTable = new RcdMaterialTable().init();
-    nodesTable.header.addCell('Node ID').addCell('Node name');
+    nodesTable.header.addCell('Node name').
+        addCell('Node ID');
     return nodesTable;
 }
 
@@ -101,8 +102,8 @@ function retrieveNodes() {
                 sort((node1, node2) => node1.name - node2.name).
                 forEach((node) => {
                     var row = nodesTable.body.createRow().
-                        addCell(node._id).
                         addCell(node._name).
+                        addCell(node._id).
                         setAttribute('node', node._id).
                         addClass('clickable').
                         setClickListener(() => {
@@ -122,6 +123,6 @@ function refreshNodesViewTitle(view) {
     var branchName = router.getParameters().branch;
     view.setPathElements([{name: 'Data Toolbox', callback: () => router.setState()},
         {name: 'Repositories', callback: () => router.setState('repositories')},
-        {name: repositoryName, callback: () => router.setState('repositories?repo=' + repositoryName)},
+        {name: repositoryName, callback: () => router.setState('branches?repo=' + repositoryName)},
         {name: branchName}]); //TODO 
 }
