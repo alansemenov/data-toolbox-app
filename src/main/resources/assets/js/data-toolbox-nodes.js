@@ -121,8 +121,36 @@ function retrieveNodes() {
 function refreshNodesViewTitle(view) {
     var repositoryName = router.getParameters().repo;
     var branchName = router.getParameters().branch;
-    view.setPathElements([{name: 'Data Toolbox', callback: () => router.setState()},
+    var path = router.getParameters().path;
+
+    var pathElements = [{name: 'Data Toolbox', callback: () => router.setState()},
         {name: 'Repositories', callback: () => router.setState('repositories')},
         {name: repositoryName, callback: () => router.setState('branches?repo=' + repositoryName)},
-        {name: branchName}]); //TODO 
+        {name: branchName, callback: path && (() => router.setState('nodes?repo=' + repositoryName + '&branch=' + branchName))}];
+
+    if (path) {
+        pathElements.push({
+            name: 'root',
+            callback: path !== '/'
+                ? (() => router.setState('nodes?repo=' + repositoryName + '&branch=' + branchName + '&path=/'))
+                : undefined
+        });
+
+
+        if (path !== '/') {
+            var currentPath = '';
+            path.substring(1).split('/').forEach((subPathElement, index, array) => {
+                currentPath += '/' + subPathElement;
+                pathElements.push({
+                    name: subPathElement,
+                    callback: index < array.length - 1
+                        ? (() => router.setState('nodes?repo=' + repositoryName + '&branch=' + branchName + '&path=' + currentPath))
+                        : undefined
+                });
+
+            });
+        }
+    }
+
+    view.setPathElements(pathElements);
 }
