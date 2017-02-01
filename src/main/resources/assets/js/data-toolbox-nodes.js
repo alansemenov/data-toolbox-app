@@ -79,8 +79,7 @@ function retrieveNodeInfo() {
     }).done(function (result) {
         console.log(result);
         if (handleResultError(result)) {
-            showConfirmationDialog(JSON.stringify(result.success, null, 2), () => {
-            });
+            showDetailsDialog({text: JSON.stringify(result.success, null, 2), title: 'Node [' + nodeKey + ']'});
         }
     }).fail(handleAjaxError).always(() => {
         hideDialog(infoDialog);
