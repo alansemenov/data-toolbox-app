@@ -12,17 +12,20 @@ function createNodesView(nodesTable) {
     var nodesView = new RcdMaterialView('nodes', nodesViewPathElements, nodesViewDescription).init();
 
     var createNodeIcon = new RcdMaterialActionIcon('add_circle', createNode).init().setTooltip('Create node');
+    var retrieveNodeInfoIcon = new RcdMaterialActionIcon('info', retrieveNodeInfo).init().setTooltip('Retrieve node info');
     var deleteNodeIcon = new RcdMaterialActionIcon('delete', deleteNodes).init().setTooltip('Delete node').enable(false);
 
     nodesTable.addSelectionListener(() => {
         var nbRowsSelected = nodesTable.getSelectedRows().length;
         createNodeIcon.enable(nbRowsSelected == 0);
+        retrieveNodeInfoIcon.enable(nbRowsSelected == 1);
         deleteNodeIcon.enable(nbRowsSelected > 0);
     });
 
     var nodesCard = new RcdMaterialCard('Nodes').
         init().
         addIcon(createNodeIcon).
+        addIcon(retrieveNodeInfoIcon).
         addIcon(deleteNodeIcon).
         addContent(nodesTable);
 
@@ -58,6 +61,29 @@ function doCreateNode(nodeName) {
     }).done(handleResultError).fail(handleAjaxError).always(() => {
         hideDialog(infoDialog);
         router.refreshState();
+    });
+}
+
+function retrieveNodeInfo() {
+    var infoDialog = showInfoDialog("Retrieving node info...");
+    var nodeKey = nodesTable.getSelectedRows()[0].attributes['node'];
+    return $.ajax({
+        method: 'POST',
+        url: config.servicesUrl + '/node-get',
+        data: JSON.stringify({
+            repositoryName: router.getParameters().repo,
+            branchName: router.getParameters().branch,
+            key: nodeKey
+        }),
+        contentType: 'application/json; charset=utf-8'
+    }).done(function (result) {
+        console.log(result);
+        if (handleResultError(result)) {
+            showConfirmationDialog(JSON.stringify(result.success, null, 2), () => {
+            });
+        }
+    }).fail(handleAjaxError).always(() => {
+        hideDialog(infoDialog);
     });
 }
 

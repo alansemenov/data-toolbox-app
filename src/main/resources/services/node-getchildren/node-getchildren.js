@@ -40,7 +40,7 @@ function runSafely(runnable, parameters) {
         return runnable.apply(null, parameters);
     } catch (e) {
         return {
-            error: 'Error while creating repository: ' + e.message
+            error: 'Error while getitng node children: ' + e.message
         }
     }
 }
