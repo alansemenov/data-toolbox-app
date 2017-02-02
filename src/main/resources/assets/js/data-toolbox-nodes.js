@@ -138,10 +138,11 @@ function refreshNodesViewTitle(view) {
             var currentPath = '';
             path.substring(1).split('/').forEach((subPathElement, index, array) => {
                 currentPath += '/' + subPathElement;
+                var constCurrentPath = currentPath;
                 pathElements.push({
                     name: subPathElement,
                     callback: index < array.length - 1
-                        ? (() => router.setState('nodes?repo=' + repositoryName + '&branch=' + branchName + '&path=' + currentPath))
+                        ? (() => router.setState('nodes?repo=' + repositoryName + '&branch=' + branchName + '&path=' + constCurrentPath))
                         : undefined
                 });
 
