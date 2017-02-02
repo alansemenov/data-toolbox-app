@@ -11,7 +11,6 @@ function createNodesView(nodesTable) {
     var nodesViewDescription = 'TODO: Define nodes.';
     var nodesView = new RcdMaterialView('nodes', nodesViewPathElements, nodesViewDescription).init();
 
-    var retrieveNodeInfoIcon = new RcdMaterialActionIcon('info', retrieveNodeInfo).init().setTooltip('Retrieve node info');
     var deleteNodeIcon = new RcdMaterialActionIcon('delete', deleteNodes).init().setTooltip('Delete node').enable(false);
 
     nodesTable.addSelectionListener(() => {
@@ -21,7 +20,6 @@ function createNodesView(nodesTable) {
 
     var nodesCard = new RcdMaterialCard('Nodes').
         init().
-        addIcon(retrieveNodeInfoIcon).
         addIcon(deleteNodeIcon).
         addContent(nodesTable);
 
