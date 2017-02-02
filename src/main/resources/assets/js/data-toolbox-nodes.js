@@ -30,9 +30,8 @@ function createNodesView(nodesTable) {
     return nodesView;
 }
 
-function retrieveNodeInfo() {
+function retrieveNodeInfo(nodeKey) {
     var infoDialog = showInfoDialog("Retrieving node info...");
-    var nodeKey = nodesTable.getSelectedRows()[0].attributes['node'];
     return $.ajax({
         method: 'POST',
         url: config.servicesUrl + '/node-get',
@@ -93,16 +92,23 @@ function retrieveNodes() {
             result.success.
                 sort((node1, node2) => node1.name - node2.name).
                 forEach((node) => {
+
+                    var retrieveNodeInfoIcon = new RcdMaterialActionIcon('info', () => retrieveNodeInfo(node._id)).
+                        init().
+                        setTooltip('Retrieve node info');
                     var row = nodesTable.body.createRow().
                         addCell(node._name).
                         addCell(node._id).
+                        addIcon(retrieveNodeInfoIcon).
                         setAttribute('node', node._id).
                         addClass('clickable').
                         setClickListener(() => {
                             router.setState('nodes?repo=' + router.getParameters().repo + '&branch=' + router.getParameters().branch +
                                             '&path=' + node._path + '&start=0&count=50');
                         });
-                    row.checkbox.addClickListener((event) => event.stopPropagation());
+                    row.checkbox.addClickListener((event) => event.stopPropagation()); //TODO
+                    row.icons.addClickListener((event) => event.stopPropagation()); //TODO
+
                 });
         }
     }).fail(handleAjaxError).always(() => {
