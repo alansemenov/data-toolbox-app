@@ -29,6 +29,9 @@ function getChildren(repositoryName, branchName, parentPath) {
         };
     } else {
         var rootNode = repoConnection.get('/');
+        if (rootNode) {
+            rootNode._name = "[root]"
+        }
         return {
             success: rootNode ? [rootNode] : []
         };
