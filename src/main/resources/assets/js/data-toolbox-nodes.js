@@ -1,7 +1,8 @@
 function createNodesTable() {
     var nodesTable = new RcdMaterialTable().init();
     nodesTable.header.addCell('Node name').
-        addCell('Node ID');
+        addCell('Node ID').
+        addCell('');
     return nodesTable;
 }
 
