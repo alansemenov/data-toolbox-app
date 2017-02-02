@@ -82,7 +82,9 @@ function retrieveNodes() {
         data: JSON.stringify({
             repositoryName: router.getParameters().repo,
             branchName: router.getParameters().branch,
-            parentPath: router.getParameters().path
+            parentPath: router.getParameters().path,
+            start: router.getParameters().start,
+            count: router.getParameters().count
         }),
         contentType: 'application/json; charset=utf-8'
     }).done(function (result) {
@@ -98,7 +100,7 @@ function retrieveNodes() {
                         addClass('clickable').
                         setClickListener(() => {
                             router.setState('nodes?repo=' + router.getParameters().repo + '&branch=' + router.getParameters().branch +
-                                            '&path=' + node._path);
+                                            '&path=' + node._path + '&start=0&count=50');
                         });
                     row.checkbox.addClickListener((event) => event.stopPropagation());
                 });

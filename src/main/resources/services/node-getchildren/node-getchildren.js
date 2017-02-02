@@ -5,15 +5,17 @@ exports.post = function (req) {
     var repositoryName = body.repositoryName;
     var branchName = body.branchName;
     var parentPath = body.parentPath;
+    var start = body.start || 0;
+    var count = body.count || 50;
 
-    var result = runSafely(getChildren, [repositoryName, branchName, parentPath]);
+    var result = runSafely(getChildren, [repositoryName, branchName, parentPath, start, count]);
     return {
         contentType: 'application/json',
         body: result
     };
 };
 
-function getChildren(repositoryName, branchName, parentPath) {
+function getChildren(repositoryName, branchName, parentPath, start, count) {
     var repoConnection = nodeLib.connect({
         repoId: repositoryName,
         branch: branchName
@@ -22,7 +24,9 @@ function getChildren(repositoryName, branchName, parentPath) {
     if (parentPath) {
         return {
             success: repoConnection.findChildren({
-                parentKey: parentPath
+                parentKey: parentPath,
+                start: start,
+                count: count
             }).hits.map(function (findChildrenResult) {
                     return repoConnection.get(findChildrenResult.id);
                 })

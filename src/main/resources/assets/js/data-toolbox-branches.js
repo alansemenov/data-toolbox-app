@@ -98,7 +98,7 @@ function retrieveBranches() {
                         setAttribute('branch', branch).
                         addClass('clickable').
                         setClickListener(() => {
-                            router.setState('nodes?repo=' + router.getParameters().repo + '&branch=' + branch);
+                            router.setState('nodes?repo=' + router.getParameters().repo + '&branch=' + branch + '&start=0&count=50');
                         });
                     row.checkbox.addClickListener((event) => event.stopPropagation());
                 });
