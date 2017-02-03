@@ -42,7 +42,11 @@ function getChildren(repositoryName, branchName, parentPath, start, count) {
             rootNode._name = "[root]"
         }
         return {
-            success: rootNode ? [rootNode] : []
+            success: {
+                hits: rootNode ? [rootNode] : [],
+                count: rootNode ? 1 : 0,
+                total: rootNode ? 1 : 0
+            }
         };
     }
 }
