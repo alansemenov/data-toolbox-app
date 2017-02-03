@@ -133,7 +133,8 @@ function retrieveNodes() {
                     row.icons.addClickListener((event) => event.stopPropagation()); //TODO
 
                 });
-            nodesTableNav.setValues(router.getParameters().start, result.success.hits.length, result.success.total);
+            nodesTableNav.setValues(router.getParameters().start ? parseInt(router.getParameters().start) : 0, result.success.hits.length,
+                result.success.total);
         }
     }).fail(handleAjaxError).always(() => {
         hideDialog(infoDialog);
