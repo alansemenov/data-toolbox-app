@@ -1,5 +1,5 @@
 var nodesTable = createNodesTable();
-var nodesTableNav = new RcdMaterialTableNav().init();
+var nodesTableNav = new RcdMaterialTableNav(navigateBefore, navigateAfter).init();
 var nodesCard = createNodesCard();
 var nodesView = createNodesView();
 
@@ -9,6 +9,24 @@ function createNodesTable() {
         addCell('Node ID').
         addCell('');
     return nodesTable;
+}
+
+function navigateBefore() {
+    navigate(false);
+}
+
+function navigateAfter() {
+    navigate(true);
+}
+
+function navigate(after) {
+    var repositoryName = router.getParameters().repo;
+    var branchName = router.getParameters().branch;
+    var path = router.getParameters().path;
+    var start = router.getParameters().start ? parseInt(router.getParameters().start) : 0;
+    var count = router.getParameters().count ? parseInt(router.getParameters().count) : 50;
+    start = after ? start + count : Math.max(0, start - count);
+    router.setState('nodes?repo=' + repositoryName + '&branch=' + branchName + '&path=' + path + '&start=' + start + '&count=' + count);
 }
 
 function createNodesCard() {
