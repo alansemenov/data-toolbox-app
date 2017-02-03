@@ -1,3 +1,8 @@
+var nodesTable = createNodesTable();
+var nodesTableNav = new RcdMaterialTableNav().init();
+var nodesCard = createNodesCard();
+var nodesView = createNodesView();
+
 function createNodesTable() {
     var nodesTable = new RcdMaterialTable().init();
     nodesTable.header.addCell('Node name').
@@ -6,27 +11,27 @@ function createNodesTable() {
     return nodesTable;
 }
 
-function createNodesView(nodesTable) {
-    //Creates the node view
-    var nodesViewPathElements = [{name: 'Data Toolbox', callback: () => router.setState()}, {name: 'Nodes'}];
-    var nodesViewDescription = 'TODO: Define nodes.';
-    var nodesView = new RcdMaterialView('nodes', nodesViewPathElements, nodesViewDescription).init();
-
+function createNodesCard() {
     var deleteNodeIcon = new RcdMaterialActionIcon('delete', deleteNodes).init().setTooltip('Delete node').enable(false);
-
     nodesTable.addSelectionListener(() => {
         var nbRowsSelected = nodesTable.getSelectedRows().length;
         deleteNodeIcon.enable(nbRowsSelected > 0);
     });
 
-    var nodesCard = new RcdMaterialCard('Nodes').
+    return new RcdMaterialCard('Nodes').
         init().
         addIcon(deleteNodeIcon).
-        addContent(nodesTable);
+        addContent(nodesTable).
+        addChild(nodesTableNav);
+}
 
-    nodesView.addChild(nodesCard);
-
-    return nodesView;
+function createNodesView() {
+    //Creates the node view
+    var nodesViewPathElements = [{name: 'Data Toolbox', callback: () => router.setState()}, {name: 'Nodes'}];
+    var nodesViewDescription = 'TODO: Define nodes.';
+    return new RcdMaterialView('nodes', nodesViewPathElements, nodesViewDescription).
+        init().
+        addChild(nodesCard);
 }
 
 function retrieveNodeInfo(nodeKey) {
@@ -88,7 +93,7 @@ function retrieveNodes() {
     }).done(function (result) {
         nodesTable.body.clear();
         if (handleResultError(result)) {
-            result.success.
+            result.success.hits.
                 sort((node1, node2) => node1.name - node2.name).
                 forEach((node) => {
 
@@ -109,6 +114,7 @@ function retrieveNodes() {
                     row.icons.addClickListener((event) => event.stopPropagation()); //TODO
 
                 });
+            nodesTableNav.setValues(router.getParameters().start, result.success.hits.length, result.success.total);
         }
     }).fail(handleAjaxError).always(() => {
         hideDialog(infoDialog);

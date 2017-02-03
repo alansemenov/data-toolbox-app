@@ -14,8 +14,6 @@ var repositoriesTable = createRepositoriesTable();
 var repositoriesView = createRepositoriesView(repositoriesTable);
 var branchesTable = createBranchesTable();
 var branchesView = createBranchesView(branchesTable);
-var nodesTable = createNodesTable();
-var nodesView = createNodesView(nodesTable);
 main.content.addView(presentationView).
     addView(dumpsView).
     addView(exportsView).

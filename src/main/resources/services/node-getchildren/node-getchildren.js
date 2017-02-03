@@ -22,14 +22,19 @@ function getChildren(repositoryName, branchName, parentPath, start, count) {
     });
 
     if (parentPath) {
+        var findChildrenResult = repoConnection.findChildren({
+            parentKey: parentPath,
+            start: start,
+            count: count
+        });
         return {
-            success: repoConnection.findChildren({
-                parentKey: parentPath,
-                start: start,
-                count: count
-            }).hits.map(function (findChildrenResult) {
+            success: {
+                hits: findChildrenResult.hits.map(function (findChildrenResult) {
                     return repoConnection.get(findChildrenResult.id);
-                })
+                }),
+                count: findChildrenResult.count,
+                total: findChildrenResult.total
+            }
         };
     } else {
         var rootNode = repoConnection.get('/');
