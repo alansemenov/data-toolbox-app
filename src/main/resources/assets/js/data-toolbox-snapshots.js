@@ -15,7 +15,7 @@ function createSnapshotsView(snapshotsTable) {
 
     var createSnapshotIcon = new RcdMaterialActionIcon('add_circle', createSnapshot).init().setTooltip('Create snapshot');
     var deleteSnapshotsIcon = new RcdMaterialActionIcon('delete', deleteSnapshots).init().setTooltip('Delete snapshot');
-    var loadSnapshotIcon = new RcdMaterialActionIcon('refresh', restoreSnapshot).init().enable(false).setTooltip('Load snapshot');
+    var loadSnapshotIcon = new RcdMaterialActionIcon('restore', restoreSnapshot).init().enable(false).setTooltip('Restore snapshot');
 
     snapshotsTable.addSelectionListener(() => {
         var nbRowsSelected = snapshotsTable.getSelectedRows().length;
