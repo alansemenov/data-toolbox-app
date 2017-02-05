@@ -31,14 +31,17 @@ function navigate(after) {
 }
 
 function createNodesCard() {
+    var exportNodeIcon = new RcdMaterialActionIcon('save', exportNode).init().setTooltip('Export node').enable(false);
     var deleteNodeIcon = new RcdMaterialActionIcon('delete', deleteNodes).init().setTooltip('Delete node').enable(false);
     nodesTable.addSelectionListener(() => {
         var nbRowsSelected = nodesTable.getSelectedRows().length;
+        exportNodeIcon.enable(nbRowsSelected == 1);
         deleteNodeIcon.enable(nbRowsSelected > 0);
     });
 
     return new RcdMaterialCard('Nodes').
         init().
+        addIcon(exportNodeIcon).
         addIcon(deleteNodeIcon).
         addContent(nodesTable).
         addChild(nodesTableNav);
@@ -74,13 +77,44 @@ function retrieveNodeInfo(nodeKey) {
     });
 }
 
+function exportNode() {
+    var nodeName = nodesTable.getSelectedRows().map((row) => row.attributes['name'])[0] || 'export';
+    var defaultExportName = nodeName + '-' + toLocalDateTimeFormat(new Date(), '-', '-');
+    showInputDialog({
+        title: "Export node",
+        ok: "EXPORT",
+        label: "Export name",
+        placeholder: defaultExportName,
+        value: defaultExportName,
+        callback: (value) => doExportNode(value || defaultExportName)
+    });
+}
+
+function doExportNode(exportName) {
+    var infoDialog = showInfoDialog("Creating export...");
+    return $.ajax({
+        method: 'POST',
+        url: config.servicesUrl + '/node-export',
+        data: JSON.stringify({
+            repositoryName: router.getParameters().repo,
+            branchName: router.getParameters().branch,
+            nodePath: nodesTable.getSelectedRows().map((row) => row.attributes['path'])[0],
+            exportName: exportName
+        }),
+        contentType: 'application/json; charset=utf-8'
+    }).done(handleResultError).fail(handleAjaxError).always(() => {
+        hideDialog(infoDialog);
+        router.setState('exports');
+    });
+}
+
 function deleteNodes() {
     showConfirmationDialog("Delete selected nodes?", doDeleteNodes);
 }
 
 function doDeleteNodes() {
     var infoDialog = showInfoDialog("Deleting node...");
-    var nodeKeys = nodesTable.getSelectedRows().map((row) => row.attributes['node']);
+    var nodeKeys = nodesTable.getSelectedRows().map((row) => row.attributes['id']);
     $.ajax({
         method: 'POST',
         url: config.servicesUrl + '/node-delete',
@@ -123,7 +157,9 @@ function retrieveNodes() {
                         addCell(node._name).
                         addCell(node._id).
                         addIcon(retrieveNodeInfoIcon).
-                        setAttribute('node', node._id).
+                        setAttribute('id', node._id).
+                        setAttribute('path', node._path).
+                        setAttribute('name', node._name).
                         addClass('clickable').
                         setClickListener(() => {
                             router.setState('nodes?repo=' + router.getParameters().repo + '&branch=' + router.getParameters().branch +
