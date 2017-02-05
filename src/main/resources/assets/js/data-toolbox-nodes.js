@@ -37,7 +37,7 @@ function createNodesCard() {
     nodesTable.addSelectionListener(() => {
         var nbRowsSelected = nodesTable.getSelectedRows().length;
         exportNodeIcon.enable(nbRowsSelected == 1);
-        importNodeIcon.enable(nbRowsSelected == 0) && router.getParameters().path;
+        importNodeIcon.enable(nbRowsSelected == 0 && router.getParameters().path);
         deleteNodeIcon.enable(nbRowsSelected > 0);
     });
 
@@ -132,8 +132,8 @@ function doImportNode(exportNames) {
         title: "Import node",
         ok: "IMPORT",
         label: "Export name",
-        placeholder: exportNames[0],
-        value: exportNames[0],
+        placeholder: exportNames[5],
+        value: exportNames[5],
         callback: (value) => doDoImportNode(value)
     });
 }

@@ -79,14 +79,18 @@ public class RcdExportScriptBean
         }, "Error while creating export" );
     }
 
-    public String load( String contentPath, String[] exportNames )
+    public String load( final String[] exportNames, final String repositoryName, final String branchName, final String nodePathString )
     {
         return runSafely( () -> {
-            final NodePath nodePath = NodePath.create( "/content" + contentPath ).build();
-            for ( String exportName : exportNames )
-            {
-                load( nodePath, exportName );
-            }
+
+            final NodePath nodePath = NodePath.create( nodePathString ).build();
+            createContext( repositoryName, branchName ).runWith( () -> {
+                for ( String exportName : exportNames )
+                {
+                    load( nodePath, exportName );
+                }
+            } );
+
             return createSuccessResult();
         }, "Error while loading export" );
     }
