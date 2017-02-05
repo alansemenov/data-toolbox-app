@@ -128,12 +128,11 @@ function importNode() {
 }
 
 function doImportNode(exportNames) {
-    showInputDialog({
+    showSelectionDialog({
         title: "Import node",
         ok: "IMPORT",
         label: "Export name",
-        placeholder: exportNames[5],
-        value: exportNames[5],
+        options: exportNames,
         callback: (value) => doDoImportNode(value)
     });
 }
