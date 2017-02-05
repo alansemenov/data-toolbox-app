@@ -198,9 +198,9 @@ function retrieveNodes() {
                 sort((node1, node2) => node1.name - node2.name).
                 forEach((node) => {
 
-                    var retrieveNodeInfoIcon = new RcdMaterialActionIcon('info', () => retrieveNodeInfo(node._id)).
+                    var retrieveNodeInfoIcon = new RcdMaterialActionIcon('visibility', () => retrieveNodeInfo(node._id)).
                         init().
-                        setTooltip('Retrieve node info');
+                        setTooltip('Display node details');
                     var row = nodesTable.body.createRow().
                         addCell(node._name).
                         addCell(node._id).
