@@ -32,16 +32,19 @@ function navigate(after) {
 
 function createNodesCard() {
     var exportNodeIcon = new RcdMaterialActionIcon('save', exportNode).init().setTooltip('Export node').enable(false);
+    var importNodeIcon = new RcdMaterialActionIcon('refresh', importNode).init().setTooltip('Import node').enable(false);
     var deleteNodeIcon = new RcdMaterialActionIcon('delete', deleteNodes).init().setTooltip('Delete node').enable(false);
     nodesTable.addSelectionListener(() => {
         var nbRowsSelected = nodesTable.getSelectedRows().length;
         exportNodeIcon.enable(nbRowsSelected == 1);
+        importNodeIcon.enable(nbRowsSelected == 0) && router.getParameters().path;
         deleteNodeIcon.enable(nbRowsSelected > 0);
     });
 
     return new RcdMaterialCard('Nodes').
         init().
         addIcon(exportNodeIcon).
+        addIcon(importNodeIcon).
         addIcon(deleteNodeIcon).
         addContent(nodesTable).
         addChild(nodesTableNav);
@@ -91,7 +94,7 @@ function exportNode() {
 }
 
 function doExportNode(exportName) {
-    var infoDialog = showInfoDialog("Creating export...");
+    var infoDialog = showInfoDialog("Exporting node...");
     return $.ajax({
         method: 'POST',
         url: config.servicesUrl + '/node-export',
@@ -105,6 +108,51 @@ function doExportNode(exportName) {
     }).done(handleResultError).fail(handleAjaxError).always(() => {
         hideDialog(infoDialog);
         router.setState('exports');
+    });
+}
+
+function importNode() {
+    var infoDialog = showInfoDialog("Retrieving exports...");
+    return $.ajax({
+        url: config.servicesUrl + '/export-list'
+    }).done(function (result) {
+        if (handleResultError(result)) {
+            var exportNames = result.success.
+                sort((export1, export2) => export1.timestamp - export2.timestamp).
+                map((anExport) =>anExport.name);
+            doImportNode(exportNames);
+        }
+    }).fail(handleAjaxError).always(() => {
+        hideDialog(infoDialog);
+    });
+}
+
+function doImportNode(exportNames) {
+    showInputDialog({
+        title: "Import node",
+        ok: "IMPORT",
+        label: "Export name",
+        placeholder: exportNames[0],
+        value: exportNames[0],
+        callback: (value) => doDoImportNode(value)
+    });
+}
+
+function doDoImportNode(exportName) { //TODO Find proper naming convention
+    var infoDialog = showInfoDialog("Importing node...");
+    return $.ajax({
+        method: 'POST',
+        url: config.servicesUrl + '/node-import',
+        data: JSON.stringify({
+            repositoryName: router.getParameters().repo,
+            branchName: router.getParameters().branch,
+            nodePath: router.getParameters().path,
+            exportName: exportName
+        }),
+        contentType: 'application/json; charset=utf-8'
+    }).done(handleResultError).fail(handleAjaxError).always(() => {
+        hideDialog(infoDialog);
+        router.refreshState();
     });
 }
 
