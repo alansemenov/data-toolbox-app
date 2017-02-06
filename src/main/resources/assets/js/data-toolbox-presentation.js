@@ -1,3 +1,4 @@
+var presentationView = createPresentationView();
 function createPresentationView() {
     //Creates and appends the presentation view
     var presentationViewPathElements = [{name: 'Data Toolbox'}];

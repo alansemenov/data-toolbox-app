@@ -1,10 +1,13 @@
+var branchesTable = createBranchesTable();
+var branchesView = createBranchesView();
+
 function createBranchesTable() {
     var branchesTable = new RcdMaterialTable().init();
     branchesTable.header.addCell('Branch name');
     return branchesTable;
 }
 
-function createBranchesView(branchesTable) {
+function createBranchesView() {
     //Creates the node view
     var branchesViewPathElements = [{name: 'Data Toolbox', callback: () => router.setState()}, {name: 'Branches'}];
     var branchesViewDescription = 'TODO: Define branches.';

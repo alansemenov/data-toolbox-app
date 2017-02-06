@@ -1,10 +1,14 @@
+var snapshotsTable = createSnapshotsTable();
+var snapshotsTableNoContent = new RcdMaterialTableNoContent('No snapshot found').init();
+var snapshotsView = createSnapshotsView();
+
 function createSnapshotsTable() {
     var snapshotsTable = new RcdMaterialTable().init();
     snapshotsTable.header.addCell('Snapshot name').addCell('Timestamp');
     return snapshotsTable;
 }
 
-function createSnapshotsView(snapshotsTable) {
+function createSnapshotsView() {
     //Creates the snapshot view
     var snapshotsViewPathElements = [{name: 'Data Toolbox', callback: () => router.setState()}, {name: 'Snapshots'}];
     var snapshotsViewDescription = 'A snapshot is a record of your Enonic XP indexes at a particular point in time. ' +
@@ -29,7 +33,8 @@ function createSnapshotsView(snapshotsTable) {
         addIcon(createSnapshotIcon).
         addIcon(deleteSnapshotsIcon).
         addIcon(loadSnapshotIcon).
-        addContent(snapshotsTable);
+        addContent(snapshotsTable).
+        addChild(snapshotsTableNoContent);
 
     snapshotsView.addChild(snapshotsCard);
 
@@ -104,6 +109,7 @@ function retrieveSnapshots() {
     }).done(function (result) {
         snapshotsTable.body.clear();
         if (handleResultError(result)) {
+            snapshotsTableNoContent.display(result.success.length == 0);
             result.success.forEach((snapshot) => {
                 snapshotsTable.body.createRow().
                     addCell(snapshot.name).

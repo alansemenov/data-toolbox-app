@@ -1,10 +1,12 @@
+var repositoriesTable = createRepositoriesTable();
+var repositoriesView = createRepositoriesView();
 function createRepositoriesTable() {
     var repositoriesTable = new RcdMaterialTable().init();
     repositoriesTable.header.addCell('Repository name');
     return repositoriesTable;
 }
 
-function createRepositoriesView(repositoriesTable) {
+function createRepositoriesView() {
     //Creates the node view
     var repositoriesViewPathElements = [{name: 'Data Toolbox', callback: () => router.setState()}, {name: 'Repositories'}];
     var repositoriesViewDescription = 'TODO: Define repositories.';

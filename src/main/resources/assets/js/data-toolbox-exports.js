@@ -1,3 +1,7 @@
+var exportsTable = createExportsTable();
+var exportsTableNoContent = new RcdMaterialTableNoContent('No export found').init();
+var exportsView = createExportsView();
+
 function createExportsTable() {
     var exportsTable = new RcdMaterialTable().init();
     exportsTable.header.addCell('Export name').
@@ -5,7 +9,7 @@ function createExportsTable() {
     return exportsTable;
 }
 
-function createExportsView(exportsTable) {
+function createExportsView() {
     //Creates the export view
     var exportsViewPathElements = [{name: 'Data Toolbox', callback: () => router.setState()}, {name: 'Exports'}];
     var exportsViewDescription = 'An export is a serialization of a given content/node. ' +
@@ -31,7 +35,8 @@ function createExportsView(exportsTable) {
         addIcon(deleteExportIcon).
         addIcon(downloadExportIcon).
         addIcon(uploadExportIcon).
-        addContent(exportsTable);
+        addContent(exportsTable).
+        addChild(exportsTableNoContent);
 
     exportsView.addChild(exportsCard);
 
@@ -63,6 +68,7 @@ function retrieveExports() {
     }).done(function (result) {
         exportsTable.body.clear();
         if (handleResultError(result)) {
+            exportsTableNoContent.display(result.success.length == 0);
             result.success.
                 sort((export1, export2) => export1.timestamp - export2.timestamp).
                 forEach((anExport) => {

@@ -2,18 +2,7 @@
 var header = createHeader();
 var main = createMain();
 
-//Creates the views
-var presentationView = createPresentationView();
-var dumpsTable = createDumpsTable();
-var dumpsView = createDumpsView(dumpsTable);
-var exportsTable = createExportsTable();
-var exportsView = createExportsView(exportsTable);
-var snapshotsTable = createSnapshotsTable();
-var snapshotsView = createSnapshotsView(snapshotsTable);
-var repositoriesTable = createRepositoriesTable();
-var repositoriesView = createRepositoriesView(repositoriesTable);
-var branchesTable = createBranchesTable();
-var branchesView = createBranchesView(branchesTable);
+//Adds the views
 main.content.addView(presentationView).
     addView(dumpsView).
     addView(exportsView).

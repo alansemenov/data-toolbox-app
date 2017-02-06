@@ -1,3 +1,7 @@
+var dumpsTable = createDumpsTable();
+var dumpsTableNoContent = new RcdMaterialTableNoContent('No dump found').init();
+var dumpsView = createDumpsView();
+
 function createDumpsTable() {
     var dumpsTable = new RcdMaterialTable().init();
     dumpsTable.header.addCell('Dump name').
@@ -6,7 +10,7 @@ function createDumpsTable() {
     return dumpsTable;
 }
 
-function createDumpsView(dumpsTable) {
+function createDumpsView() {
     //Creates the dump view
     var dumpsViewPathElements = [{name: 'Data Toolbox', callback: () => router.setState()}, {name: 'Dumps'}];
     var dumpsViewDescription = 'A dump is an export of your data (contents, users, groups and roles) from your Enonic XP server to a serialized format. ' +
@@ -38,7 +42,8 @@ function createDumpsView(dumpsTable) {
         addIcon(loadDumpIcon).
         addIcon(downloadDumpIcon).
         addIcon(uploadDumpIcon).
-        addContent(dumpsTable);
+        addContent(dumpsTable).
+        addChild(dumpsTableNoContent);
 
     dumpsView.addChild(dumpsCard);
 
@@ -111,6 +116,7 @@ function retrieveDumps() {
     }).done(function (result) {
         dumpsTable.body.clear();
         if (handleResultError(result)) {
+            dumpsTableNoContent.display(result.success.length == 0);
             result.success.
                 sort((dump1, dump2) => dump1.timestamp - dump2.timestamp).
                 forEach((dump) => {
