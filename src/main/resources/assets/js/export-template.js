@@ -19,6 +19,7 @@
         uploadExportsIcon.enable(nbRowsSelected == 0);
     });
 
+    var tableNoContent = new RcdMaterialTableNoContent('No export found').init();
     var card = new RcdMaterialCard('').
         init().
         addIcon(createExportIcon).
@@ -26,7 +27,8 @@
         addIcon(loadExportsIcon).
         addIcon(downloadExportsIcon).
         addIcon(uploadExportsIcon).
-        addContent(exportsTable);
+        addContent(exportsTable).
+        addChild(tableNoContent);
 
 
     var exportWidgetContainer;
@@ -47,6 +49,7 @@
         }).done(function (result) {
             exportsTable.body.clear();
             if (handleResultError(result)) {
+                tableNoContent.display(result.success.length == 0);
                 result.success.
                     sort((export1, export2) => export1.timestamp - export2.timestamp).
                     forEach((anExport) => {
