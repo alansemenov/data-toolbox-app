@@ -1,4 +1,5 @@
 var nodesTable = createNodesTable();
+var nodesTableNoContent = new RcdMaterialTableNoContent('No child node found').init();
 var nodesTableNav = new RcdMaterialTableNav(navigateBefore, navigateAfter).init();
 var nodesCard = createNodesCard();
 var nodesView = createNodesView();
@@ -47,6 +48,7 @@ function createNodesCard() {
         addIcon(importNodeIcon).
         addIcon(deleteNodeIcon).
         addContent(nodesTable).
+        addChild(nodesTableNoContent).
         addChild(nodesTableNav);
 }
 
@@ -193,6 +195,7 @@ function retrieveNodes() {
     }).done(function (result) {
         nodesTable.body.clear();
         if (handleResultError(result)) {
+            nodesTableNoContent.display(result.success.hits.length == 0);
             result.success.hits.
                 sort((node1, node2) => node1.name - node2.name).
                 forEach((node) => {
