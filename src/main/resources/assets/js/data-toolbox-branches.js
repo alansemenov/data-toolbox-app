@@ -10,7 +10,13 @@ function createBranchesTable() {
 function createBranchesView() {
     //Creates the node view
     var branchesViewPathElements = [{name: 'Data Toolbox', callback: () => router.setState()}, {name: 'Branches'}];
-    var branchesViewDescription = 'TODO: Define branches.';
+    var branchesViewDescription = 'A branch is a set of data in a repository. ' +
+                                  'All repositories have a default branch called master. ' +
+                                  'Any number of branches could be added to facilitate your data. ' +
+                                  'For example, the cms-repo repository contains two branches: ' +
+                                  '"draft" containing the content as seen in the Content Studio and ' +
+                                  '"master" containing the published content served by the portal. ' +
+                                  'See <a href="http://xp.readthedocs.io/en/stable/developer/node-domain/branch.html">Branch</a> for more information.';
     var branchesView = new RcdMaterialView('branches', branchesViewPathElements, branchesViewDescription).init();
 
     var createBranchIcon = new RcdMaterialActionIcon('add_circle', createBranch).init().setTooltip('Create branch');

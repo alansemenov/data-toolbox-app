@@ -9,7 +9,12 @@ function createRepositoriesTable() {
 function createRepositoriesView() {
     //Creates the node view
     var repositoriesViewPathElements = [{name: 'Data Toolbox', callback: () => router.setState()}, {name: 'Repositories'}];
-    var repositoriesViewDescription = 'TODO: Define repositories.';
+    var repositoriesViewDescription = 'Enonic XP data is split in repositories. ' +
+                                      'Data stored in a repository will typically belong to a common domain. ' +
+                                      'Enonic XP uses by default 2 repositories: ' +
+                                      '"system-repo", the core repository, containing users, groups, roles, references to other repositories, installed application, etc and ' +
+                                      '"cms-repo", the content domain repository, containing the data managed by Content Studio. ' +
+                                      'See <a href="http://xp.readthedocs.io/en/stable/developer/node-domain/repository.html">Repository</a> for more information.';
     var repositoriesView = new RcdMaterialView('repositories', repositoriesViewPathElements, repositoriesViewDescription).init();
 
     var createRepositoryIcon = new RcdMaterialActionIcon('add_circle', createRepository).init().setTooltip('Create repository');
