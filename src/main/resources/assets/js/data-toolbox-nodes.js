@@ -38,7 +38,7 @@ function createNodesCard() {
     nodesTable.addSelectionListener(() => {
         var nbRowsSelected = nodesTable.getSelectedRows().length;
         exportNodeIcon.enable(nbRowsSelected == 1);
-        importNodeIcon.enable(nbRowsSelected == 0 && router.getParameters().path);
+        importNodeIcon.enable(nbRowsSelected == 0);
         deleteNodeIcon.enable(nbRowsSelected > 0);
     });
 
@@ -147,7 +147,7 @@ function doDoImportNode(exportName) { //TODO Find proper naming convention
         data: JSON.stringify({
             repositoryName: router.getParameters().repo,
             branchName: router.getParameters().branch,
-            nodePath: router.getParameters().path,
+            nodePath: router.getParameters().path || '/',
             exportName: exportName
         }),
         contentType: 'application/json; charset=utf-8'
