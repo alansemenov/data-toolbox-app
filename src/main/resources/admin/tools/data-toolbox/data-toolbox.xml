@@ -1,6 +1,6 @@
 <tool>
   <display-name>Data toolbox</display-name>
-  <description>Manage your dumps and snapshots</description>
+  <description>Manage your data</description>
   <allow>
     <principal>role:system.admin</principal>
   </allow>
