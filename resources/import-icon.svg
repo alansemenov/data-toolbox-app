@@ -15,7 +15,7 @@
    id="svg4214"
    version="1.1"
    inkscape:version="0.91 r13725"
-   sodipodi:docname="export-icon.svg">
+   sodipodi:docname="import-icon.svg">
   <defs
      id="defs4216" />
   <sodipodi:namedview
@@ -26,7 +26,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="19.692585"
-     inkscape:cx="12.715286"
+     inkscape:cx="20.840172"
      inkscape:cy="6.3693172"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -34,8 +34,8 @@
      units="px"
      inkscape:window-width="1436"
      inkscape:window-height="855"
-     inkscape:window-x="104"
-     inkscape:window-y="272"
+     inkscape:window-x="306"
+     inkscape:window-y="121"
      inkscape:window-maximized="0" />
   <metadata
      id="metadata4219">
@@ -67,9 +67,10 @@
        id="rect5406"
        width="6"
        height="5"
-       x="10"
-       y="1037.8622"
-       ry="0" />
+       x="-21.9"
+       y="-1042.8622"
+       ry="0"
+       transform="scale(-1,-1)" />
     <path
        sodipodi:type="star"
        style="opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
@@ -86,7 +87,7 @@
        inkscape:randomized="0"
        d="m -6.6484904,1037.7429 0,-9.4221 8.1597569,4.7111 z"
        inkscape:transform-center-x="-1.1666679"
-       transform="matrix(0.85786869,0,0,1.0613373,21.603532,-56.033054)"
+       transform="matrix(-0.85786869,0,0,-1.0613373,10.296468,2136.7575)"
        inkscape:transform-center-y="2.1735994e-05" />
   </g>
 </svg>
