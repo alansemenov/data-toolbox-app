@@ -118,7 +118,7 @@ function retrieveDumps() {
         if (handleResultError(result)) {
             dumpsTableNoContent.display(result.success.length == 0);
             result.success.
-                sort((dump1, dump2) => dump1.timestamp - dump2.timestamp).
+                sort((dump1, dump2) => dump2.timestamp - dump1.timestamp).
                 forEach((dump) => {
                     dumpsTable.body.createRow().
                         addCell(dump.name).

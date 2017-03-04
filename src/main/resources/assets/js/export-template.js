@@ -51,7 +51,7 @@
             if (handleResultError(result)) {
                 tableNoContent.display(result.success.length == 0);
                 result.success.
-                    sort((export1, export2) => export1.timestamp - export2.timestamp).
+                    sort((export1, export2) => export2.timestamp - export1.timestamp).
                     forEach((anExport) => {
                         exportsTable.body.createRow().
                             addCell(anExport.name).

@@ -110,7 +110,9 @@ function retrieveSnapshots() {
         snapshotsTable.body.clear();
         if (handleResultError(result)) {
             snapshotsTableNoContent.display(result.success.length == 0);
-            result.success.forEach((snapshot) => {
+            result.success.
+                sort((snapshot1, snapshot2) => snapshot2.timestamp - snapshot1.timestamp).
+                forEach((snapshot) => {
                 snapshotsTable.body.createRow().
                     addCell(snapshot.name).
                     addCell(toLocalDateTimeFormat(new Date(snapshot.timestamp))).
