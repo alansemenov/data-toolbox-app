@@ -90,7 +90,9 @@ function retrieveNodeInfo(nodeKey) {
 }
 
 function exportNode() {
-    var nodeName = nodesTable.getSelectedRows().map((row) => row.attributes['name'])[0] || 'export';
+    var nodeName = router.getParameters().path
+        ? (nodesTable.getSelectedRows().map((row) => row.attributes['name'])[0] || 'export')
+        : router.getParameters().repo + '-' + router.getParameters().branch;
     var defaultExportName = nodeName + '-' + toLocalDateTimeFormat(new Date(), '-', '-');
     showInputDialog({
         title: "Export node",
@@ -207,7 +209,7 @@ function retrieveNodes() {
                 sort((node1, node2) => node1.name - node2.name).
                 forEach((node) => {
 
-                    var retrieveNodeInfoIcon = new RcdMaterialActionIcon('visibility', () => retrieveNodeInfo(node._id)).
+                    var retrieveNodeInfoIcon = new RcdMaterialActionIcon('info', () => retrieveNodeInfo(node._id)).
                         init().
                         setTooltip('Display node details');
                     var row = nodesTable.body.createRow().
