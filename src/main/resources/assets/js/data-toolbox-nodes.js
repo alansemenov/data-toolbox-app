@@ -32,8 +32,8 @@ function navigate(after) {
 }
 
 function createNodesCard() {
-    var exportNodeIcon = new RcdMaterialActionIcon('save', exportNode).init().setTooltip('Export node').enable(false);
-    var importNodeIcon = new RcdMaterialActionIcon('refresh', importNode).init().setTooltip('Import node').enable(false);
+    var exportNodeIcon = new RcdMaterialActionIcon('archive', exportNode).init().setTooltip('Export node').enable(false);
+    var importNodeIcon = new RcdMaterialActionIcon('unarchive', importNode).init().setTooltip('Import node').enable(false);
     var deleteNodeIcon = new RcdMaterialActionIcon('delete', deleteNodes).init().setTooltip('Delete node').enable(false);
     nodesTable.addSelectionListener(() => {
         var nbRowsSelected = nodesTable.getSelectedRows().length;
