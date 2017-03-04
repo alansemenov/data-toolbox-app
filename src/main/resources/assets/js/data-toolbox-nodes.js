@@ -47,6 +47,7 @@ function createNodesCard() {
         addIcon(exportNodeIcon).
         addIcon(importNodeIcon).
         addIcon(deleteNodeIcon).
+        addIcon(new RcdCustomIcon(config.assetsUrl + '/icons/export-icon.svg').init()).
         addContent(nodesTable).
         addChild(nodesTableNoContent).
         addChild(nodesTableNav);
