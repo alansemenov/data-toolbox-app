@@ -25,9 +25,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="19.692585"
-     inkscape:cx="12.715286"
-     inkscape:cy="6.3693172"
+     inkscape:zoom="3.4811901"
+     inkscape:cx="104.6937"
+     inkscape:cy="-42.241923"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -65,9 +65,9 @@
     <rect
        style="opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect5406"
-       width="6"
+       width="5"
        height="5"
-       x="10"
+       x="9"
        y="1037.8622"
        ry="0" />
     <path
@@ -85,8 +85,8 @@
        inkscape:rounded="0"
        inkscape:randomized="0"
        d="m -6.6484904,1037.7429 0,-9.4221 8.1597569,4.7111 z"
-       inkscape:transform-center-x="-1.1666679"
-       transform="matrix(0.85786869,0,0,1.0613373,21.603532,-56.033054)"
+       inkscape:transform-center-x="-1.5000021"
+       transform="matrix(1.102974,0,0,1.0613373,21.233112,-56.033054)"
        inkscape:transform-center-y="2.1735994e-05" />
   </g>
 </svg>
