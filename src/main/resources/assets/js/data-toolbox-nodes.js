@@ -32,8 +32,14 @@ function navigate(after) {
 }
 
 function createNodesCard() {
-    var exportNodeIcon = new RcdMaterialActionIcon('archive', exportNode).init().setTooltip('Export node').enable(false);
-    var importNodeIcon = new RcdMaterialActionIcon('unarchive', importNode).init().setTooltip('Import node').enable(false);
+    var exportNodeIcon = new RcdCustomActionIcon(config.assetsUrl + '/icons/export-icon.svg', exportNode).
+        init().
+        setTooltip('Export node').
+        enable(false);
+    var importNodeIcon = new RcdCustomActionIcon(config.assetsUrl + '/icons/import-icon.svg', importNode).
+        init().
+        setTooltip('Import node').
+        enable(false);
     var deleteNodeIcon = new RcdMaterialActionIcon('delete', deleteNodes).init().setTooltip('Delete node').enable(false);
     nodesTable.addSelectionListener(() => {
         var nbRowsSelected = nodesTable.getSelectedRows().length;
@@ -47,7 +53,6 @@ function createNodesCard() {
         addIcon(exportNodeIcon).
         addIcon(importNodeIcon).
         addIcon(deleteNodeIcon).
-        addIcon(new RcdCustomIcon(config.assetsUrl + '/icons/export-icon.svg').init()).
         addContent(nodesTable).
         addChild(nodesTableNoContent).
         addChild(nodesTableNav);
