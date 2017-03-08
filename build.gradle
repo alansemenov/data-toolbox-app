@@ -50,6 +50,9 @@ repositories {
     maven {
         url 'http://repo.enonic.com/public'
     }
+    maven {
+        url "http://dl.bintray.com/rcd-systems/rcd-repo"
+    }
 }
 
 task extractRcdJsFwk( type: Copy ) {
