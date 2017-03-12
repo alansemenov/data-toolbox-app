@@ -20,7 +20,7 @@ apply plugin: "com.eriwen.gradle.js"
 
 app {
     name = project.appName
-    displayName = project.displayName
+    displayName = 'Data Toolbox'
     vendorName = 'Enonic AS'
     vendorUrl = 'http://enonic.com'
 }
