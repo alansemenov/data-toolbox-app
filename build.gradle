@@ -39,7 +39,7 @@ dependencies {
     include "com.enonic.xp:lib-portal:${xpVersion}"
     include "com.enonic.xp:lib-mustache:${xpVersion}"
     include "com.enonic.xp:lib-io:${xpVersion}"
-    include "systems.rcd.fwk.core:rcd-fwk-core:7.0.1"
+    include "systems.rcd.fwk.core:rcd-fwk-core:7.0.2-SNAPSHOT"
     rcdjsfwkcore "systems.rcd.js.fwk.core:rcd-jsfwk-core:1.0.1"
     rcdjsfwkmaterial "systems.rcd.js.fwk.material:rcd-jsfwk-material:1.0.2"
 }
