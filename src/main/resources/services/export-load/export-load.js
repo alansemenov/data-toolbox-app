@@ -6,6 +6,6 @@ exports.post = function (req) {
 
     return {
         contentType: 'application/json',
-        body: bean.load(contentPath, exportNames)
+        body: bean.load(exportNames, 'cms-repo', 'draft', '/content' + contentPath)
     }
 };

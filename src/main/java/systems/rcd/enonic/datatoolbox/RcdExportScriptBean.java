@@ -16,12 +16,22 @@ import systems.rcd.fwk.core.format.json.data.RcdJsonObject;
 import systems.rcd.fwk.core.io.file.RcdFileService;
 import systems.rcd.fwk.core.util.zip.RcdZipService;
 
+import com.enonic.xp.branch.Branch;
+import com.enonic.xp.context.Context;
+import com.enonic.xp.context.ContextAccessor;
+import com.enonic.xp.context.ContextBuilder;
 import com.enonic.xp.export.ExportNodesParams;
 import com.enonic.xp.export.ExportService;
 import com.enonic.xp.export.ImportNodesParams;
 import com.enonic.xp.home.HomeDir;
 import com.enonic.xp.node.NodePath;
+import com.enonic.xp.repository.CreateRepositoryParams;
+import com.enonic.xp.repository.NodeRepositoryService;
+import com.enonic.xp.repository.Repository;
+import com.enonic.xp.repository.RepositoryId;
+import com.enonic.xp.repository.RepositoryService;
 import com.enonic.xp.script.bean.BeanContext;
+import com.enonic.xp.security.SystemConstants;
 import com.enonic.xp.vfs.VirtualFiles;
 
 public class RcdExportScriptBean
@@ -29,10 +39,16 @@ public class RcdExportScriptBean
 {
     private Supplier<ExportService> exportServiceSupplier;
 
+    private Supplier<RepositoryService> repositoryServiceSupplier;
+
+    private Supplier<NodeRepositoryService> nodeRepositoryServiceSupplier;
+
     @Override
     public void initialize( final BeanContext context )
     {
         exportServiceSupplier = context.getService( ExportService.class );
+        repositoryServiceSupplier = context.getService( RepositoryService.class );
+        nodeRepositoryServiceSupplier = context.getService( NodeRepositoryService.class );
     }
 
     public String list()
@@ -58,31 +74,39 @@ public class RcdExportScriptBean
         }, "Error while listing exports" );
     }
 
-    public String create( String contentPath, String exportName )
+    public String create( final String repositoryName, final String branchName, final String nodePath, final String exportName )
     {
         return runSafely( () -> {
-            final NodePath nodePath = NodePath.create( "/content" + contentPath ).build();
             final ExportNodesParams exportNodesParams = ExportNodesParams.create().
-                sourceNodePath( nodePath ).
+                sourceNodePath( NodePath.create( nodePath ).build() ).
                 targetDirectory( getExportDirectoryPath().resolve( exportName ).toString() ).
                 dryRun( false ).
                 includeNodeIds( true ).
                 build();
 
-            exportServiceSupplier.get().
-                exportNodes( exportNodesParams );
+            createContext( repositoryName, branchName ).
+                runWith( () -> exportServiceSupplier.get().exportNodes( exportNodesParams ) );
             return createSuccessResult();
         }, "Error while creating export" );
     }
 
-    public String load( String contentPath, String[] exportNames )
+    public String load( final String[] exportNames, final String repositoryName, final String branchName, final String nodePathString )
     {
         return runSafely( () -> {
-            final NodePath nodePath = NodePath.create( "/content" + contentPath ).build();
-            for ( String exportName : exportNames )
-            {
-                load( nodePath, exportName );
-            }
+
+            final NodePath nodePath = NodePath.create( nodePathString ).build();
+            createContext( repositoryName, branchName ).runWith( () -> {
+                for ( String exportName : exportNames )
+                {
+                    load( nodePath, exportName );
+                }
+                if ( SystemConstants.SYSTEM_REPO.getId().toString().equals( repositoryName ) &&
+                    SystemConstants.BRANCH_SYSTEM.getValue().equals( branchName ) )
+                {
+                    initializeStoredRepositories();
+                }
+            } );
+
             return createSuccessResult();
         }, "Error while loading export" );
     }
@@ -139,11 +163,36 @@ public class RcdExportScriptBean
             importNodes( importNodesParams );
     }
 
+    private void initializeStoredRepositories()
+    {
+        repositoryServiceSupplier.get().invalidateAll();
+        for ( Repository repository : repositoryServiceSupplier.get().list() )
+        {
+            if ( !nodeRepositoryServiceSupplier.get().isInitialized( repository.getId() ) )
+            {
+                final CreateRepositoryParams createRepositoryParams = CreateRepositoryParams.create().
+                    repositoryId( repository.getId() ).
+                    repositorySettings( repository.getSettings() ).
+                    build();
+                nodeRepositoryServiceSupplier.get().create( createRepositoryParams );
+            }
+        }
+    }
+
     private Path getExportDirectoryPath()
     {
         return HomeDir.get().
             toFile().
             toPath().
             resolve( "data/export" );
+    }
+
+
+    private Context createContext( final String repositoryName, final String branch )
+    {
+        return ContextBuilder.from( ContextAccessor.current() ).
+            repositoryId( RepositoryId.from( repositoryName ) ).
+            branch( Branch.from( branch ) ).
+            build();
     }
 }

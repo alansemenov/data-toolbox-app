@@ -1,11 +1,13 @@
 exports.post = function (req) {
     var bean = __.newBean('systems.rcd.enonic.datatoolbox.RcdExportScriptBean');
     var body = JSON.parse(req.body);
-    var contentPath = body.contentPath;
+    var repositoryName = body.repositoryName;
+    var branchName = body.branchName;
+    var nodePath = body.nodePath;
     var exportName = body.exportName;
 
     return {
         contentType: 'application/json',
-        body: bean.create('cms-repo', 'draft', '/content' + contentPath, exportName)
+        body: bean.load([exportName], repositoryName, branchName, nodePath)
     }
 };

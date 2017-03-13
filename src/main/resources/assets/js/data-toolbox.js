@@ -2,15 +2,14 @@
 var header = createHeader();
 var main = createMain();
 
-//Creates the views
-var presentationView = createPresentationView();
-var dumpsTable = createDumpsTable();
-var dumpsView = createDumpsView(dumpsTable);
-var snapshotsTable = createSnapshotsTable();
-var snapshotsView = createSnapshotsView(snapshotsTable);
+//Adds the views
 main.content.addView(presentationView).
     addView(dumpsView).
-    addView(snapshotsView);
+    addView(exportsView).
+    addView(snapshotsView).
+    addView(repositoriesView).
+    addView(branchesView).
+    addView(nodesView);
 
 //Appends the header and main elements
 header.show(document.body);
@@ -25,14 +24,32 @@ router.addDefaultRoute(() => {
 router.addRoute(dumpsView.viewId, () => {
     retrieveDumps();
     main.nav.selectLink('dumps');
-
     main.content.displayView(dumpsView.viewId);
+});
+router.addRoute(exportsView.viewId, () => {
+    retrieveExports();
+    main.nav.selectLink('exports');
+    main.content.displayView(exportsView.viewId);
 });
 router.addRoute(snapshotsView.viewId, () => {
     retrieveSnapshots();
     main.nav.selectLink('snapshots');
-
     main.content.displayView(snapshotsView.viewId);
+});
+router.addRoute(repositoriesView.viewId, () => {
+    retrieveRepositories();
+    main.nav.selectLink('repositories');
+    main.content.displayView(repositoriesView.viewId);
+});
+router.addRoute(branchesView.viewId, () => {
+    retrieveBranches();
+    refreshBranchesViewTitle(branchesView);
+    main.content.displayView(branchesView.viewId);
+});
+router.addRoute(nodesView.viewId, () => {
+    retrieveNodes();
+    refreshNodesViewTitle(nodesView);
+    main.content.displayView(nodesView.viewId);
 });
 router.setState(router.getCurrentState());
 

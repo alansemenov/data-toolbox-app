@@ -1,10 +1,14 @@
+var snapshotsTable = createSnapshotsTable();
+var snapshotsTableNoContent = new RcdMaterialTableNoContent('No snapshot found').init();
+var snapshotsView = createSnapshotsView();
+
 function createSnapshotsTable() {
     var snapshotsTable = new RcdMaterialTable().init();
     snapshotsTable.header.addCell('Snapshot name').addCell('Timestamp');
     return snapshotsTable;
 }
 
-function createSnapshotsView(snapshotsTable) {
+function createSnapshotsView() {
     //Creates the snapshot view
     var snapshotsViewPathElements = [{name: 'Data Toolbox', callback: () => router.setState()}, {name: 'Snapshots'}];
     var snapshotsViewDescription = 'A snapshot is a record of your Enonic XP indexes at a particular point in time. ' +
@@ -15,7 +19,7 @@ function createSnapshotsView(snapshotsTable) {
 
     var createSnapshotIcon = new RcdMaterialActionIcon('add_circle', createSnapshot).init().setTooltip('Create snapshot');
     var deleteSnapshotsIcon = new RcdMaterialActionIcon('delete', deleteSnapshots).init().setTooltip('Delete snapshot');
-    var loadSnapshotIcon = new RcdMaterialActionIcon('refresh', restoreSnapshot).init().enable(false).setTooltip('Load snapshot');
+    var loadSnapshotIcon = new RcdMaterialActionIcon('restore', restoreSnapshot).init().enable(false).setTooltip('Restore snapshot');
 
     snapshotsTable.addSelectionListener(() => {
         var nbRowsSelected = snapshotsTable.getSelectedRows().length;
@@ -29,7 +33,8 @@ function createSnapshotsView(snapshotsTable) {
         addIcon(createSnapshotIcon).
         addIcon(deleteSnapshotsIcon).
         addIcon(loadSnapshotIcon).
-        addContent(snapshotsTable);
+        addContent(snapshotsTable).
+        addChild(snapshotsTableNoContent);
 
     snapshotsView.addChild(snapshotsCard);
 
@@ -59,7 +64,7 @@ function doCreateSnapshot(snapshotName) {
         contentType: 'application/json; charset=utf-8'
     }).done(handleResultError).fail(handleAjaxError).always(() => {
         hideDialog(infoDialog);
-        router.setState('snapshots');
+        router.refreshState();
     });
 }
 
@@ -78,7 +83,7 @@ function doDeleteSnapshots() {
         contentType: 'application/json; charset=utf-8'
     }).done(handleResultError).fail(handleAjaxError).always(function () {
         hideDialog(infoDialog);
-        router.setState('snapshots');
+        router.refreshState();
     });
 }
 
@@ -93,7 +98,7 @@ function restoreSnapshot() {
         contentType: 'application/json; charset=utf-8'
     }).done(handleResultError).fail(handleAjaxError).always(function () {
         hideDialog(infoDialog);
-        router.setState('snapshots');
+        router.refreshState();
     });
 }
 
@@ -104,7 +109,10 @@ function retrieveSnapshots() {
     }).done(function (result) {
         snapshotsTable.body.clear();
         if (handleResultError(result)) {
-            result.success.forEach((snapshot) => {
+            snapshotsTableNoContent.display(result.success.length == 0);
+            result.success.
+                sort((snapshot1, snapshot2) => snapshot2.timestamp - snapshot1.timestamp).
+                forEach((snapshot) => {
                 snapshotsTable.body.createRow().
                     addCell(snapshot.name).
                     addCell(toLocalDateTimeFormat(new Date(snapshot.timestamp))).
