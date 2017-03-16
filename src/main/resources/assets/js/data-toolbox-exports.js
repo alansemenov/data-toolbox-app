@@ -1,9 +1,9 @@
-var exportsTable = createExportsTable();
-var exportsTableNoContent = new RcdMaterialTableNoContent('No export found').init();
-var exportsView = createExportsView();
+const exportsTable = createExportsTable();
+const exportsTableNoContent = new RcdMaterialTableNoContent('No export found').init();
+const exportsView = createExportsView();
 
 function createExportsTable() {
-    var exportsTable = new RcdMaterialTable().init();
+    const exportsTable = new RcdMaterialTable().init();
     exportsTable.header.addCell('Export name').
         addCell('Timestamp');
     return exportsTable;
@@ -11,26 +11,27 @@ function createExportsTable() {
 
 function createExportsView() {
     //Creates the export view
-    var exportsViewPathElements = [{name: 'Data Toolbox', callback: () => router.setState()}, {name: 'Exports'}];
-    var exportsViewDescription = 'An export is a serialization of a given content/node. ' +
-                                 'While the export/import focuses on a given content, the dump/load is used to export an entire system (all repositories and branches). ' +
-                                 'This makes exports well suited for transfering a specific content to another installation. ' +
-                                 'Warning: The current export mechanism does not export old versions of your data. You will loose the version history of your contents. ' +
-                                 'See <a href="http://xp.readthedocs.io/en/stable/operations/export.html">Export and Import</a> for more information.';
-    var exportsView = new RcdMaterialView('exports', exportsViewPathElements, exportsViewDescription).init();
+    const exportsViewPathElements = [{name: 'Data Toolbox', callback: () => router.setState()}, {name: 'Exports'}];
+    const exportsViewDescription = 'An export is a serialization of a given content/node. ' +
+                                   'While the export/import focuses on a given content, the dump/load is used to export an entire system (all repositories and branches). ' +
+                                   'This makes exports well suited for transfering a specific content to another installation. ' +
+                                   'Warning: The current export mechanism does not export old versions of your data. You will loose the version history of your contents. ' +
+                                   'See <a href="http://xp.readthedocs.io/en/stable/operations/export.html">Export and Import</a> for more information.';
+    const exportsView = new RcdMaterialView('exports', exportsViewPathElements, exportsViewDescription).init();
 
-    var deleteExportIcon = new RcdMaterialActionIcon('delete', deleteExports).init().setTooltip('Delete export').enable(false);
-    var downloadExportIcon = new RcdMaterialActionIcon('file_download', dowloadExports).init().setTooltip('Download export').enable(false);
-    var uploadExportIcon = new RcdMaterialActionIcon('file_upload', uploadExport).init().setTooltip('Upload export').enable(false);
+    const deleteExportIcon = new RcdMaterialActionIcon('delete', deleteExports).init().setTooltip('Delete export').enable(false);
+    const downloadExportIcon = new RcdMaterialActionIcon('file_download',
+        dowloadExports).init().setTooltip('Download export').enable(false);
+    const uploadExportIcon = new RcdMaterialActionIcon('file_upload', uploadExport).init().setTooltip('Upload export').enable(false);
 
     exportsTable.addSelectionListener(() => {
-        var nbRowsSelected = exportsTable.getSelectedRows().length;
+        const nbRowsSelected = exportsTable.getSelectedRows().length;
         deleteExportIcon.enable(nbRowsSelected > 0);
         downloadExportIcon.enable(nbRowsSelected > 0);
         uploadExportIcon.enable(nbRowsSelected == 0);
     });
 
-    var exportsCard = new RcdMaterialCard('Exports').
+    const exportsCard = new RcdMaterialCard('Exports').
         init().
         addIcon(deleteExportIcon).
         addIcon(downloadExportIcon).
@@ -48,8 +49,8 @@ function deleteExports() {
 }
 
 function doDeleteExports() {
-    var infoDialog = showInfoDialog("Deleting export...");
-    var exportNames = exportsTable.getSelectedRows().map((row) => row.attributes['export']);
+    const infoDialog = showInfoDialog("Deleting export...");
+    const exportNames = exportsTable.getSelectedRows().map((row) => row.attributes['export']);
     $.ajax({
         method: 'POST',
         url: config.servicesUrl + '/export-delete',
@@ -62,7 +63,7 @@ function doDeleteExports() {
 }
 
 function retrieveExports() {
-    var infoDialog = showInfoDialog("Retrieving exports...");
+    const infoDialog = showInfoDialog("Retrieving exports...");
     return $.ajax({
         url: config.servicesUrl + '/export-list'
     }).done(function (result) {
@@ -85,15 +86,15 @@ function retrieveExports() {
 }
 
 function dowloadExports() {
-    var exportNames = exportsTable.getSelectedRows().
+    const exportNames = exportsTable.getSelectedRows().
         map((row) => row.attributes['export']);
 
-    var exportNamesInput = new RcdInputElement().init().
+    const exportNamesInput = new RcdInputElement().init().
         setAttribute('type', 'hidden').
         setAttribute('name', 'exportNames').
         setAttribute('value', exportNames);
 
-    var downloadForm = new RcdFormElement().init().
+    const downloadForm = new RcdFormElement().init().
         setAttribute('action', config.servicesUrl + '/export-download').
         setAttribute('method', 'post').
         addChild(exportNamesInput);
@@ -105,7 +106,7 @@ function dowloadExports() {
 
 var uploadForm;
 function uploadExport() {
-    var uploadFileInput = new RcdInputElement().init().
+    const uploadFileInput = new RcdInputElement().init().
         setAttribute('type', 'file').
         setAttribute('name', 'uploadFile').
         addChangeListener(doUploadExport);
@@ -117,8 +118,8 @@ function uploadExport() {
 }
 
 function doUploadExport() {
-    var infoDialog = showInfoDialog("Uploading export...");
-    var formData = new FormData(uploadForm.getDomElement());
+    const infoDialog = showInfoDialog("Uploading export...");
+    const formData = new FormData(uploadForm.getDomElement());
     $.ajax({
         method: 'POST',
         url: config.servicesUrl + '/export-upload',

@@ -1,34 +1,34 @@
-var snapshotsTable = createSnapshotsTable();
-var snapshotsTableNoContent = new RcdMaterialTableNoContent('No snapshot found').init();
-var snapshotsView = createSnapshotsView();
+const snapshotsTable = createSnapshotsTable();
+const snapshotsTableNoContent = new RcdMaterialTableNoContent('No snapshot found').init();
+const snapshotsView = createSnapshotsView();
 
 function createSnapshotsTable() {
-    var snapshotsTable = new RcdMaterialTable().init();
+    const snapshotsTable = new RcdMaterialTable().init();
     snapshotsTable.header.addCell('Snapshot name').addCell('Timestamp');
     return snapshotsTable;
 }
 
 function createSnapshotsView() {
     //Creates the snapshot view
-    var snapshotsViewPathElements = [{name: 'Data Toolbox', callback: () => router.setState()}, {name: 'Snapshots'}];
-    var snapshotsViewDescription = 'A snapshot is a record of your Enonic XP indexes at a particular point in time. ' +
+    const snapshotsViewPathElements = [{name: 'Data Toolbox', callback: () => router.setState()}, {name: 'Snapshots'}];
+    const snapshotsViewDescription = 'A snapshot is a record of your Enonic XP indexes at a particular point in time. ' +
                                    'Your first snapshot will be a complete copy of your indexes, but all subsequent snapshots will save the delta between the existing snapshots and the current state.' +
                                    'This makes snapshots optimized for repetitive saves and allow to quickly rollback to a previous state in one click. It is also used, in addition to blobs backup, for backing up your data. ' +
                                    'See <a href="http://xp.readthedocs.io/en/stable/operations/backup.html#backing-up-indexes">Backing up indexes</a> for more information.';
-    var snapshotsView = new RcdMaterialView('snapshots', snapshotsViewPathElements, snapshotsViewDescription).init();
+    const snapshotsView = new RcdMaterialView('snapshots', snapshotsViewPathElements, snapshotsViewDescription).init();
 
-    var createSnapshotIcon = new RcdMaterialActionIcon('add_circle', createSnapshot).init().setTooltip('Create snapshot');
-    var deleteSnapshotsIcon = new RcdMaterialActionIcon('delete', deleteSnapshots).init().setTooltip('Delete snapshot');
-    var loadSnapshotIcon = new RcdMaterialActionIcon('restore', restoreSnapshot).init().enable(false).setTooltip('Restore snapshot');
+    const createSnapshotIcon = new RcdMaterialActionIcon('add_circle', createSnapshot).init().setTooltip('Create snapshot');
+    const deleteSnapshotsIcon = new RcdMaterialActionIcon('delete', deleteSnapshots).init().setTooltip('Delete snapshot');
+    const loadSnapshotIcon = new RcdMaterialActionIcon('restore', restoreSnapshot).init().enable(false).setTooltip('Restore snapshot');
 
     snapshotsTable.addSelectionListener(() => {
-        var nbRowsSelected = snapshotsTable.getSelectedRows().length;
+        const nbRowsSelected = snapshotsTable.getSelectedRows().length;
         createSnapshotIcon.enable(nbRowsSelected == 0);
         deleteSnapshotsIcon.enable(nbRowsSelected > 0);
         loadSnapshotIcon.enable(nbRowsSelected == 1);
     });
 
-    var snapshotsCard = new RcdMaterialCard('Snapshots').
+    const snapshotsCard = new RcdMaterialCard('Snapshots').
         init().
         addIcon(createSnapshotIcon).
         addIcon(deleteSnapshotsIcon).
@@ -42,7 +42,7 @@ function createSnapshotsView() {
 }
 
 function createSnapshot() {
-    var defaultSnapshotName = 'snapshot-' + toLocalDateTimeFormat(new Date(), '-', '-');
+    const defaultSnapshotName = 'snapshot-' + toLocalDateTimeFormat(new Date(), '-', '-');
     showInputDialog({
         title: "Create snapshot",
         ok: "CREATE",
@@ -54,7 +54,7 @@ function createSnapshot() {
 }
 
 function doCreateSnapshot(snapshotName) {
-    var infoDialog = showInfoDialog("Creating snapshot...");
+    const infoDialog = showInfoDialog("Creating snapshot...");
     $.ajax({
         method: 'POST',
         url: config.servicesUrl + '/snapshot-create',
@@ -73,8 +73,8 @@ function deleteSnapshots() {
 }
 
 function doDeleteSnapshots() {
-    var infoDialog = showInfoDialog("Deleting snapshot...");
-    var snapshotNames = snapshotsTable.getSelectedRows().
+    const infoDialog = showInfoDialog("Deleting snapshot...");
+    const snapshotNames = snapshotsTable.getSelectedRows().
         map((row) => row.attributes['snapshot']);
     $.ajax({
         method: 'POST',
@@ -88,8 +88,8 @@ function doDeleteSnapshots() {
 }
 
 function restoreSnapshot() {
-    var infoDialog = showInfoDialog("Restoring snapshot...");
-    var snapshotName = snapshotsTable.getSelectedRows().
+    const infoDialog = showInfoDialog("Restoring snapshot...");
+    const snapshotName = snapshotsTable.getSelectedRows().
         map((row) => row.attributes['snapshot'])[0];
     $.ajax({
         method: 'POST',
@@ -103,7 +103,7 @@ function restoreSnapshot() {
 }
 
 function retrieveSnapshots() {
-    var infoDialog = showInfoDialog("Retrieving snapshots...");
+    const infoDialog = showInfoDialog("Retrieving snapshots...");
     return $.ajax({
         url: config.servicesUrl + '/snapshot-list'
     }).done(function (result) {

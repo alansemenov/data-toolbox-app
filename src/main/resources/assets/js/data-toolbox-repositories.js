@@ -1,32 +1,32 @@
-var repositoriesTable = createRepositoriesTable();
-var repositoriesView = createRepositoriesView();
+const repositoriesTable = createRepositoriesTable();
+const repositoriesView = createRepositoriesView();
 function createRepositoriesTable() {
-    var repositoriesTable = new RcdMaterialTable().init();
+    const repositoriesTable = new RcdMaterialTable().init();
     repositoriesTable.header.addCell('Repository name');
     return repositoriesTable;
 }
 
 function createRepositoriesView() {
     //Creates the node view
-    var repositoriesViewPathElements = [{name: 'Data Toolbox', callback: () => router.setState()}, {name: 'Repositories'}];
-    var repositoriesViewDescription = 'Enonic XP data is split in repositories. ' +
+    const repositoriesViewPathElements = [{name: 'Data Toolbox', callback: () => router.setState()}, {name: 'Repositories'}];
+    const repositoriesViewDescription = 'Enonic XP data is split in repositories. ' +
                                       'Data stored in a repository will typically belong to a common domain. ' +
                                       'Enonic XP uses by default 2 repositories: ' +
                                       '"system-repo", the core repository, containing users, groups, roles, references to other repositories, installed application, etc and ' +
                                       '"cms-repo", the content domain repository, containing the data managed by Content Studio. ' +
                                       'See <a href="http://xp.readthedocs.io/en/stable/developer/node-domain/repository.html">Repository</a> for more information.';
-    var repositoriesView = new RcdMaterialView('repositories', repositoriesViewPathElements, repositoriesViewDescription).init();
+    const repositoriesView = new RcdMaterialView('repositories', repositoriesViewPathElements, repositoriesViewDescription).init();
 
-    var createRepositoryIcon = new RcdMaterialActionIcon('add_circle', createRepository).init().setTooltip('Create repository');
-    var deleteRepositoryIcon = new RcdMaterialActionIcon('delete', deleteRepositories).init().setTooltip('Delete repository').enable(false);
+    const createRepositoryIcon = new RcdMaterialActionIcon('add_circle', createRepository).init().setTooltip('Create repository');
+    const deleteRepositoryIcon = new RcdMaterialActionIcon('delete', deleteRepositories).init().setTooltip('Delete repository').enable(false);
 
     repositoriesTable.addSelectionListener(() => {
-        var nbRowsSelected = repositoriesTable.getSelectedRows().length;
+        const nbRowsSelected = repositoriesTable.getSelectedRows().length;
         createRepositoryIcon.enable(nbRowsSelected == 0);
         deleteRepositoryIcon.enable(nbRowsSelected > 0);
     });
 
-    var repositoriesCard = new RcdMaterialCard('Repositories').
+    const repositoriesCard = new RcdMaterialCard('Repositories').
         init().
         addIcon(createRepositoryIcon).
         addIcon(deleteRepositoryIcon).
@@ -38,7 +38,7 @@ function createRepositoriesView() {
 }
 
 function createRepository() {
-    var defaultRepositoryName = 'repository-' + toLocalDateTimeFormat(new Date(), '-', '-').toLowerCase();
+    const defaultRepositoryName = 'repository-' + toLocalDateTimeFormat(new Date(), '-', '-').toLowerCase();
     showInputDialog({
         title: "Create repository",
         ok: "CREATE",
@@ -50,7 +50,7 @@ function createRepository() {
 }
 
 function doCreateRepository(repositoryName) {
-    var infoDialog = showInfoDialog("Creating repository...");
+    const infoDialog = showInfoDialog("Creating repository...");
     $.ajax({
         method: 'POST',
         url: config.servicesUrl + '/repository-create',
@@ -69,8 +69,8 @@ function deleteRepositories() {
 }
 
 function doDeleteRepositories() {
-    var infoDialog = showInfoDialog("Deleting repository...");
-    var repositoryNames = repositoriesTable.getSelectedRows().map((row) => row.attributes['repository']);
+    const infoDialog = showInfoDialog("Deleting repository...");
+    const repositoryNames = repositoriesTable.getSelectedRows().map((row) => row.attributes['repository']);
     $.ajax({
         method: 'POST',
         url: config.servicesUrl + '/repository-delete',
@@ -83,7 +83,7 @@ function doDeleteRepositories() {
 }
 
 function retrieveRepositories() {
-    var infoDialog = showInfoDialog("Retrieving repositories...");
+    const infoDialog = showInfoDialog("Retrieving repositories...");
     return $.ajax({
         url: config.servicesUrl + '/repository-list'
     }).done(function (result) {
@@ -92,7 +92,7 @@ function retrieveRepositories() {
             result.success.
                 sort((repository1, repository2) => repository1.name - repository2.name).
                 forEach((repository) => {
-                    var row = repositoriesTable.body.createRow().
+                    const row = repositoriesTable.body.createRow().
                         addCell(repository.name).
                         setAttribute('repository', repository.name).
                         addClass('clickable').

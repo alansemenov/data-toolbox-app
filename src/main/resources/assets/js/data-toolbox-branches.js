@@ -1,34 +1,34 @@
-var branchesTable = createBranchesTable();
-var branchesView = createBranchesView();
+const branchesTable = createBranchesTable();
+const branchesView = createBranchesView();
 
 function createBranchesTable() {
-    var branchesTable = new RcdMaterialTable().init();
+    const branchesTable = new RcdMaterialTable().init();
     branchesTable.header.addCell('Branch name');
     return branchesTable;
 }
 
 function createBranchesView() {
     //Creates the node view
-    var branchesViewPathElements = [{name: 'Data Toolbox', callback: () => router.setState()}, {name: 'Branches'}];
-    var branchesViewDescription = 'A branch is a set of data in a repository. ' +
+    const branchesViewPathElements = [{name: 'Data Toolbox', callback: () => router.setState()}, {name: 'Branches'}];
+    const branchesViewDescription = 'A branch is a set of data in a repository. ' +
                                   'All repositories have a default branch called master. ' +
                                   'Any number of branches could be added to facilitate your data. ' +
                                   'For example, the cms-repo repository contains two branches: ' +
                                   '"draft" containing the content as seen in the Content Studio and ' +
                                   '"master" containing the published content served by the portal. ' +
                                   'See <a href="http://xp.readthedocs.io/en/stable/developer/node-domain/branch.html">Branch</a> for more information.';
-    var branchesView = new RcdMaterialView('branches', branchesViewPathElements, branchesViewDescription).init();
+    const branchesView = new RcdMaterialView('branches', branchesViewPathElements, branchesViewDescription).init();
 
-    var createBranchIcon = new RcdMaterialActionIcon('add_circle', createBranch).init().setTooltip('Create branch');
-    var deleteBranchIcon = new RcdMaterialActionIcon('delete', deleteBranches).init().setTooltip('Delete branch').enable(false);
+    const createBranchIcon = new RcdMaterialActionIcon('add_circle', createBranch).init().setTooltip('Create branch');
+    const deleteBranchIcon = new RcdMaterialActionIcon('delete', deleteBranches).init().setTooltip('Delete branch').enable(false);
 
     branchesTable.addSelectionListener(() => {
-        var nbRowsSelected = branchesTable.getSelectedRows().length;
+        const nbRowsSelected = branchesTable.getSelectedRows().length;
         createBranchIcon.enable(nbRowsSelected == 0);
         deleteBranchIcon.enable(nbRowsSelected > 0);
     });
 
-    var branchesCard = new RcdMaterialCard('Branches').
+    const branchesCard = new RcdMaterialCard('Branches').
         init().
         addIcon(createBranchIcon).
         addIcon(deleteBranchIcon).
@@ -40,7 +40,7 @@ function createBranchesView() {
 }
 
 function createBranch() {
-    var defaultBranchName = 'branch-' + toLocalDateTimeFormat(new Date(), '-', '-').toLowerCase();
+    const defaultBranchName = 'branch-' + toLocalDateTimeFormat(new Date(), '-', '-').toLowerCase();
     showInputDialog({
         title: "Create branch",
         ok: "CREATE",
@@ -52,7 +52,7 @@ function createBranch() {
 }
 
 function doCreateBranch(branchName) {
-    var infoDialog = showInfoDialog("Creating branch...");
+    const infoDialog = showInfoDialog("Creating branch...");
     $.ajax({
         method: 'POST',
         url: config.servicesUrl + '/branch-create',
@@ -72,8 +72,8 @@ function deleteBranches() {
 }
 
 function doDeleteBranches() {
-    var infoDialog = showInfoDialog("Deleting branch...");
-    var branchNames = branchesTable.getSelectedRows().map((row) => row.attributes['branch']);
+    const infoDialog = showInfoDialog("Deleting branch...");
+    const branchNames = branchesTable.getSelectedRows().map((row) => row.attributes['branch']);
     $.ajax({
         method: 'POST',
         url: config.servicesUrl + '/branch-delete',
@@ -89,7 +89,7 @@ function doDeleteBranches() {
 }
 
 function retrieveBranches() {
-    var infoDialog = showInfoDialog("Retrieving branches...");
+    const infoDialog = showInfoDialog("Retrieving branches...");
     return $.ajax({
         method: 'POST',
         url: config.servicesUrl + '/repository-get',
@@ -102,7 +102,7 @@ function retrieveBranches() {
                 branches.
                 sort((branch1, branch2) => branch1 - branch2).
                 forEach((branch) => {
-                    var row = branchesTable.body.createRow().
+                    const row = branchesTable.body.createRow().
                         addCell(branch).
                         setAttribute('branch', branch).
                         addClass('clickable').
@@ -118,7 +118,7 @@ function retrieveBranches() {
 }
 
 function refreshBranchesViewTitle(view) {
-    var repositoryName = router.getParameters().repo;
+    const repositoryName = router.getParameters().repo;
     view.setPathElements([{name: 'Data Toolbox', callback: () => router.setState()},
         {name: 'Repositories', callback: () => router.setState('repositories')}, {name: repositoryName}]);
 }

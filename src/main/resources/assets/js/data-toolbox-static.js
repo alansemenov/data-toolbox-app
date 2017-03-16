@@ -3,7 +3,7 @@ function createHeader() {
 }
 
 function createMain() {
-    var main = new RcdMaterialMain().init();
+    const main = new RcdMaterialMain().init();
 
     //Fills the nav bar
     main.nav.addLink('dumps', 'file_download', 'Dumps', () => router.setState('dumps')).

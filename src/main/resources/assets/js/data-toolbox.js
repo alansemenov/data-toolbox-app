@@ -1,6 +1,6 @@
 //Create the static part
-var header = createHeader();
-var main = createMain();
+const header = createHeader();
+const main = createMain();
 
 //Adds the views
 main.content.addView(presentationView).
@@ -16,7 +16,7 @@ header.setParent(document.body);
 main.setParent(document.body);
 
 //Sets up the router
-var router = new RcdHistoryRouter();
+const router = new RcdHistoryRouter();
 router.addDefaultRoute(() => {
     main.nav.selectLink();
     main.content.displayView(presentationView.viewId)

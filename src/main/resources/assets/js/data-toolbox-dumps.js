@@ -1,9 +1,9 @@
-var dumpsTable = createDumpsTable();
-var dumpsTableNoContent = new RcdMaterialTableNoContent('No dump found').init();
-var dumpsView = createDumpsView();
+const dumpsTable = createDumpsTable();
+const dumpsTableNoContent = new RcdMaterialTableNoContent('No dump found').init();
+const dumpsView = createDumpsView();
 
 function createDumpsTable() {
-    var dumpsTable = new RcdMaterialTable().init();
+    const dumpsTable = new RcdMaterialTable().init();
     dumpsTable.header.addCell('Dump name').
         //addCell('Size (bytes)').
         addCell('Timestamp');
@@ -12,22 +12,22 @@ function createDumpsTable() {
 
 function createDumpsView() {
     //Creates the dump view
-    var dumpsViewPathElements = [{name: 'Data Toolbox', callback: () => router.setState()}, {name: 'Dumps'}];
-    var dumpsViewDescription = 'A dump is an export of your data (contents, users, groups and roles) from your Enonic XP server to a serialized format. ' +
-                               'While the export/import focuses on a given content, the dump/load is used to export an entire system (all repositories and branches). ' +
-                               'This makes dumps well suited for migrating your data to another installation. ' +
-                               'Warning: The current dump mechanism does not export old versions of your data. You will loose the version history of your contents. ' +
-                               'See <a href="http://xp.readthedocs.io/en/stable/operations/export.html">Export and Import</a> for more information.';
-    var dumpsView = new RcdMaterialView('dumps', dumpsViewPathElements, dumpsViewDescription).init();
+    const dumpsViewPathElements = [{name: 'Data Toolbox', callback: () => router.setState()}, {name: 'Dumps'}];
+    const dumpsViewDescription = 'A dump is an export of your data (contents, users, groups and roles) from your Enonic XP server to a serialized format. ' +
+                                 'While the export/import focuses on a given content, the dump/load is used to export an entire system (all repositories and branches). ' +
+                                 'This makes dumps well suited for migrating your data to another installation. ' +
+                                 'Warning: The current dump mechanism does not export old versions of your data. You will loose the version history of your contents. ' +
+                                 'See <a href="http://xp.readthedocs.io/en/stable/operations/export.html">Export and Import</a> for more information.';
+    const dumpsView = new RcdMaterialView('dumps', dumpsViewPathElements, dumpsViewDescription).init();
 
-    var createDumpIcon = new RcdMaterialActionIcon('add_circle', createDump).init().setTooltip('Create dump');
-    var deleteDumpIcon = new RcdMaterialActionIcon('delete', deleteDumps).init().setTooltip('Delete dump').enable(false);
-    var loadDumpIcon = new RcdMaterialActionIcon('refresh', loadDumps).init().setTooltip('Load dump').enable(false);
-    var downloadDumpIcon = new RcdMaterialActionIcon('file_download', dowloadDumps).init().setTooltip('Download dump').enable(false);
-    var uploadDumpIcon = new RcdMaterialActionIcon('file_upload', uploadDump).init().setTooltip('Upload dump').enable(false);
+    const createDumpIcon = new RcdMaterialActionIcon('add_circle', createDump).init().setTooltip('Create dump');
+    const deleteDumpIcon = new RcdMaterialActionIcon('delete', deleteDumps).init().setTooltip('Delete dump').enable(false);
+    const loadDumpIcon = new RcdMaterialActionIcon('refresh', loadDumps).init().setTooltip('Load dump').enable(false);
+    const downloadDumpIcon = new RcdMaterialActionIcon('file_download', dowloadDumps).init().setTooltip('Download dump').enable(false);
+    const uploadDumpIcon = new RcdMaterialActionIcon('file_upload', uploadDump).init().setTooltip('Upload dump').enable(false);
 
     dumpsTable.addSelectionListener(() => {
-        var nbRowsSelected = dumpsTable.getSelectedRows().length;
+        const nbRowsSelected = dumpsTable.getSelectedRows().length;
         createDumpIcon.enable(nbRowsSelected == 0);
         deleteDumpIcon.enable(nbRowsSelected > 0);
         loadDumpIcon.enable(nbRowsSelected > 0);
@@ -35,7 +35,7 @@ function createDumpsView() {
         uploadDumpIcon.enable(nbRowsSelected == 0);
     });
 
-    var dumpsCard = new RcdMaterialCard('Dumps').
+    const dumpsCard = new RcdMaterialCard('Dumps').
         init().
         addIcon(createDumpIcon).
         addIcon(deleteDumpIcon).
@@ -51,7 +51,7 @@ function createDumpsView() {
 }
 
 function createDump() {
-    var defaultDumpName = 'dump-' + toLocalDateTimeFormat(new Date(), '-', '-');
+    const defaultDumpName = 'dump-' + toLocalDateTimeFormat(new Date(), '-', '-');
     showInputDialog({
         title: "Create dump",
         ok: "CREATE",
@@ -63,7 +63,7 @@ function createDump() {
 }
 
 function doCreateDump(dumpName) {
-    var infoDialog = showInfoDialog("Creating dump...");
+    const infoDialog = showInfoDialog("Creating dump...");
     $.ajax({
         method: 'POST',
         url: config.servicesUrl + '/dump-create',
@@ -78,8 +78,8 @@ function doCreateDump(dumpName) {
 }
 
 function loadDumps() {
-    var infoDialog = showInfoDialog("Loading dump...");
-    var dumpNames = dumpsTable.getSelectedRows().map((row) => row.attributes['dump']);
+    const infoDialog = showInfoDialog("Loading dump...");
+    const dumpNames = dumpsTable.getSelectedRows().map((row) => row.attributes['dump']);
     $.ajax({
         method: 'POST',
         url: config.servicesUrl + '/dump-load',
@@ -96,8 +96,8 @@ function deleteDumps() {
 }
 
 function doDeleteDumps() {
-    var infoDialog = showInfoDialog("Deleting dump...");
-    var dumpNames = dumpsTable.getSelectedRows().map((row) => row.attributes['dump']);
+    const infoDialog = showInfoDialog("Deleting dump...");
+    const dumpNames = dumpsTable.getSelectedRows().map((row) => row.attributes['dump']);
     $.ajax({
         method: 'POST',
         url: config.servicesUrl + '/dump-delete',
@@ -110,7 +110,7 @@ function doDeleteDumps() {
 }
 
 function retrieveDumps() {
-    var infoDialog = showInfoDialog("Retrieving dumps...");
+    const infoDialog = showInfoDialog("Retrieving dumps...");
     return $.ajax({
         url: config.servicesUrl + '/dump-list'
     }).done(function (result) {
@@ -133,15 +133,15 @@ function retrieveDumps() {
 }
 
 function dowloadDumps() {
-    var dumpNames = dumpsTable.getSelectedRows().
+    const dumpNames = dumpsTable.getSelectedRows().
         map((row) => row.attributes['dump']);
 
-    var dumpNamesInput = new RcdInputElement().init().
+    const dumpNamesInput = new RcdInputElement().init().
         setAttribute('type', 'hidden').
         setAttribute('name', 'dumpNames').
         setAttribute('value', dumpNames);
 
-    var downloadForm = new RcdFormElement().init().
+    const downloadForm = new RcdFormElement().init().
         setAttribute('action', config.servicesUrl + '/dump-download').
         setAttribute('method', 'post').
         addChild(dumpNamesInput);
@@ -153,7 +153,7 @@ function dowloadDumps() {
 
 var uploadForm;
 function uploadDump() {
-    var uploadFileInput = new RcdInputElement().init().
+    const uploadFileInput = new RcdInputElement().init().
         setAttribute('type', 'file').
         setAttribute('name', 'uploadFile').
         addChangeListener(doUploadDump);
@@ -165,8 +165,8 @@ function uploadDump() {
 }
 
 function doUploadDump() {
-    var infoDialog = showInfoDialog("Uploading dump...");
-    var formData = new FormData(uploadForm.getDomElement());
+    const infoDialog = showInfoDialog("Uploading dump...");
+    const formData = new FormData(uploadForm.getDomElement());
     $.ajax({
         method: 'POST',
         url: config.servicesUrl + '/dump-upload',

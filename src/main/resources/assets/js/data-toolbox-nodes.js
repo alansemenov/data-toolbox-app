@@ -1,11 +1,11 @@
-var nodesTable = createNodesTable();
-var nodesTableNoContent = new RcdMaterialTableNoContent('No child node found').init();
-var nodesTableNav = new RcdMaterialTableNav(navigateBefore, navigateAfter).init();
-var nodesCard = createNodesCard();
-var nodesView = createNodesView();
+const nodesTable = createNodesTable();
+const nodesTableNoContent = new RcdMaterialTableNoContent('No child node found').init();
+const nodesTableNav = new RcdMaterialTableNav(navigateBefore, navigateAfter).init();
+const nodesCard = createNodesCard();
+const nodesView = createNodesView();
 
 function createNodesTable() {
-    var nodesTable = new RcdMaterialTable().init();
+    const nodesTable = new RcdMaterialTable().init();
     nodesTable.header.addCell('Node name').
         addCell('Node ID').
         addCell('');
@@ -21,28 +21,28 @@ function navigateAfter() {
 }
 
 function navigate(after) {
-    var repositoryName = router.getParameters().repo;
-    var branchName = router.getParameters().branch;
-    var path = router.getParameters().path;
-    var start = router.getParameters().start ? parseInt(router.getParameters().start) : 0;
-    var count = router.getParameters().count ? parseInt(router.getParameters().count) : 50;
+    const repositoryName = router.getParameters().repo;
+    const branchName = router.getParameters().branch;
+    const path = router.getParameters().path;
+    let start = router.getParameters().start ? parseInt(router.getParameters().start) : 0;
+    const count = router.getParameters().count ? parseInt(router.getParameters().count) : 50;
     start = after ? start + count : Math.max(0, start - count);
     router.setState('nodes?repo=' + repositoryName + '&branch=' + branchName + (path ? '&path=' + path : '') + '&start=' + start +
                     '&count=' + count);
 }
 
 function createNodesCard() {
-    var exportNodeIcon = new RcdCustomActionIcon(config.assetsUrl + '/icons/export-icon.svg', exportNode).
+    const exportNodeIcon = new RcdCustomActionIcon(config.assetsUrl + '/icons/export-icon.svg', exportNode).
         init().
         setTooltip('Export node').
         enable(false);
-    var importNodeIcon = new RcdCustomActionIcon(config.assetsUrl + '/icons/import-icon.svg', importNode).
+    const importNodeIcon = new RcdCustomActionIcon(config.assetsUrl + '/icons/import-icon.svg', importNode).
         init().
         setTooltip('Import node').
         enable(false);
-    var deleteNodeIcon = new RcdMaterialActionIcon('delete', deleteNodes).init().setTooltip('Delete node').enable(false);
+    const deleteNodeIcon = new RcdMaterialActionIcon('delete', deleteNodes).init().setTooltip('Delete node').enable(false);
     nodesTable.addSelectionListener(() => {
-        var nbRowsSelected = nodesTable.getSelectedRows().length;
+        const nbRowsSelected = nodesTable.getSelectedRows().length;
         exportNodeIcon.enable(nbRowsSelected == 1);
         importNodeIcon.enable(nbRowsSelected == 0);
         deleteNodeIcon.enable(nbRowsSelected > 0);
@@ -60,8 +60,8 @@ function createNodesCard() {
 
 function createNodesView() {
     //Creates the node view
-    var nodesViewPathElements = [{name: 'Data Toolbox', callback: () => router.setState()}, {name: 'Nodes'}];
-    var nodesViewDescription = 'A Node represents a single storable entity of data. ' +
+    const nodesViewPathElements = [{name: 'Data Toolbox', callback: () => router.setState()}, {name: 'Nodes'}];
+    const nodesViewDescription = 'A Node represents a single storable entity of data. ' +
                                'It can be compared to a row in sql or a document in document oriented storage models. ' +
                                'See <a href="http://xp.readthedocs.io/en/stable/developer/node-domain/nodes.html">Nodes</a> for more information. ' +
                                'The nodes are represented here in a tree structure. ' +
@@ -75,7 +75,7 @@ function createNodesView() {
 }
 
 function retrieveNodeInfo(nodeKey) {
-    var infoDialog = showInfoDialog("Retrieving node info...");
+    const infoDialog = showInfoDialog("Retrieving node info...");
     return $.ajax({
         method: 'POST',
         url: config.servicesUrl + '/node-get',
@@ -96,10 +96,10 @@ function retrieveNodeInfo(nodeKey) {
 }
 
 function exportNode() {
-    var nodeName = router.getParameters().path
+    const nodeName = router.getParameters().path
         ? (nodesTable.getSelectedRows().map((row) => row.attributes['name'])[0] || 'export')
         : router.getParameters().repo + '-' + router.getParameters().branch;
-    var defaultExportName = nodeName + '-' + toLocalDateTimeFormat(new Date(), '-', '-');
+    const defaultExportName = nodeName + '-' + toLocalDateTimeFormat(new Date(), '-', '-');
     showInputDialog({
         title: "Export node",
         ok: "EXPORT",
@@ -111,7 +111,7 @@ function exportNode() {
 }
 
 function doExportNode(exportName) {
-    var infoDialog = showInfoDialog("Exporting node...");
+    const infoDialog = showInfoDialog("Exporting node...");
     return $.ajax({
         method: 'POST',
         url: config.servicesUrl + '/node-export',
@@ -129,12 +129,12 @@ function doExportNode(exportName) {
 }
 
 function importNode() {
-    var infoDialog = showInfoDialog("Retrieving exports...");
+    const infoDialog = showInfoDialog("Retrieving exports...");
     return $.ajax({
         url: config.servicesUrl + '/export-list'
     }).done(function (result) {
         if (handleResultError(result)) {
-            var exportNames = result.success.
+            const exportNames = result.success.
                 sort((export1, export2) => export1.timestamp - export2.timestamp).
                 map((anExport) =>anExport.name);
             doImportNode(exportNames);
@@ -155,7 +155,7 @@ function doImportNode(exportNames) {
 }
 
 function doDoImportNode(exportName) { //TODO Find proper naming convention
-    var infoDialog = showInfoDialog("Importing node...");
+    const infoDialog = showInfoDialog("Importing node...");
     return $.ajax({
         method: 'POST',
         url: config.servicesUrl + '/node-import',
@@ -177,8 +177,8 @@ function deleteNodes() {
 }
 
 function doDeleteNodes() {
-    var infoDialog = showInfoDialog("Deleting node...");
-    var nodeKeys = nodesTable.getSelectedRows().map((row) => row.attributes['id']);
+    const infoDialog = showInfoDialog("Deleting node...");
+    const nodeKeys = nodesTable.getSelectedRows().map((row) => row.attributes['id']);
     $.ajax({
         method: 'POST',
         url: config.servicesUrl + '/node-delete',
@@ -195,7 +195,7 @@ function doDeleteNodes() {
 }
 
 function retrieveNodes() {
-    var infoDialog = showInfoDialog("Retrieving nodes...");
+    const infoDialog = showInfoDialog("Retrieving nodes...");
     return $.ajax({
         method: 'POST',
         url: config.servicesUrl + '/node-getchildren',
@@ -215,10 +215,10 @@ function retrieveNodes() {
                 sort((node1, node2) => node1.name - node2.name).
                 forEach((node) => {
 
-                    var retrieveNodeInfoIcon = new RcdMaterialActionIcon('info', () => retrieveNodeInfo(node._id)).
+                    const retrieveNodeInfoIcon = new RcdMaterialActionIcon('info', () => retrieveNodeInfo(node._id)).
                         init().
                         setTooltip('Display node details');
-                    var row = nodesTable.body.createRow().
+                    const row = nodesTable.body.createRow().
                         addCell(node._name).
                         addCell(node._id).
                         addIcon(retrieveNodeInfoIcon).
@@ -243,11 +243,11 @@ function retrieveNodes() {
 }
 
 function refreshNodesViewTitle(view) {
-    var repositoryName = router.getParameters().repo;
-    var branchName = router.getParameters().branch;
-    var path = router.getParameters().path;
+    const repositoryName = router.getParameters().repo;
+    const branchName = router.getParameters().branch;
+    const path = router.getParameters().path;
 
-    var pathElements = [{name: 'Data Toolbox', callback: () => router.setState()},
+    const pathElements = [{name: 'Data Toolbox', callback: () => router.setState()},
         {name: 'Repositories', callback: () => router.setState('repositories')},
         {name: repositoryName, callback: () => router.setState('branches?repo=' + repositoryName)},
         {name: branchName, callback: path && (() => router.setState('nodes?repo=' + repositoryName + '&branch=' + branchName))}];
@@ -262,10 +262,10 @@ function refreshNodesViewTitle(view) {
 
 
         if (path !== '/') {
-            var currentPath = '';
+            let currentPath = '';
             path.substring(1).split('/').forEach((subPathElement, index, array) => {
                 currentPath += '/' + subPathElement;
-                var constCurrentPath = currentPath;
+                const constCurrentPath = currentPath;
                 pathElements.push({
                     name: subPathElement,
                     callback: index < array.length - 1
