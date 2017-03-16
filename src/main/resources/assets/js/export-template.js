@@ -36,7 +36,7 @@
         exportWidgetContainer = document.getElementById('exportWidgetContainer');
         if (exportWidgetContainer) {
             retrieveExports();
-            card.show(exportWidgetContainer);
+            card.setParent(exportWidgetContainer);
             clearInterval(interval);
         }
     }, 100);
@@ -49,7 +49,7 @@
         }).done(function (result) {
             exportsTable.body.clear();
             if (handleResultError(result)) {
-                tableNoContent.display(result.success.length == 0);
+                tableNoContent.show(result.success.length == 0);
                 result.success.
                     sort((export1, export2) => export2.timestamp - export1.timestamp).
                     forEach((anExport) => {

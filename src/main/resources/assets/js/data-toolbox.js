@@ -12,8 +12,8 @@ main.content.addView(presentationView).
     addView(nodesView);
 
 //Appends the header and main elements
-header.show(document.body);
-main.show(document.body);
+header.setParent(document.body);
+main.setParent(document.body);
 
 //Sets up the router
 var router = new RcdHistoryRouter();

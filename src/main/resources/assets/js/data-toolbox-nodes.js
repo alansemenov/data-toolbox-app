@@ -210,7 +210,7 @@ function retrieveNodes() {
     }).done(function (result) {
         nodesTable.body.clear();
         if (handleResultError(result)) {
-            nodesTableNoContent.display(result.success.hits.length == 0);
+            nodesTableNoContent.show(result.success.hits.length == 0);
             result.success.hits.
                 sort((node1, node2) => node1.name - node2.name).
                 forEach((node) => {
@@ -226,7 +226,7 @@ function retrieveNodes() {
                         setAttribute('path', node._path).
                         setAttribute('name', node._name).
                         addClass('clickable').
-                        setClickListener(() => {
+                        addClickListener(() => {
                             router.setState('nodes?repo=' + router.getParameters().repo + '&branch=' + router.getParameters().branch +
                                             '&path=' + node._path + '&start=0&count=50');
                         });

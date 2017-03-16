@@ -68,7 +68,7 @@ function retrieveExports() {
     }).done(function (result) {
         exportsTable.body.clear();
         if (handleResultError(result)) {
-            exportsTableNoContent.display(result.success.length == 0);
+            exportsTableNoContent.show(result.success.length == 0);
             result.success.
                 sort((export1, export2) => export2.timestamp - export1.timestamp).
                 forEach((anExport) => {

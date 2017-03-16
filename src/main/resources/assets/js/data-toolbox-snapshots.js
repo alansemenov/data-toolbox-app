@@ -109,15 +109,15 @@ function retrieveSnapshots() {
     }).done(function (result) {
         snapshotsTable.body.clear();
         if (handleResultError(result)) {
-            snapshotsTableNoContent.display(result.success.length == 0);
+            snapshotsTableNoContent.show(result.success.length == 0);
             result.success.
                 sort((snapshot1, snapshot2) => snapshot2.timestamp - snapshot1.timestamp).
                 forEach((snapshot) => {
-                snapshotsTable.body.createRow().
-                    addCell(snapshot.name).
-                    addCell(toLocalDateTimeFormat(new Date(snapshot.timestamp))).
-                    setAttribute('snapshot', snapshot.name);
-            });
+                    snapshotsTable.body.createRow().
+                        addCell(snapshot.name).
+                        addCell(toLocalDateTimeFormat(new Date(snapshot.timestamp))).
+                        setAttribute('snapshot', snapshot.name);
+                });
         }
     }).fail(handleAjaxError).always(function () {
         hideDialog(infoDialog);
