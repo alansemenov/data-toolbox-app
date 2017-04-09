@@ -4,7 +4,8 @@ function createApp() {
         setDefaultRoute(createPresentationRoute()).
         addRoute(createDumpsRoute()).
         addRoute(createExportsRoute()).
-        addRoute(createSnapshotsRoute());
+        addRoute(createSnapshotsRoute()).
+        addRoute(createRepositoriesRoute());
 }
 
 function handleResultError(result) {
