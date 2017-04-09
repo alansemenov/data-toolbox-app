@@ -42,8 +42,8 @@ dependencies {
     include "com.enonic.xp:lib-repo:${xpVersion}"
     include "com.enonic.xp:lib-node:${xpVersion}"
     include "systems.rcd.fwk.core:rcd-fwk-core:7.0.2"
-    rcdjsfwkcore "systems.rcd.js.fwk.core:rcd-jsfwk-core:1.0.5-SNAPSHOT"
-    rcdjsfwkmaterial "systems.rcd.js.fwk.material:rcd-jsfwk-material:1.0.6-SNAPSHOT"
+    rcdjsfwkcore "systems.rcd.js.fwk.core:rcd-jsfwk-core:2.0.0-SNAPSHOT"
+    rcdjsfwkmaterial "systems.rcd.js.fwk.material:rcd-jsfwk-material:2.0.0-SNAPSHOT"
 }
 
 repositories {
@@ -67,18 +67,8 @@ processResources.dependsOn extractRcdJsFwk
 
 
 task mergeJsFwk( type: com.eriwen.gradle.js.tasks.CombineJsTask ) {
-    source = ["${rootProject.buildDir}/resources/main/assets/js/rcd-jsfwk-html.js",
-              "${rootProject.buildDir}/resources/main/assets/js/rcd-jsfwk-html-elements.js",
-              "${rootProject.buildDir}/resources/main/assets/js/rcd-jsfwk-html-util.js",
-              "${rootProject.buildDir}/resources/main/assets/js/rcd-jsfwk-material-icons.js",
-              "${rootProject.buildDir}/resources/main/assets/js/rcd-jsfwk-material-skeleton.js",
-              "${rootProject.buildDir}/resources/main/assets/js/rcd-jsfwk-material-inputs.js",
-              "${rootProject.buildDir}/resources/main/assets/js/rcd-jsfwk-material-tables.js",
-              "${rootProject.buildDir}/resources/main/assets/js/rcd-jsfwk-material-cards.js",
-              "${rootProject.buildDir}/resources/main/assets/js/rcd-jsfwk-material-dialogs.js",
-              "${rootProject.buildDir}/resources/main/assets/js/rcd-jsfwk-material-snackbars.js",
-              "${rootProject.buildDir}/resources/main/assets/js/rcd-jsfwk-router.js",
-              "${rootProject.buildDir}/resources/main/assets/js/rcd-jsfwk-time.js"]
+    source = ["${rootProject.buildDir}/resources/main/assets/js/rcd-jsfwk-core.js",
+              "${rootProject.buildDir}/resources/main/assets/js/rcd-jsfwk-material.js"]
     dest = file( "${rootProject.buildDir}/resources/main/assets/js/rcd-jsfwk.js" )
 }
 
@@ -105,8 +95,6 @@ task lessc( dependsOn: processResources ) << {
 }
 jar.dependsOn lessc
 jar.dependsOn dirtyWidgetWorkaround
-
-
 
 
 bintray {
