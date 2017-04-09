@@ -8,21 +8,21 @@ import systems.rcd.fwk.core.format.json.data.RcdJsonArray;
 import systems.rcd.fwk.core.format.json.data.RcdJsonObject;
 
 import com.enonic.xp.node.DeleteSnapshotParams;
-import com.enonic.xp.node.NodeService;
 import com.enonic.xp.node.RestoreParams;
 import com.enonic.xp.node.SnapshotParams;
 import com.enonic.xp.node.SnapshotResult;
 import com.enonic.xp.script.bean.BeanContext;
+import com.enonic.xp.snapshot.SnapshotService;
 
 public class RcdSnapshotScriptBean
     extends RcdScriptBean
 {
-    private Supplier<NodeService> nodeServiceSupplier;
+    private Supplier<SnapshotService> snapshotServiceSupplier;
 
     @Override
     public void initialize( final BeanContext context )
     {
-        nodeServiceSupplier = context.getService( NodeService.class );
+        snapshotServiceSupplier = context.getService( SnapshotService.class );
     }
 
     public String list()
@@ -30,7 +30,7 @@ public class RcdSnapshotScriptBean
         return runSafely( () -> {
             final RcdJsonArray snapshotJsonArray = RcdJsonService.createJsonArray();
 
-            for ( SnapshotResult snapshotResult : nodeServiceSupplier.get().listSnapshots() )
+            for ( SnapshotResult snapshotResult : snapshotServiceSupplier.get().list() )
             {
                 final RcdJsonObject snapshot = RcdJsonService.createJsonObject().
                     put( "name", snapshotResult.getName() ).
@@ -49,7 +49,7 @@ public class RcdSnapshotScriptBean
                 snapshotName( snapshotName.toLowerCase() ).
                 build();
 
-            nodeServiceSupplier.get().
+            snapshotServiceSupplier.get().
                 snapshot( snapshotParams );
 
             return createSuccessResult();
@@ -63,8 +63,8 @@ public class RcdSnapshotScriptBean
                 addAll( Arrays.asList( snapshotNames ) ).
                 build();
 
-            nodeServiceSupplier.get().
-                deleteSnapshot( deleteSnapshotParams );
+            snapshotServiceSupplier.get().
+                delete( deleteSnapshotParams );
 
             return createSuccessResult();
         }, "Error while deleting snapshots" );
@@ -77,8 +77,12 @@ public class RcdSnapshotScriptBean
             final RestoreParams restoreParams = RestoreParams.create().
                 snapshotName( snapshotName ).
                 build();
-            nodeServiceSupplier.get().
+            snapshotServiceSupplier.get().
                 restore( restoreParams );
+            //TODO
+            //Node storage invalidation
+            //Node event publishing
+            //Node event publishing
             return createSuccessResult();
         }, "Error while loading snapshot" );
     }
