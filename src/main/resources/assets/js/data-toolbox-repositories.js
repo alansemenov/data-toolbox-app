@@ -29,9 +29,14 @@ function createRepositoriesRoute() {
             if (handleResultError(result)) {
                 result.success.sort((repository1, repository2) => repository2.timestamp - repository1.timestamp).
                     forEach((repository) => {
-                        tableCard.createRow().
+                        const row = tableCard.createRow().
                             addCell(repository.name).
-                            setAttribute('repository', repository.name);
+                            setAttribute('repository', repository.name).
+                            addClass('rcd-clickable').
+                            addClickListener(() => {
+                                RcdHistoryRouter.getInstance().setState('branches?repo=' + repository.name);
+                            });
+                        row.checkbox.addClickListener((event) => event.stopPropagation());
                     });
             }
         }).fail(handleAjaxError).always(() => {
