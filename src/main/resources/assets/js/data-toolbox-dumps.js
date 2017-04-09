@@ -7,7 +7,10 @@ function createDumpsRoute() {
         addColumn('Dump name').
         addColumn('Timestamp').
         addIconArea(new RcdGoogleMaterialIconArea('add_circle', createDump).init(), {max: 0}).
-        addIconArea(new RcdGoogleMaterialIconArea('delete', deleteDumps).init(), {min: 1});
+        addIconArea(new RcdGoogleMaterialIconArea('delete', deleteDumps).init(), {min: 1}).
+        addIconArea(new RcdGoogleMaterialIconArea('refresh', loadDumps).init(), {min: 1}).
+        addIconArea(new RcdGoogleMaterialIconArea('file_download', dowloadDumps).init(), {min: 1}).
+        addIconArea(new RcdGoogleMaterialIconArea('file_upload', uploadDumps).init(), {max: 0});
     const layout = new RcdMaterialLayout().init().
         addChild(tableCard);
 
@@ -80,6 +83,61 @@ function createDumpsRoute() {
             url: config.servicesUrl + '/dump-delete',
             data: JSON.stringify({dumpNames: dumpNames}),
             contentType: 'application/json; charset=utf-8'
+        }).done(handleResultError).fail(handleAjaxError).always(() => {
+            infoDialog.close();
+            retrieveDumps();
+        });
+    }
+
+    function loadDumps() {
+        const infoDialog = showInfoDialog("Loading dumps...");
+        const dumpNames = tableCard.getSelectedRows().map((row) => row.attributes['dump']);
+        $.ajax({
+            method: 'POST',
+            url: config.servicesUrl + '/dump-load',
+            data: JSON.stringify({dumpNames: dumpNames}),
+            contentType: 'application/json; charset=utf-8'
+        }).done(handleResultError).fail(handleAjaxError).always(() => {
+            infoDialog.close();
+        });
+    }
+
+    function dowloadDumps() {
+        const dumpNames = tableCard.getSelectedRows().map((row) => row.attributes['dump']);
+        const dumpNamesInput = new RcdInputElement().init().
+            setAttribute('type', 'hidden').
+            setAttribute('name', 'dumpNames').
+            setAttribute('value', dumpNames);
+        const downloadForm = new RcdFormElement().init().
+            setAttribute('action', config.servicesUrl + '/dump-download').
+            setAttribute('method', 'post').
+            addChild(dumpNamesInput);
+        document.body.appendChild(downloadForm.getDomElement());
+        downloadForm.submit();
+        document.body.removeChild(downloadForm.getDomElement());
+    }
+
+    var uploadForm;
+
+    function uploadDumps() {
+        const uploadFileInput = new RcdInputElement().init().
+            setAttribute('type', 'file').
+            setAttribute('name', 'uploadFile').
+            addChangeListener(doUploadDumps);
+        uploadForm = new RcdFormElement().init().
+            addChild(uploadFileInput);
+        uploadFileInput.click();
+    }
+
+    function doUploadDumps() {
+        const infoDialog = showInfoDialog("Uploading dump archive...");
+        const formData = new FormData(uploadForm.getDomElement());
+        $.ajax({
+            method: 'POST',
+            url: config.servicesUrl + '/dump-upload',
+            data: formData,
+            contentType: false,
+            processData: false
         }).done(handleResultError).fail(handleAjaxError).always(() => {
             infoDialog.close();
             retrieveDumps();
