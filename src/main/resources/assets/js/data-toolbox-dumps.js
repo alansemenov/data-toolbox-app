@@ -6,7 +6,8 @@ function createDumpsRoute() {
     const tableCard = new RcdMaterialTableCard('Dumps').init().
         addColumn('Dump name').
         addColumn('Timestamp').
-        addIconArea(new RcdGoogleMaterialIconArea('add_circle', createDump).init(), {max: 0});
+        addIconArea(new RcdGoogleMaterialIconArea('add_circle', createDump).init(), {max: 0}).
+        addIconArea(new RcdGoogleMaterialIconArea('delete', deleteDumps).init(), {min: 1});
     const layout = new RcdMaterialLayout().init().
         addChild(tableCard);
 
@@ -21,7 +22,7 @@ function createDumpsRoute() {
     };
 
     function retrieveDumps() {
-        const infoDialog = new RcdMaterialInfoDialog({text: 'Retrieving dump list...'}).init().open();
+        const infoDialog = showInfoDialog('Retrieving dump list...');
         return $.ajax({
             url: config.servicesUrl + '/dump-list'
         }).done(function (result) {
@@ -53,13 +54,31 @@ function createDumpsRoute() {
     }
 
     function doCreateDump(dumpName) {
-        const infoDialog = new RcdMaterialInfoDialog({text: 'Creating dump...'}).init().open();
+        const infoDialog = showInfoDialog('Creating dump...');
         $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/dump-create',
             data: JSON.stringify({
                 dumpName: dumpName || ('dump-' + toLocalDateTimeFormat(new Date(), '-', '-'))
             }),
+            contentType: 'application/json; charset=utf-8'
+        }).done(handleResultError).fail(handleAjaxError).always(() => {
+            infoDialog.close();
+            retrieveDumps();
+        });
+    }
+
+    function deleteDumps() {
+        showConfirmationDialog("Delete selected dumps?", doDeleteDumps);
+    }
+
+    function doDeleteDumps() {
+        const infoDialog = showInfoDialog("Deleting selected dumps...");
+        const dumpNames = tableCard.getSelectedRows().map((row) => row.attributes['dump']);
+        $.ajax({
+            method: 'POST',
+            url: config.servicesUrl + '/dump-delete',
+            data: JSON.stringify({dumpNames: dumpNames}),
             contentType: 'application/json; charset=utf-8'
         }).done(handleResultError).fail(handleAjaxError).always(() => {
             infoDialog.close();

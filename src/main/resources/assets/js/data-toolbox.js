@@ -23,5 +23,17 @@ function handleAjaxError(jqXHR) {
     }
 }
 
+function showInfoDialog(text) {
+    return new RcdMaterialInfoDialog({text: text}).
+        init().
+        open();
+}
+
+function showConfirmationDialog(text, callback) {
+    return new RcdMaterialConfirmationDialog({text: text, callback: callback}).
+        init().
+        open();
+}
+
 var app = createApp();
 app.start(document.body);
