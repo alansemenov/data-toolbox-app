@@ -3,7 +3,8 @@ function createApp() {
         init().
         setDefaultRoute(createPresentationRoute()).
         addRoute(createDumpsRoute()).
-        addRoute(createExportsRoute());
+        addRoute(createExportsRoute()).
+        addRoute(createSnapshotsRoute());
 }
 
 function handleResultError(result) {
