@@ -42,6 +42,15 @@ function createPresentationRoute() {
                 '"draft" containing the content as seen in the Content Studio and ' +
                 '"master" containing the published content served by the portal. ' +
                 'See <a href="http://xp.readthedocs.io/en/stable/developer/node-domain/branch.html">Branch</a> for more information.');
+    
+    const nodesSectionContent = new RcdPElement().init().
+        setText('A Node represents a single storable entity of data. ' +
+                'It can be compared to a row in sql or a document in document oriented storage models. ' +
+                'See <a href="http://xp.readthedocs.io/en/stable/developer/node-domain/nodes.html">Nodes</a> for more information. ' +
+                'The nodes are represented here in a tree structure. ' +
+                'While this solution is adapted to repositories like cms-repo or system-repo, ' +
+                'it may be problematic for repositories not following a tree structure or for nodes with too many children. ' +
+                'If you need a tool to browse these repositories or if you need browsing based on queries, we recommend using the tool <a href="https://market.enonic.com/vendors/runar-myklebust/repoxplorer">repoXPlorer</a>.');
 
 
     const layout = new RcdMaterialSectionLayout('Data Toolbox', sectionContent).init().
@@ -49,7 +58,8 @@ function createPresentationRoute() {
         addSubSection('Exports', exportsSectionContent).
         addSubSection('Snapshots', snapshotsSectionContent).
         addSubSection('Repositories', repositoriesSectionContent).
-        addSubSection('Branches', branchesSectionContent);
+        addSubSection('Branches', branchesSectionContent).
+        addSubSection('Nodes', nodesSectionContent);
 
     return {
         callback: (main) => main.addChild(layout)
