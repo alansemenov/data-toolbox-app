@@ -1,8 +1,5 @@
 function createBranchesRoute() {
-    const breadcrumbsLayout = new RcdMaterialBreadcrumbsLayout().init().
-        addBreadcrumb(new RcdMaterialBreadcrumb('Data Toolbox', () => RcdHistoryRouter.getInstance().setState()).init()).
-        addBreadcrumb(new RcdMaterialBreadcrumb('Repositories', () => RcdHistoryRouter.getInstance().setState('repositories')).init()).
-        addBreadcrumb(new RcdMaterialBreadcrumb(RcdHistoryRouter.getInstance().getParameters().repo).init());
+    const breadcrumbsLayout = new RcdMaterialBreadcrumbsLayout().init();
 
     const tableCard = new RcdMaterialTableCard('Branches').init().
         addColumn('Branch name').
@@ -16,6 +13,7 @@ function createBranchesRoute() {
         callback: (main) => {
             main.addChild(breadcrumbsLayout).addChild(layout);
             app.setTitle(RcdHistoryRouter.getInstance().getParameters().repo);
+            refreshBreadcrumbs();
             retrieveBranches();
         }
     };
@@ -92,5 +90,12 @@ function createBranchesRoute() {
             infoDialog.close();
             retrieveBranches();
         });
+    }
+
+    function refreshBreadcrumbs() {
+        breadcrumbsLayout.
+            setBreadcrumbs([new RcdMaterialBreadcrumb('Data Toolbox', () => RcdHistoryRouter.getInstance().setState()).init(),
+                new RcdMaterialBreadcrumb('Repositories', () => RcdHistoryRouter.getInstance().setState('repositories')).init(),
+                new RcdMaterialBreadcrumb(RcdHistoryRouter.getInstance().getParameters().repo).init()]);
     }
 }
