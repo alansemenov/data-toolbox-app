@@ -11,10 +11,10 @@ function createNodesRoute() {
     return {
         state: 'nodes',
         callback: (main) => {
-            main.addChild(breadcrumbsLayout).addChild(layout);
-            app.setTitle(RcdHistoryRouter.getInstance().getParameters().repo);
             refreshBreadcrumbs();
             retrieveNodes();
+            app.setTitle(RcdHistoryRouter.getParameters().repo);
+            main.addChild(breadcrumbsLayout).addChild(layout);
         }
     };
 
@@ -24,11 +24,11 @@ function createNodesRoute() {
             method: 'POST',
             url: config.servicesUrl + '/node-getchildren',
             data: JSON.stringify({
-                repositoryName: RcdHistoryRouter.getInstance().getParameters().repo,
-                branchName: RcdHistoryRouter.getInstance().getParameters().branch,
-                parentPath: RcdHistoryRouter.getInstance().getParameters().path,
-                start: RcdHistoryRouter.getInstance().getParameters().start,
-                count: RcdHistoryRouter.getInstance().getParameters().count
+                repositoryName: RcdHistoryRouter.getParameters().repo,
+                branchName: RcdHistoryRouter.getParameters().branch,
+                parentPath: RcdHistoryRouter.getParameters().path,
+                start: RcdHistoryRouter.getParameters().start,
+                count: RcdHistoryRouter.getParameters().count
             }),
             contentType: 'application/json; charset=utf-8'
         }).done(function (result) {
@@ -43,9 +43,9 @@ function createNodesRoute() {
                         setAttribute('name', node._name).
                         addClass('rcd-clickable').
                         addClickListener(() => {
-                            RcdHistoryRouter.getInstance().
-                                setState('nodes?repo=' + RcdHistoryRouter.getInstance().getParameters().repo + '&branch=' +
-                                         RcdHistoryRouter.getInstance().getParameters().branch +
+                            RcdHistoryRouter.
+                                setState('nodes?repo=' + RcdHistoryRouter.getParameters().repo + '&branch=' +
+                                         RcdHistoryRouter.getParameters().branch +
                                          '&path=' + node._path + '&start=0&count=50');
                         });
                     row.checkbox.addClickListener((event) => event.stopPropagation());
@@ -67,8 +67,8 @@ function createNodesRoute() {
             method: 'POST',
             url: config.servicesUrl + '/node-delete',
             data: JSON.stringify({
-                repositoryName: RcdHistoryRouter.getInstance().getParameters().repo,
-                branchName: RcdHistoryRouter.getInstance().getParameters().branch,
+                repositoryName: RcdHistoryRouter.getParameters().repo,
+                branchName: RcdHistoryRouter.getParameters().branch,
                 keys: nodeKeys
             }),
             contentType: 'application/json; charset=utf-8'
@@ -79,22 +79,22 @@ function createNodesRoute() {
     }
 
     function refreshBreadcrumbs() {
-        const repositoryName = RcdHistoryRouter.getInstance().getParameters().repo;
-        const branchName = RcdHistoryRouter.getInstance().getParameters().branch;
-        const path = RcdHistoryRouter.getInstance().getParameters().path;
+        const repositoryName = RcdHistoryRouter.getParameters().repo;
+        const branchName = RcdHistoryRouter.getParameters().branch;
+        const path = RcdHistoryRouter.getParameters().path;
 
         breadcrumbsLayout.
-            setBreadcrumbs([new RcdMaterialBreadcrumb('Data Toolbox', () => RcdHistoryRouter.getInstance().setState()).init(),
-                new RcdMaterialBreadcrumb('Repositories', () => RcdHistoryRouter.getInstance().setState('repositories')).init(),
+            setBreadcrumbs([new RcdMaterialBreadcrumb('Data Toolbox', () => RcdHistoryRouter.setState()).init(),
+                new RcdMaterialBreadcrumb('Repositories', () => RcdHistoryRouter.setState('repositories')).init(),
                 new RcdMaterialBreadcrumb(repositoryName,
-                    () => RcdHistoryRouter.getInstance().setState('branches?repo=' + repositoryName)).init(),
+                    () => RcdHistoryRouter.setState('branches?repo=' + repositoryName)).init(),
                 new RcdMaterialBreadcrumb(branchName, path &&
-                                                      (() => RcdHistoryRouter.getInstance().setState('nodes?repo=' + repositoryName +
+                                                      (() => RcdHistoryRouter.setState('nodes?repo=' + repositoryName +
                                                                                                      '&branch=' + branchName))).init()]);
 
         if (path) {
             breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb('root', path !== '/'
-                ? (() => RcdHistoryRouter.getInstance().setState('nodes?repo=' + repositoryName + '&branch=' + branchName + '&path=/'))
+                ? (() => RcdHistoryRouter.setState('nodes?repo=' + repositoryName + '&branch=' + branchName + '&path=/'))
                 : undefined).init());
 
             if (path !== '/') {
@@ -103,7 +103,7 @@ function createNodesRoute() {
                     currentPath += '/' + subPathElement;
                     const constCurrentPath = currentPath;
                     breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb(subPathElement, index < array.length - 1
-                        ? (() => RcdHistoryRouter.getInstance().setState('nodes?repo=' + repositoryName + '&branch=' + branchName +
+                        ? (() => RcdHistoryRouter.setState('nodes?repo=' + repositoryName + '&branch=' + branchName +
                                                                          '&path=' + constCurrentPath))
                         : undefined).init());
                 });

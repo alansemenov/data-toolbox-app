@@ -1,6 +1,6 @@
 function createExportsRoute() {
     const breadcrumbsLayout = new RcdMaterialBreadcrumbsLayout().init().
-        addBreadcrumb(new RcdMaterialBreadcrumb('Data Toolbox', () => RcdHistoryRouter.getInstance().setState()).init()).
+        addBreadcrumb(new RcdMaterialBreadcrumb('Data Toolbox', () => RcdHistoryRouter.setState()).init()).
         addBreadcrumb(new RcdMaterialBreadcrumb('Exports').init());
 
     const tableCard = new RcdMaterialTableCard('Exports').init().

@@ -12,7 +12,7 @@ function createBranchesRoute() {
         state: 'branches',
         callback: (main) => {
             main.addChild(breadcrumbsLayout).addChild(layout);
-            app.setTitle(RcdHistoryRouter.getInstance().getParameters().repo);
+            app.setTitle(RcdHistoryRouter.getParameters().repo);
             refreshBreadcrumbs();
             retrieveBranches();
         }
@@ -23,7 +23,7 @@ function createBranchesRoute() {
         return $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/repository-get',
-            data: JSON.stringify({repositoryName: RcdHistoryRouter.getInstance().getParameters().repo}),
+            data: JSON.stringify({repositoryName: RcdHistoryRouter.getParameters().repo}),
             contentType: 'application/json; charset=utf-8'
         }).done(function (result) {
             tableCard.deleteRows();
@@ -35,9 +35,9 @@ function createBranchesRoute() {
                             setAttribute('branch', branch).
                             addClass('rcd-clickable').
                             addClickListener(() => {
-                                RcdHistoryRouter.getInstance().setState('nodes?repo=' +
-                                                                        RcdHistoryRouter.getInstance().getParameters().repo + '&branch=' +
-                                                                        branch + '&start=0&count=50');
+                                RcdHistoryRouter.setState('nodes?repo=' +
+                                                          RcdHistoryRouter.getParameters().repo + '&branch=' +
+                                                          branch + '&start=0&count=50');
                             });
                         row.checkbox.addClickListener((event) => event.stopPropagation());
                     });
@@ -94,8 +94,8 @@ function createBranchesRoute() {
 
     function refreshBreadcrumbs() {
         breadcrumbsLayout.
-            setBreadcrumbs([new RcdMaterialBreadcrumb('Data Toolbox', () => RcdHistoryRouter.getInstance().setState()).init(),
-                new RcdMaterialBreadcrumb('Repositories', () => RcdHistoryRouter.getInstance().setState('repositories')).init(),
-                new RcdMaterialBreadcrumb(RcdHistoryRouter.getInstance().getParameters().repo).init()]);
+            setBreadcrumbs([new RcdMaterialBreadcrumb('Data Toolbox', () => RcdHistoryRouter.setState()).init(),
+                new RcdMaterialBreadcrumb('Repositories', () => RcdHistoryRouter.setState('repositories')).init(),
+                new RcdMaterialBreadcrumb(RcdHistoryRouter.getParameters().repo).init()]);
     }
 }

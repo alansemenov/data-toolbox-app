@@ -1,6 +1,6 @@
 function createRepositoriesRoute() {
     const breadcrumbsLayout = new RcdMaterialBreadcrumbsLayout().init().
-        addBreadcrumb(new RcdMaterialBreadcrumb('Data Toolbox', () => RcdHistoryRouter.getInstance().setState()).init()).
+        addBreadcrumb(new RcdMaterialBreadcrumb('Data Toolbox', () => RcdHistoryRouter.setState()).init()).
         addBreadcrumb(new RcdMaterialBreadcrumb('Repositories').init());
 
     const tableCard = new RcdMaterialTableCard('Repositories').init().
@@ -34,7 +34,7 @@ function createRepositoriesRoute() {
                             setAttribute('repository', repository.name).
                             addClass('rcd-clickable').
                             addClickListener(() => {
-                                RcdHistoryRouter.getInstance().setState('branches?repo=' + repository.name);
+                                RcdHistoryRouter.setState('branches?repo=' + repository.name);
                             });
                         row.checkbox.addClickListener((event) => event.stopPropagation());
                     });

@@ -1,6 +1,6 @@
 function createDumpsRoute() {
     const breadcrumbsLayout = new RcdMaterialBreadcrumbsLayout().init().
-        addBreadcrumb(new RcdMaterialBreadcrumb('Data Toolbox', () => RcdHistoryRouter.getInstance().setState()).init()).
+        addBreadcrumb(new RcdMaterialBreadcrumb('Data Toolbox', () => RcdHistoryRouter.setState()).init()).
         addBreadcrumb(new RcdMaterialBreadcrumb('Dumps').init());
 
     const tableCard = new RcdMaterialTableCard('Dumps').init().

@@ -1,6 +1,6 @@
 function createSnapshotsRoute() {
     const breadcrumbsLayout = new RcdMaterialBreadcrumbsLayout().init().
-        addBreadcrumb(new RcdMaterialBreadcrumb('Data Toolbox', () => RcdHistoryRouter.getInstance().setState()).init()).
+        addBreadcrumb(new RcdMaterialBreadcrumb('Data Toolbox', () => RcdHistoryRouter.setState()).init()).
         addBreadcrumb(new RcdMaterialBreadcrumb('Snapshots').init());
 
     const tableCard = new RcdMaterialTableCard('Snapshots').init().
