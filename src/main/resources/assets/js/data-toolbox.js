@@ -6,7 +6,8 @@ function createApp() {
         addRoute(createExportsRoute()).
         addRoute(createSnapshotsRoute()).
         addRoute(createRepositoriesRoute()).
-        addRoute(createBranchesRoute());
+        addRoute(createBranchesRoute()).
+        addRoute(createNodesRoute());
 }
 
 function handleResultError(result) {
