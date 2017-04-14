@@ -60,6 +60,9 @@ function createPresentationRoute() {
         addSubSection('Nodes', nodesSectionContent);
 
     return {
-        callback: (main) => main.addChild(layout)
+        callback: (main) => {
+            main.addChild(layout);
+            app.setTitle('Data Toolbox');
+        }
     };
 }
