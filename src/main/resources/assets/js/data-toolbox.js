@@ -40,5 +40,11 @@ function showConfirmationDialog(text, callback) {
         open();
 }
 
+function showDetailsDialog(title, text) {
+    return new RcdMaterialDetailsDialog({title: title, text: text}).
+        init().
+        open();
+}
+
 var app = createApp();
 app.start(document.body);

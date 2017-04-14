@@ -4,7 +4,9 @@ function createNodesRoute() {
     const tableCard = new RcdMaterialTableCard('Nodes').init().
         addColumn('Node name').
         addColumn('Node ID').
-        addIconArea(new RcdGoogleMaterialIconArea('delete', deleteNodes).init().setTooltip('Delete selected nodes'), {min: 1});
+        addIconArea(new RcdGoogleMaterialIconArea('delete', deleteNodes).init().setTooltip('Delete selected nodes'), {min: 1}).
+        addIconArea(new RcdGoogleMaterialIconArea('info', () => retrieveNodeInfo()).init().setTooltip('Retrieve selected node info'),
+        {min: 1, max: 1});
     const layout = new RcdMaterialLayout().init().
         addChild(tableCard);
 
@@ -75,6 +77,31 @@ function createNodesRoute() {
         }).done(handleResultError).fail(handleAjaxError).always(() => {
             infoDialog.close();
             retrieveNodes();
+        });
+    }
+
+    function retrieveNodeInfo(nodeKey) {
+        if (!nodeKey) {
+            nodeKey = tableCard.getSelectedRows().map((row) => row.attributes['id'])[0];
+        }
+
+        const infoDialog = showInfoDialog("Retrieving node info...");
+        return $.ajax({
+            method: 'POST',
+            url: config.servicesUrl + '/node-get',
+            data: JSON.stringify({
+                repositoryName: RcdHistoryRouter.getParameters().repo,
+                branchName: RcdHistoryRouter.getParameters().branch,
+                key: nodeKey
+            }),
+            contentType: 'application/json; charset=utf-8'
+        }).done(function (result) {
+            console.log(result);
+            if (handleResultError(result)) {
+                showDetailsDialog('Node [' + nodeKey + ']', JSON.stringify(result.success, null, 2));
+            }
+        }).fail(handleAjaxError).always(() => {
+            infoDialog.close();
         });
     }
 
