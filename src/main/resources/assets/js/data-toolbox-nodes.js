@@ -61,6 +61,11 @@ function createNodesRoute() {
                         });
                     row.checkbox.addClickListener((event) => event.stopPropagation());
                 });
+                tableCard.setFooter({
+                    start: RcdHistoryRouter.getParameters().start ? parseInt(RcdHistoryRouter.getParameters().start) : 0,
+                    count: result.success.hits.length,
+                    total: result.success.total
+                });
             }
         }).fail(handleAjaxError).always(() => {
             infoDialog.close();
