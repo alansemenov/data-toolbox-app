@@ -1,9 +1,9 @@
 function createExportsRoute() {
     const breadcrumbsLayout = new RcdMaterialBreadcrumbsLayout().init().
         addBreadcrumb(new RcdMaterialBreadcrumb('Data Toolbox', () => RcdHistoryRouter.setState()).init()).
-        addBreadcrumb(new RcdMaterialBreadcrumb('Exports').init());
+        addBreadcrumb(new RcdMaterialBreadcrumb('Node exports').init());
 
-    const tableCard = new RcdMaterialTableCard('Exports').init().
+    const tableCard = new RcdMaterialTableCard('Node exports').init().
         addColumn('Export name').
         addColumn('Timestamp').
         addIconArea(new RcdGoogleMaterialIconArea('delete', deleteExports).init(), {min: 1}).
@@ -14,7 +14,7 @@ function createExportsRoute() {
 
     return {
         state: 'exports',
-        name: 'Exports',
+        name: 'Node Exports',
         iconArea: new RcdGoogleMaterialIconArea('import_export').init(),
         callback: (main) => {
             main.addChild(breadcrumbsLayout).addChild(layout);

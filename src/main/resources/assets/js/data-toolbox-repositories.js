@@ -12,7 +12,7 @@ function createRepositoriesRoute() {
 
     return {
         state: 'repositories',
-        name: 'Repositories',
+        name: 'Repositories ',
         iconArea: new RcdGoogleMaterialIconArea('storage').init(),
         callback: (main) => {
             main.addChild(breadcrumbsLayout).addChild(layout);

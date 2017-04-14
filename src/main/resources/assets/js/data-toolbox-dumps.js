@@ -1,9 +1,9 @@
 function createDumpsRoute() {
     const breadcrumbsLayout = new RcdMaterialBreadcrumbsLayout().init().
         addBreadcrumb(new RcdMaterialBreadcrumb('Data Toolbox', () => RcdHistoryRouter.setState()).init()).
-        addBreadcrumb(new RcdMaterialBreadcrumb('Dumps').init());
+        addBreadcrumb(new RcdMaterialBreadcrumb('System dumps').init());
 
-    const tableCard = new RcdMaterialTableCard('Dumps').init().
+    const tableCard = new RcdMaterialTableCard('System dumps').init().
         addColumn('Dump name').
         addColumn('Timestamp').
         addIconArea(new RcdGoogleMaterialIconArea('add_circle', createDump).init(), {max: 0}).
@@ -16,7 +16,7 @@ function createDumpsRoute() {
 
     return {
         state: 'dumps',
-        name: 'Dumps',
+        name: 'System Dumps',
         iconArea: new RcdGoogleMaterialIconArea('file_download').init(),
         callback: (main) => {
             main.addChild(breadcrumbsLayout).addChild(layout);

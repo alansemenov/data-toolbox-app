@@ -1,23 +1,21 @@
 function createPresentationRoute() {
     const sectionContent = new RcdPElement().init().
         setText('Data toolbox provides a web interface to visualize and manipulate your Enonic XP data.<br/> ' +
-                'In Repositories, a tree representation of your repositories/branches/nodes is shown to allow to ' +
-                'navigate through, display, export and import your nodes. ' +
-                'The 3 others views will help you manage your exports, dumps and snapshots.<br/> ' +
+                'The repositories view provides a tree representation of your repositories/branches/nodes. ' +
+                'The 3 others views will help you manage your node exports, system dumps and snapshots. ' +
                 'A widget is also included to allow to export content directly from the Content studio.');
 
-    const dumpsSectionContent = new RcdPElement().init().
-        setText('A dump is an export of your data (contents, users, groups and roles) from your Enonic XP server to a serialized format. ' +
-                'While the export/import focuses on a given content, the dump/load is used to export an entire system (all repositories and branches). ' +
-                'This makes dumps well suited for migrating your data to another installation. ' +
-                'Warning: The current dump mechanism does not export old versions of your data. You will loose the version history of your contents. ' +
+    const exportsSectionContent = new RcdPElement().init().
+        setText('A node export is a serialization of a given content/node. ' +
+                'This makes node exports well suited for transferring a specific content to another installation. ' +
+                'Warning: The current export mechanism does not export old versions of your data. You will loose the version history of your contents. ' +
                 'See <a href="http://xp.readthedocs.io/en/stable/operations/export.html">Export and Import</a> for more information.');
 
-    const exportsSectionContent = new RcdPElement().init().
-        setText('An export is a serialization of a given content/node. ' +
-                'While the export/import focuses on a given content, the dump/load is used to export an entire system (all repositories and branches). ' +
-                'This makes exports well suited for transfering a specific content to another installation. ' +
-                'Warning: The current export mechanism does not export old versions of your data. You will loose the version history of your contents. ' +
+    const dumpsSectionContent = new RcdPElement().init().
+        setText('A system dump is an export of your entire data (contents, users, groups and roles) from your Enonic XP server to a serialized format. ' +
+                'While the node export/import focuses on a given content, the dump/load is used to export an entire system (all repositories and branches). ' +
+                'This makes dumps well suited for migrating your data to another installation. ' +
+                'Warning: The current dump mechanism does not export old versions of your data. You will loose the version history of your contents. ' +
                 'See <a href="http://xp.readthedocs.io/en/stable/operations/export.html">Export and Import</a> for more information.');
 
     const snapshotsSectionContent = new RcdPElement().init().
@@ -42,7 +40,7 @@ function createPresentationRoute() {
                 '"draft" containing the content as seen in the Content Studio and ' +
                 '"master" containing the published content served by the portal. ' +
                 'See <a href="http://xp.readthedocs.io/en/stable/developer/node-domain/branch.html">Branch</a> for more information.');
-    
+
     const nodesSectionContent = new RcdPElement().init().
         setText('A Node represents a single storable entity of data. ' +
                 'It can be compared to a row in sql or a document in document oriented storage models. ' +
@@ -54,8 +52,8 @@ function createPresentationRoute() {
 
 
     const layout = new RcdMaterialSectionLayout('Data Toolbox', sectionContent).init().
-        addSubSection('Dumps', dumpsSectionContent).
-        addSubSection('Exports', exportsSectionContent).
+        addSubSection('Node Exports', exportsSectionContent).
+        addSubSection('System Dumps', dumpsSectionContent).
         addSubSection('Snapshots', snapshotsSectionContent).
         addSubSection('Repositories', repositoriesSectionContent).
         addSubSection('Branches', branchesSectionContent).
