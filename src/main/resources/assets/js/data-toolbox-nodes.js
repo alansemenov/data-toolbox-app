@@ -16,7 +16,6 @@ function createNodesRoute() {
         callback: (main) => {
             refreshBreadcrumbs();
             retrieveNodes();
-            app.setTitle(RcdHistoryRouter.getParameters().repo);
             main.addChild(breadcrumbsLayout).addChild(layout);
         }
     };
@@ -134,9 +133,14 @@ function createNodesRoute() {
                 ? (() => RcdHistoryRouter.setState('nodes?repo=' + repositoryName + '&branch=' + branchName + '&path=/'))
                 : undefined).init());
 
-            if (path !== '/') {
+            if (path === '/') {
+                app.setTitle('Root node');
+            } else {
+                const pathElements = path.substring(1).split('/')
+                app.setTitle(pathElements[pathElements.length - 1]);
+
                 let currentPath = '';
-                path.substring(1).split('/').forEach((subPathElement, index, array) => {
+                pathElements.forEach((subPathElement, index, array) => {
                     currentPath += '/' + subPathElement;
                     const constCurrentPath = currentPath;
                     breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb(subPathElement, index < array.length - 1
@@ -144,7 +148,10 @@ function createNodesRoute() {
                                                            '&path=' + constCurrentPath))
                         : undefined).init());
                 });
+
             }
+        } else {
+            app.setTitle(branchName);
         }
     }
 }
