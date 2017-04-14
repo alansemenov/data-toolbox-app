@@ -6,11 +6,13 @@ function createDumpsRoute() {
     const tableCard = new RcdMaterialTableCard('System dumps').init().
         addColumn('Dump name').
         addColumn('Timestamp').
-        addIconArea(new RcdGoogleMaterialIconArea('add_circle', createDump).init(), {max: 0}).
-        addIconArea(new RcdGoogleMaterialIconArea('delete', deleteDumps).init(), {min: 1}).
-        addIconArea(new RcdGoogleMaterialIconArea('refresh', loadDumps).init(), {min: 1}).
-        addIconArea(new RcdGoogleMaterialIconArea('file_download', dowloadDumps).init(), {min: 1}).
-        addIconArea(new RcdGoogleMaterialIconArea('file_upload', uploadDumps).init(), {max: 0});
+        addIconArea(new RcdGoogleMaterialIconArea('add_circle', createDump).init().setTooltip('Create a system dump'), {max: 0}).
+        addIconArea(new RcdGoogleMaterialIconArea('delete', deleteDumps).init().setTooltip('Delete selected system dumps'), {min: 1}).
+        addIconArea(new RcdGoogleMaterialIconArea('refresh', loadDumps).init().setTooltip('Load selected system dumps'), {min: 1}).
+        addIconArea(new RcdGoogleMaterialIconArea('file_download',
+            dowloadDumps).init().setTooltip('Archive and download selected system dumps'), {min: 1}).
+        addIconArea(new RcdGoogleMaterialIconArea('file_upload', uploadDumps).init().setTooltip('Upload and unarchive system dumps'),
+        {max: 0});
     const layout = new RcdMaterialLayout().init().
         addChild(tableCard);
 

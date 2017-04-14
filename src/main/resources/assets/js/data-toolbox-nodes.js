@@ -4,7 +4,7 @@ function createNodesRoute() {
     const tableCard = new RcdMaterialTableCard('Nodes').init().
         addColumn('Node name').
         addColumn('Node ID').
-        addIconArea(new RcdGoogleMaterialIconArea('delete', deleteNodes).init(), {min: 1});
+        addIconArea(new RcdGoogleMaterialIconArea('delete', deleteNodes).init().setTooltip('Delete selected nodes'), {min: 1});
     const layout = new RcdMaterialLayout().init().
         addChild(tableCard);
 
@@ -90,7 +90,7 @@ function createNodesRoute() {
                     () => RcdHistoryRouter.setState('branches?repo=' + repositoryName)).init(),
                 new RcdMaterialBreadcrumb(branchName, path &&
                                                       (() => RcdHistoryRouter.setState('nodes?repo=' + repositoryName +
-                                                                                                     '&branch=' + branchName))).init()]);
+                                                                                       '&branch=' + branchName))).init()]);
 
         if (path) {
             breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb('root', path !== '/'
@@ -104,7 +104,7 @@ function createNodesRoute() {
                     const constCurrentPath = currentPath;
                     breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb(subPathElement, index < array.length - 1
                         ? (() => RcdHistoryRouter.setState('nodes?repo=' + repositoryName + '&branch=' + branchName +
-                                                                         '&path=' + constCurrentPath))
+                                                           '&path=' + constCurrentPath))
                         : undefined).init());
                 });
             }
