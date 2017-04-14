@@ -4,8 +4,9 @@ function createNodesRoute() {
     const tableCard = new RcdMaterialTableCard('Nodes').init().
         addColumn('Node name').
         addColumn('Node ID').
+        addColumn('', {icon: true}).
         addIconArea(new RcdGoogleMaterialIconArea('delete', deleteNodes).init().setTooltip('Delete selected nodes'), {min: 1}).
-        addIconArea(new RcdGoogleMaterialIconArea('info', () => retrieveNodeInfo()).init().setTooltip('Retrieve selected node info'),
+        addIconArea(new RcdGoogleMaterialIconArea('info', () => retrieveNodeInfo()).init().setTooltip('Display selected node detail'),
         {min: 1, max: 1});
     const layout = new RcdMaterialLayout().init().
         addChild(tableCard);
@@ -37,9 +38,18 @@ function createNodesRoute() {
             tableCard.deleteRows();
             if (handleResultError(result)) {
                 result.success.hits.forEach((node) => {
+
+                    const retrieveNodeInfoIcon = new RcdGoogleMaterialIconArea('info', (source, event) => {
+                        retrieveNodeInfo(node._id);
+                        event.stopPropagation();
+                    }).
+                        init().
+                        setTooltip('Display node details');
+
                     const row = tableCard.createRow().
                         addCell(node._name).
                         addCell(node._id).
+                        addCell(retrieveNodeInfoIcon, {icon: true}).
                         setAttribute('id', node._id).
                         setAttribute('path', node._path).
                         setAttribute('name', node._name).
