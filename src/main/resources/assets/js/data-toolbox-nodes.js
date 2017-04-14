@@ -61,10 +61,27 @@ function createNodesRoute() {
                         });
                     row.checkbox.addClickListener((event) => event.stopPropagation());
                 });
+
+                const startInt = parseInt(RcdHistoryRouter.getParameters().start);
+                const countInt = parseInt(RcdHistoryRouter.getParameters().count);
+                console.log('startInt:' + startInt);
+                console.log('countInt:' + countInt);
+                const previousCallback = () => RcdHistoryRouter.
+                    setState('nodes?repo=' + RcdHistoryRouter.getParameters().repo + '&branch=' + RcdHistoryRouter.getParameters().branch +
+                             '&path=' + RcdHistoryRouter.getParameters().path +
+                             '&start=' + Math.max(0, startInt - countInt) +
+                             '&count=' + RcdHistoryRouter.getParameters().count);
+                const nextCallback = () => RcdHistoryRouter.
+                    setState('nodes?repo=' + RcdHistoryRouter.getParameters().repo + '&branch=' + RcdHistoryRouter.getParameters().branch +
+                             '&path=' + RcdHistoryRouter.getParameters().path +
+                             '&start=' + (startInt + countInt) +
+                             '&count=' + RcdHistoryRouter.getParameters().count);
                 tableCard.setFooter({
                     start: RcdHistoryRouter.getParameters().start ? parseInt(RcdHistoryRouter.getParameters().start) : 0,
                     count: result.success.hits.length,
-                    total: result.success.total
+                    total: result.success.total,
+                    previousCallback: previousCallback,
+                    nextCallback: nextCallback
                 });
             }
         }).fail(handleAjaxError).always(() => {
