@@ -27,9 +27,9 @@ function createPresentationRoute() {
     const repositoriesSectionContent = new RcdPElement().init().
         setText('Enonic XP data is split in repositories. ' +
                 'Data stored in a repository will typically belong to a common domain. ' +
-                'Enonic XP uses by default 2 repositories: ' +
-                '"system-repo", the core repository, containing users, groups, roles, references to other repositories, installed application, etc and ' +
-                '"cms-repo", the content domain repository, containing the data managed by Content Studio. ' +
+                'Enonic XP uses by default 2 repositories. ' +
+                '"system-repo", the core repository, contains the users, groups, roles, references to other repositories, installed application, ... ' +
+                '"cms-repo", the content domain repository, contains the data managed by Content Studio. ' +
                 'See <a href="http://xp.readthedocs.io/en/stable/developer/node-domain/repository.html">Repository</a> for more information.');
 
     const branchesSectionContent = new RcdPElement().init().

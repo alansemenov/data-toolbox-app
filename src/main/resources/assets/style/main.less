@@ -3,15 +3,23 @@
 @rcd-primary-color: #2a5c88;
 @rcd-accent-color: #d29136;
 
-.rcd-material-section {
+.rcd-body .rcd-material-section-title {
+  @media (max-width: @rcd-material-max-mobile-width) {
+    margin-top: @rcd-material-layout-mobile-margin;
+  }
+  @media (min-width: @rcd-material-min-tablet-width) {
+    margin-top: @rcd-material-layout-margin;
+  }
+}
+
+.rcd-material-section:not(.rcd-material-subsection) {
+  line-height: 32px;
   p {
-    font-size: 17px;
+    font-size: 20px;
     font-weight: 300;
   }
 }
 
 .rcd-material-subsection {
-  p {
-    font-size: 15px;
-  }
+  line-height: 24px;
 }
