@@ -4,10 +4,11 @@
     const tableCard = new RcdMaterialTableCard('Exports').init().
         addColumn('Export name').
         addIconArea(new RcdGoogleMaterialIconArea('add_circle', createExport).init().setTooltip('Export content'), {max: 0}).
-        addIconArea(new RcdGoogleMaterialIconArea('delete', deleteExports).init().setTooltip('Delete selected node exports'), {min: 1}).
+        addIconArea(new RcdGoogleMaterialIconArea('refresh', loadExports).init().setTooltip('Import selected exports'), {min: 1}).
+        addIconArea(new RcdGoogleMaterialIconArea('delete', deleteExports).init().setTooltip('Delete selected exports'), {min: 1}).
         addIconArea(new RcdGoogleMaterialIconArea('file_download',
-            dowloadExports).init().setTooltip('Archive and download selected node exports'), {min: 1}).
-        addIconArea(new RcdGoogleMaterialIconArea('file_upload', uploadExports).init().setTooltip('Upload and unarchive node exports'),
+            dowloadExports).init().setTooltip('Archive and download selected exports'), {min: 1}).
+        addIconArea(new RcdGoogleMaterialIconArea('file_upload', uploadExports).init().setTooltip('Upload and unarchive exports'),
         {max: 0});
 
     var exportWidgetContainer;
@@ -52,13 +53,31 @@
     }
 
     function doCreateExport(exportName) {
-        const infoDialog = showInfoDialog("Exporting node...", exportWidgetContainer);
+        const infoDialog = showInfoDialog("Exporting content...", exportWidgetContainer);
         return $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/export-create',
             data: JSON.stringify({
                 contentPath: config.contentPath,
                 exportName: exportName
+            }),
+            contentType: 'application/json; charset=utf-8'
+        }).done(handleResultError).fail(handleAjaxError).always(() => {
+            infoDialog.close();
+            retrieveExports();
+        });
+    }
+
+    function loadExports() {
+        const infoDialog = showInfoDialog("Loading selected exports...", exportWidgetContainer);
+        const exportNames = tableCard.getSelectedRows().
+            map((row) => row.attributes['export']);
+        return $.ajax({
+            method: 'POST',
+            url: config.servicesUrl + '/export-load',
+            data: JSON.stringify({
+                contentPath: config.contentPath,
+                exportNames: exportNames
             }),
             contentType: 'application/json; charset=utf-8'
         }).done(handleResultError).fail(handleAjaxError).always(() => {
