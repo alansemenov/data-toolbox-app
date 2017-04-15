@@ -1,20 +1,20 @@
 (function () {
     //@widgetWorkAround@
-
-    const tableCard = new RcdMaterialTableCard('Exports').init().
-        addColumn('Export name').
-        addIconArea(new RcdGoogleMaterialIconArea('add_circle', createExport).init().setTooltip('Export content'), {max: 0}).
-        addIconArea(new RcdGoogleMaterialIconArea('refresh', loadExports).init().setTooltip('Import selected exports'), {min: 1}).
-        addIconArea(new RcdGoogleMaterialIconArea('delete', deleteExports).init().setTooltip('Delete selected exports'), {min: 1}).
-        addIconArea(new RcdGoogleMaterialIconArea('file_download',
-            dowloadExports).init().setTooltip('Archive and download selected exports'), {min: 1}).
-        addIconArea(new RcdGoogleMaterialIconArea('file_upload', uploadExports).init().setTooltip('Upload and unarchive exports'),
-        {max: 0});
-
-    var exportWidgetContainer;
+    let tableCard;
+    let exportWidgetContainer;
     const interval = setInterval(() => {
         exportWidgetContainer = document.getElementById('exportWidgetContainer');
         if (exportWidgetContainer) {
+            tableCard = new RcdMaterialTableCard('Exports').init().
+                addColumn('Export name').
+                addIconArea(new RcdGoogleMaterialIconArea('add_circle', createExport).init().setTooltip('Export content', exportWidgetContainer), {max: 0}).
+                addIconArea(new RcdGoogleMaterialIconArea('refresh', loadExports).init().setTooltip('Import selected exports', exportWidgetContainer), {min: 1}).
+                addIconArea(new RcdGoogleMaterialIconArea('delete', deleteExports).init().setTooltip('Delete selected exports', exportWidgetContainer), {min: 1}).
+                addIconArea(new RcdGoogleMaterialIconArea('file_download',
+                    dowloadExports).init().setTooltip('Archive and download selected exports', exportWidgetContainer, RcdMaterialTooltipAlignment.RIGHT), {min: 1}).
+                addIconArea(new RcdGoogleMaterialIconArea('file_upload', uploadExports).init().setTooltip('Upload and unarchive exports', exportWidgetContainer, RcdMaterialTooltipAlignment.RIGHT),
+                {max: 0});
+            
             retrieveExports();
             tableCard.setParent(exportWidgetContainer);
             clearInterval(interval);

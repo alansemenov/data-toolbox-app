@@ -8,9 +8,10 @@ function createExportsRoute() {
         addColumn('Timestamp').
         addIconArea(new RcdGoogleMaterialIconArea('delete', deleteExports).init().setTooltip('Delete selected node exports'), {min: 1}).
         addIconArea(new RcdGoogleMaterialIconArea('file_download',
-            dowloadExports).init().setTooltip('Archive and download selected node exports'), {min: 1}).
-        addIconArea(new RcdGoogleMaterialIconArea('file_upload', uploadExports).init().setTooltip('Upload and unarchive node exports'),
-        {max: 0});
+            dowloadExports).init().setTooltip('Archive and download selected node exports', undefined, RcdMaterialTooltipAlignment.RIGHT),
+        {min: 1}).
+        addIconArea(new RcdGoogleMaterialIconArea('file_upload', uploadExports).init().setTooltip('Upload and unarchive node exports',
+            undefined, RcdMaterialTooltipAlignment.RIGHT), {max: 0});
     const layout = new RcdMaterialLayout().init().
         addChild(tableCard);
 

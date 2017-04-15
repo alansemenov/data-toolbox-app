@@ -3,8 +3,10 @@ function createBranchesRoute() {
 
     const tableCard = new RcdMaterialTableCard('Branches').init().
         addColumn('Branch name').
-        addIconArea(new RcdGoogleMaterialIconArea('add_circle', createBranch).init().setTooltip('Create a branch'), {max: 0}).
-        addIconArea(new RcdGoogleMaterialIconArea('delete', deleteBranches).init().setTooltip('Delete selected branches'), {min: 1});
+        addIconArea(new RcdGoogleMaterialIconArea('add_circle', createBranch).init().setTooltip('Create a branch', undefined,
+            RcdMaterialTooltipAlignment.RIGHT), {max: 0}).
+        addIconArea(new RcdGoogleMaterialIconArea('delete', deleteBranches).init().setTooltip('Delete selected branches', undefined,
+            RcdMaterialTooltipAlignment.RIGHT), {min: 1});
     const layout = new RcdMaterialLayout().init().
         addChild(tableCard);
 
