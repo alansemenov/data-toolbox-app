@@ -12,8 +12,8 @@ exports.get = function (req) {
     var content = contentLib.get({key: req.params.contentId});
     var view = resolve("export.html");
     var body = mustacheLib.render(view, {
-        assetsUrl: portalLib.assetUrl({path: ""}),
         servicesUrl: portalLib.serviceUrl({service: ""}),
+        assetsUrl: portalLib.assetUrl({path: ""}),
         contentPath: content._path,
         contentName: content._name
     });
