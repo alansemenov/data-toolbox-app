@@ -5,6 +5,10 @@ function createNodesRoute() {
         addColumn('Node name').
         addColumn('Node ID').
         addColumn('', {icon: true}).
+        addIconArea(new RcdImageIconArea(config.assetsUrl + '/icons/import-icon.svg', importNode).init().setTooltip('Import node export'),
+        {max: 0}).
+        addIconArea(new RcdImageIconArea(config.assetsUrl + '/icons/export-icon.svg', exportNode).init().setTooltip('Export selected node'),
+        {min: 1, max: 1}).
         addIconArea(new RcdGoogleMaterialIconArea('delete', deleteNodes).init().setTooltip('Delete selected nodes'), {min: 1}).
         addIconArea(new RcdGoogleMaterialIconArea('info', () => retrieveNodeInfo()).init().setTooltip('Display selected node detail'),
         {min: 1, max: 1});
@@ -64,8 +68,6 @@ function createNodesRoute() {
 
                 const startInt = parseInt(RcdHistoryRouter.getParameters().start);
                 const countInt = parseInt(RcdHistoryRouter.getParameters().count);
-                console.log('startInt:' + startInt);
-                console.log('countInt:' + countInt);
                 const previousCallback = () => RcdHistoryRouter.
                     setState('nodes?repo=' + RcdHistoryRouter.getParameters().repo + '&branch=' + RcdHistoryRouter.getParameters().branch +
                              '&path=' + RcdHistoryRouter.getParameters().path +
@@ -133,6 +135,83 @@ function createNodesRoute() {
             }
         }).fail(handleAjaxError).always(() => {
             infoDialog.close();
+        });
+    }
+
+    function exportNode() {
+        const nodeName = RcdHistoryRouter.getParameters().path
+            ? (tableCard.getSelectedRows().map((row) => row.attributes['name'])[0] || 'export')
+            : RcdHistoryRouter.getParameters().repo + '-' + RcdHistoryRouter.getParameters().branch;
+        const defaultExportName = nodeName + '-' + toLocalDateTimeFormat(new Date(), '-', '-');
+        showInputDialog({
+            title: "Export node",
+            ok: "EXPORT",
+            label: "Export name",
+            placeholder: defaultExportName,
+            value: defaultExportName,
+            callback: (value) => doExportNode(value || defaultExportName)
+        });
+    }
+
+    function doExportNode(exportName) {
+        const infoDialog = showInfoDialog("Exporting selected node...");
+        return $.ajax({
+            method: 'POST',
+            url: config.servicesUrl + '/node-export',
+            data: JSON.stringify({
+                repositoryName: RcdHistoryRouter.getParameters().repo,
+                branchName: RcdHistoryRouter.getParameters().branch,
+                nodePath: tableCard.getSelectedRows().map((row) => row.attributes['path'])[0],
+                exportName: exportName
+            }),
+            contentType: 'application/json; charset=utf-8'
+        }).done(handleResultError).fail(handleAjaxError).always(() => {
+            infoDialog.close();
+            RcdHistoryRouter.setState('exports');
+        });
+    }
+
+    function importNode() {
+        const infoDialog = showInfoDialog("Retrieving node export list...");
+        return $.ajax({
+            url: config.servicesUrl + '/export-list'
+        }).done(function (result) {
+            if (handleResultError(result)) {
+                const exportNames = result.success.
+                    sort((export1, export2) => export2.timestamp - export1.timestamp).
+                    map((anExport) =>anExport.name);
+                selectNodeExport(exportNames);
+            }
+        }).fail(handleAjaxError).always(() => {
+            infoDialog.close();
+        });
+    }
+
+    function selectNodeExport(exportNames) {
+        showSelectionDialog({
+            title: "Select node export",
+            ok: "IMPORT",
+            label: "Export name",
+            options: exportNames,
+            callback: (value) => doImportNode(value)
+        });
+    }
+
+    function doImportNode(exportName) {
+        const infoDialog = showInfoDialog("Importing node...");
+        return $.ajax({
+            method: 'POST',
+            url: config.servicesUrl + '/node-import',
+            data: JSON.stringify({
+                repositoryName: RcdHistoryRouter.getParameters().repo,
+                branchName: RcdHistoryRouter.getParameters().branch,
+                nodePath: RcdHistoryRouter.getParameters().path || '/',
+                exportName: exportName
+            }),
+            contentType: 'application/json; charset=utf-8'
+        }).done(handleResultError).fail(handleAjaxError).always(() => {
+            infoDialog.close();
+            RcdHistoryRouter.refresh();
         });
     }
 

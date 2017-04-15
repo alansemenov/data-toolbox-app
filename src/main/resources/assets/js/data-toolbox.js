@@ -40,6 +40,18 @@ function showConfirmationDialog(text, callback) {
         open();
 }
 
+function showInputDialog(params) {
+    return new RcdMaterialInputDialog(params).
+        init().
+        open();
+}
+
+function showSelectionDialog(params) {
+    return new RcdMaterialSelectionDialog(params).
+        init().
+        open();
+}
+
 function showDetailsDialog(title, text) {
     return new RcdMaterialDetailsDialog({title: title, text: text}).
         init().
