@@ -13,6 +13,7 @@ import com.google.common.io.ByteSource;
 import systems.rcd.fwk.core.format.json.RcdJsonService;
 import systems.rcd.fwk.core.format.json.data.RcdJsonArray;
 import systems.rcd.fwk.core.format.json.data.RcdJsonObject;
+import systems.rcd.fwk.core.format.json.data.RcdJsonValue;
 import systems.rcd.fwk.core.io.file.RcdFileService;
 import systems.rcd.fwk.core.util.zip.RcdZipService;
 
@@ -23,6 +24,7 @@ import com.enonic.xp.context.ContextBuilder;
 import com.enonic.xp.export.ExportNodesParams;
 import com.enonic.xp.export.ExportService;
 import com.enonic.xp.export.ImportNodesParams;
+import com.enonic.xp.export.NodeImportResult;
 import com.enonic.xp.home.HomeDir;
 import com.enonic.xp.node.NodePath;
 import com.enonic.xp.repository.CreateRepositoryParams;
@@ -93,12 +95,15 @@ public class RcdExportScriptBean
     public String load( final String[] exportNames, final String repositoryName, final String branchName, final String nodePathString )
     {
         return runSafely( () -> {
-
+            final RcdJsonObject results = RcdJsonService.createJsonObject();
             final NodePath nodePath = NodePath.create( nodePathString ).build();
             createContext( repositoryName, branchName ).runWith( () -> {
                 for ( String exportName : exportNames )
                 {
-                    load( nodePath, exportName );
+                    final NodeImportResult nodeImportResult = load( nodePath, exportName );
+                    final RcdJsonValue result = convertNodeImportResultToJson( nodeImportResult );
+                    results.put( exportName, result );
+
                 }
                 if ( SystemConstants.SYSTEM_REPO.getId().toString().equals( repositoryName ) &&
                     SystemConstants.BRANCH_SYSTEM.getValue().equals( branchName ) )
@@ -107,8 +112,25 @@ public class RcdExportScriptBean
                 }
             } );
 
-            return createSuccessResult();
+            return createSuccessResult( results );
         }, "Error while loading export" );
+    }
+
+    private RcdJsonValue convertNodeImportResultToJson( final NodeImportResult nodeImportResult )
+    {
+        final RcdJsonObject result = RcdJsonService.createJsonObject();
+        final RcdJsonArray addedNodesResult = result.createArray( "addedNodes" );
+        final RcdJsonArray updatedNodesResult = result.createArray( "updatedNodes" );
+        final RcdJsonArray importedBinariesResult = result.createArray( "importedBinaries" );
+        final RcdJsonArray errorsResult = result.createArray( "errors" );
+
+        nodeImportResult.getAddedNodes().forEach( nodePath -> addedNodesResult.add( nodePath.toString() ) );
+        nodeImportResult.getUpdateNodes().forEach( nodePath -> updatedNodesResult.add( nodePath.toString() ) );
+        nodeImportResult.getExportedBinaries().forEach( binary -> importedBinariesResult.add( binary ) );
+        nodeImportResult.getImportErrors().forEach(
+            error -> errorsResult.add( error.getMessage() + " - " + error.getException().toString() ) );
+
+        return result;
     }
 
     public String delete( final String... exportNames )
@@ -149,7 +171,7 @@ public class RcdExportScriptBean
         }
     }
 
-    private void load( NodePath nodePath, String exportName )
+    private NodeImportResult load( NodePath nodePath, String exportName )
     {
         final ImportNodesParams importNodesParams = ImportNodesParams.create().
             targetNodePath( nodePath ).
@@ -159,7 +181,7 @@ public class RcdExportScriptBean
             includePermissions( true ).
             build();
 
-        exportServiceSupplier.get().
+        return exportServiceSupplier.get().
             importNodes( importNodesParams );
     }
 

@@ -52,8 +52,8 @@ function showSelectionDialog(params) {
         open();
 }
 
-function showDetailsDialog(title, text) {
-    return new RcdMaterialDetailsDialog({title: title, text: text}).
+function showDetailsDialog(title, text, callback) {
+    return new RcdMaterialDetailsDialog({title: title, text: text, callback: callback}).
         init().
         open();
 }

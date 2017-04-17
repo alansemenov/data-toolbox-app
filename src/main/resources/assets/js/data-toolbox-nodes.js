@@ -1,4 +1,29 @@
 function createNodesRoute() {
+
+    class RcdMaterialNodeImportResultDialog extends RcdMaterialModalDialog {
+        constructor(importResult) {
+            super('Node export import result', 'Added nodes: ' + importResult.addedNodes.length + '\n' +
+                                               'Updated nodes: ' + importResult.updatedNodes.length + '\n' +
+                                               'Imported binaries: ' + importResult.importedBinaries.length + '\n' +
+                                               'Errors: ' + importResult.errors.length, true);
+            this.result = importResult;
+        }
+
+        init() {
+            const closeCallback = () =>  this.close();
+            const detailsCallback = () => {
+                this.close();
+                showDetailsDialog('Node export import result details', JSON.stringify(this.result, null, 2));
+            };
+            super.init().
+                addAction('CLOSE', closeCallback).
+                addAction('DETAILS', detailsCallback).
+                addKeyUpListener('Enter', detailsCallback).
+                addKeyUpListener('Escape', closeCallback);
+            return this;
+        }
+    }
+
     const breadcrumbsLayout = new RcdMaterialBreadcrumbsLayout().init();
 
     const tableCard = new RcdMaterialTableCard('Nodes').init().
@@ -211,7 +236,12 @@ function createNodesRoute() {
                 exportName: exportName
             }),
             contentType: 'application/json; charset=utf-8'
-        }).done(handleResultError).fail(handleAjaxError).always(() => {
+        }).done(function (result) {
+            if (handleResultError(result)) {
+                const importResult = result.success[exportName];
+                new RcdMaterialNodeImportResultDialog(importResult).init().open();
+            }
+        }).fail(handleAjaxError).always(() => {
             infoDialog.close();
             RcdHistoryRouter.refresh();
         });
