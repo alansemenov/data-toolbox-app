@@ -1,11 +1,12 @@
 function createNodesRoute() {
 
     class RcdMaterialNodeImportResultDialog extends RcdMaterialModalDialog {
-        constructor(importResult) {
-            super('Node export import result', 'Added nodes: ' + importResult.addedNodes.length + '\n' +
-                                               'Updated nodes: ' + importResult.updatedNodes.length + '\n' +
-                                               'Imported binaries: ' + importResult.importedBinaries.length + '\n' +
-                                               'Errors: ' + importResult.errors.length, true);
+        constructor(exportName, importResult) {
+            super('[' + exportName + '] import result', 'Added nodes: ' + importResult.addedNodes.length + '\n' +
+                                                        'Updated nodes: ' + importResult.updatedNodes.length + '\n' +
+                                                        'Imported binaries: ' + importResult.importedBinaries.length + '\n' +
+                                                        'Errors: ' + importResult.errors.length, true);
+            this.exportName = exportName;
             this.result = importResult;
         }
 
@@ -13,7 +14,7 @@ function createNodesRoute() {
             const closeCallback = () =>  this.close();
             const detailsCallback = () => {
                 this.close();
-                showDetailsDialog('Node export import result details', JSON.stringify(this.result, null, 2));
+                showDetailsDialog('[' + this.exportName + '] import result details', JSON.stringify(this.result, null, 2));
             };
             super.init().
                 addAction('CLOSE', closeCallback).
@@ -239,7 +240,7 @@ function createNodesRoute() {
         }).done(function (result) {
             if (handleResultError(result)) {
                 const importResult = result.success[exportName];
-                new RcdMaterialNodeImportResultDialog(importResult).init().open();
+                new RcdMaterialNodeImportResultDialog(exportName, importResult).init().open();
             }
         }).fail(handleAjaxError).always(() => {
             infoDialog.close();
