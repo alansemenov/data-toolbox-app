@@ -67,6 +67,7 @@ function createBranchesRoute() {
             method: 'POST',
             url: config.servicesUrl + '/branch-create',
             data: JSON.stringify({
+                repositoryName: RcdHistoryRouter.getParameters().repo,
                 branchName: branchName || ('branch-' + toLocalDateTimeFormat(new Date(), '-', '-')).toLowerCase()
             }),
             contentType: 'application/json; charset=utf-8'
