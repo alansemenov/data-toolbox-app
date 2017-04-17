@@ -233,7 +233,7 @@ function createNodesRoute() {
             data: JSON.stringify({
                 repositoryName: RcdHistoryRouter.getParameters().repo,
                 branchName: RcdHistoryRouter.getParameters().branch,
-                nodePath: RcdHistoryRouter.getParameters().path || '/',
+                nodePath: RcdHistoryRouter.getParameters().path ||   '/',
                 exportName: exportName
             }),
             contentType: 'application/json; charset=utf-8'
