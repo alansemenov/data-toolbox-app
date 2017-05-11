@@ -5,7 +5,7 @@ function createDumpsRoute() {
 
     const tableCard = new RcdMaterialTableCard('System dumps').init().
         addColumn('Dump name').
-        addColumn('Timestamp').
+        addColumn('Timestamp', {classes: ['non-mobile-cell']}).
         addIconArea(new RcdGoogleMaterialIconArea('add_circle', createDump).init().setTooltip('Create a system dump'), {max: 0}).
         addIconArea(new RcdGoogleMaterialIconArea('delete', deleteDumps).init().setTooltip('Delete selected system dumps'), {min: 1}).
         addIconArea(new RcdGoogleMaterialIconArea('refresh', loadDumps).init().setTooltip('Load selected system dumps'), {min: 1}).
@@ -39,7 +39,7 @@ function createDumpsRoute() {
                     forEach((dump) => {
                         tableCard.createRow().
                             addCell(dump.name).
-                            addCell(toLocalDateTimeFormat(new Date(dump.timestamp))).
+                            addCell(toLocalDateTimeFormat(new Date(dump.timestamp)), {classes: ['non-mobile-cell']}).
                             setAttribute('dump', dump.name);
                     });
             }

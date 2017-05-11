@@ -29,7 +29,7 @@ function createNodesRoute() {
 
     const tableCard = new RcdMaterialTableCard('Nodes').init().
         addColumn('Node name').
-        addColumn('Node ID').
+        addColumn('Node ID', {classes: ['non-mobile-cell']}).
         addColumn('', {icon: true}).
         addIconArea(new RcdImageIconArea(config.assetsUrl + '/icons/import-icon.svg', importNode).init().setTooltip('Import node export',
             undefined, RcdMaterialTooltipAlignment.RIGHT),
@@ -79,7 +79,7 @@ function createNodesRoute() {
 
                     const row = tableCard.createRow().
                         addCell(node._name).
-                        addCell(node._id).
+                        addCell(node._id, {classes: ['non-mobile-cell']}).
                         addCell(retrieveNodeInfoIcon, {icon: true}).
                         setAttribute('id', node._id).
                         setAttribute('path', node._path).
