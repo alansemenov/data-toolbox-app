@@ -31,15 +31,11 @@ function createNodesRoute() {
         addColumn('Node name').
         addColumn('Node ID', {classes: ['non-mobile-cell']}).
         addColumn('', {icon: true}).
-        addIconArea(new RcdImageIconArea(config.assetsUrl + '/icons/import-icon.svg', importNode).init().setTooltip('Import node export',
-            undefined, RcdMaterialTooltipAlignment.RIGHT),
-        {max: 0}).
-        addIconArea(new RcdGoogleMaterialIconArea('info', () => retrieveNodeInfo()).init().setTooltip('Display selected node detail'),
+        addIconArea(new RcdImageIconArea(config.assetsUrl + '/icons/export-icon.svg', exportNode).init().setTooltip('Export selected node'),
         {min: 1, max: 1}).
-        addIconArea(new RcdGoogleMaterialIconArea('delete', deleteNodes).init().setTooltip('Delete selected nodes'), {min: 1}).
-        addIconArea(new RcdImageIconArea(config.assetsUrl + '/icons/export-icon.svg', exportNode).init().setTooltip('Export selected node',
-            undefined, RcdMaterialTooltipAlignment.RIGHT),
-        {min: 1, max: 1});
+        addIconArea(new RcdImageIconArea(config.assetsUrl + '/icons/import-icon.svg', importNode).init().setTooltip('Import node export',
+            undefined, RcdMaterialTooltipAlignment.RIGHT), {max: 0}).
+        addIconArea(new RcdGoogleMaterialIconArea('delete', deleteNodes).init().setTooltip('Delete selected nodes'), {min: 1});
     const layout = new RcdMaterialLayout().init().
         addChild(tableCard);
 

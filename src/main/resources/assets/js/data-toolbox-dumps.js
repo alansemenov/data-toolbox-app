@@ -7,14 +7,13 @@ function createDumpsRoute() {
         addColumn('Dump name').
         addColumn('Timestamp', {classes: ['non-mobile-cell']}).
         addIconArea(new RcdGoogleMaterialIconArea('add_circle', createDump).init().setTooltip('Create a system dump'), {max: 0}).
-        addIconArea(new RcdGoogleMaterialIconArea('delete', deleteDumps).init().setTooltip('Delete selected system dumps'), {min: 1}).
         addIconArea(new RcdGoogleMaterialIconArea('refresh', loadDumps).init().setTooltip('Load selected system dumps'), {min: 1}).
         addIconArea(new RcdGoogleMaterialIconArea('file_download',
-            dowloadDumps).init().setTooltip('Archive and download selected system dumps', undefined, RcdMaterialTooltipAlignment.RIGHT),
-        {min: 1}).
+            dowloadDumps).init().setTooltip('Archive and download selected system dumps'), {min: 1}).
         addIconArea(new RcdGoogleMaterialIconArea('file_upload', uploadDumps).init().setTooltip('Upload and unarchive system dumps',
-            undefined, RcdMaterialTooltipAlignment.RIGHT),
-        {max: 0});
+            undefined, RcdMaterialTooltipAlignment.RIGHT), {max: 0}).
+        addIconArea(new RcdGoogleMaterialIconArea('delete', deleteDumps).init().setTooltip('Delete selected system dumps', undefined,
+            RcdMaterialTooltipAlignment.RIGHT), {min: 1});
     const layout = new RcdMaterialLayout().init().
         addChild(tableCard);
 

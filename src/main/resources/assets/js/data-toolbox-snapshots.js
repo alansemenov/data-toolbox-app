@@ -6,7 +6,7 @@ function createSnapshotsRoute() {
     const tableCard = new RcdMaterialTableCard('Snapshots').init().
         addColumn('Snapshot name').
         addColumn('Timestamp', {classes: ['non-mobile-cell']}).
-        addIconArea(new RcdGoogleMaterialIconArea('add_circle', createSnapshot).init().setTooltip('Create a snapshot', undefined, RcdMaterialTooltipAlignment.RIGHT), {max: 0}).
+        addIconArea(new RcdGoogleMaterialIconArea('add_circle', createSnapshot).init().setTooltip('Create a snapshot'), {max: 0}).
         addIconArea(new RcdGoogleMaterialIconArea('restore', restoreSnapshot).init().setTooltip('Restore selected snapshot'),
         {min: 1, max: 1}).
         addIconArea(new RcdGoogleMaterialIconArea('delete', deleteSnapshots).init().setTooltip('Delete selected snapshots', undefined,
