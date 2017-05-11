@@ -5,7 +5,7 @@ function createExportsRoute() {
 
     const tableCard = new RcdMaterialTableCard('Node exports').init().
         addColumn('Export name').
-        addColumn('Timestamp').
+        addColumn('Timestamp', {classes: ['non-mobile-cell']}).
         addIconArea(new RcdGoogleMaterialIconArea('delete', deleteExports).init().setTooltip('Delete selected node exports'), {min: 1}).
         addIconArea(new RcdGoogleMaterialIconArea('file_download',
             dowloadExports).init().setTooltip('Archive and download selected node exports', undefined, RcdMaterialTooltipAlignment.RIGHT),
@@ -36,7 +36,7 @@ function createExportsRoute() {
                     forEach((anExport) => {
                         tableCard.createRow().
                             addCell(anExport.name).
-                            addCell(toLocalDateTimeFormat(new Date(anExport.timestamp))).
+                            addCell(toLocalDateTimeFormat(new Date(anExport.timestamp)), {classes: ['non-mobile-cell']}).
                             setAttribute('export', anExport.name);
                     });
             }
