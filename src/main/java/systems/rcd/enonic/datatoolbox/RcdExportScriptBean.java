@@ -39,6 +39,8 @@ import com.enonic.xp.vfs.VirtualFiles;
 public class RcdExportScriptBean
     extends RcdScriptBean
 {
+    private static final long RESULT_DETAILS_COUNT = 100;
+
     private Supplier<ExportService> exportServiceSupplier;
 
     private Supplier<RepositoryService> repositoryServiceSupplier;
@@ -119,16 +121,47 @@ public class RcdExportScriptBean
     private RcdJsonValue convertNodeImportResultToJson( final NodeImportResult nodeImportResult )
     {
         final RcdJsonObject result = RcdJsonService.createJsonObject();
+
+        result.put( "addedNodeCount", nodeImportResult.getAddedNodes().getSize() );
+        result.put( "updatedNodeCount", nodeImportResult.getUpdateNodes().getSize() );
+        result.put( "importedBinaryCount", nodeImportResult.getExportedBinaries().size() );
+        result.put( "errorCount", nodeImportResult.getImportErrors().size() );
+
         final RcdJsonArray addedNodesResult = result.createArray( "addedNodes" );
         final RcdJsonArray updatedNodesResult = result.createArray( "updatedNodes" );
         final RcdJsonArray importedBinariesResult = result.createArray( "importedBinaries" );
         final RcdJsonArray errorsResult = result.createArray( "errors" );
-
-        nodeImportResult.getAddedNodes().forEach( nodePath -> addedNodesResult.add( nodePath.toString() ) );
-        nodeImportResult.getUpdateNodes().forEach( nodePath -> updatedNodesResult.add( nodePath.toString() ) );
-        nodeImportResult.getExportedBinaries().forEach( binary -> importedBinariesResult.add( binary ) );
-        nodeImportResult.getImportErrors().forEach(
-            error -> errorsResult.add( error.getMessage() + " - " + error.getException().toString() ) );
+        nodeImportResult.getAddedNodes().
+            stream().
+            limit( RESULT_DETAILS_COUNT ).
+            forEach( nodePath -> addedNodesResult.add( nodePath.toString() ) );
+        if ( addedNodesResult.size() == RESULT_DETAILS_COUNT )
+        {
+            addedNodesResult.add( "..." );
+        }
+        nodeImportResult.getUpdateNodes().stream().
+            limit( RESULT_DETAILS_COUNT ).
+            forEach( nodePath -> updatedNodesResult.add( nodePath.toString() ) );
+        if ( updatedNodesResult.size() == RESULT_DETAILS_COUNT )
+        {
+            updatedNodesResult.add( "..." );
+        }
+        nodeImportResult.getExportedBinaries().
+            stream().
+            limit( RESULT_DETAILS_COUNT ).
+            forEach( binary -> importedBinariesResult.add( binary ) );
+        if ( importedBinariesResult.size() == RESULT_DETAILS_COUNT )
+        {
+            importedBinariesResult.add( "..." );
+        }
+        nodeImportResult.getImportErrors().
+            stream().
+            limit( RESULT_DETAILS_COUNT ).
+            forEach( error -> errorsResult.add( error.getMessage() + " - " + error.getException().toString() ) );
+        if ( errorsResult.size() == RESULT_DETAILS_COUNT )
+        {
+            errorsResult.add( "..." );
+        }
 
         return result;
     }

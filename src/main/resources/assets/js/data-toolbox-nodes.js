@@ -2,10 +2,10 @@ function createNodesRoute() {
 
     class RcdMaterialNodeImportResultDialog extends RcdMaterialModalDialog {
         constructor(exportName, importResult) {
-            super('[' + exportName + '] import result', 'Added nodes: ' + importResult.addedNodes.length + '\n' +
-                                                        'Updated nodes: ' + importResult.updatedNodes.length + '\n' +
-                                                        'Imported binaries: ' + importResult.importedBinaries.length + '\n' +
-                                                        'Errors: ' + importResult.errors.length, true);
+            super('Import result', 'Added nodes: ' + importResult.addedNodeCount + '\n' +
+                                   'Updated nodes: ' + importResult.updatedNodeCount + '\n' +
+                                   'Imported binaries: ' + importResult.importedBinaryCount + '\n' +
+                                   'Errors: ' + importResult.errorCount, true);
             this.exportName = exportName;
             this.result = importResult;
         }
@@ -14,7 +14,7 @@ function createNodesRoute() {
             const closeCallback = () =>  this.close();
             const detailsCallback = () => {
                 this.close();
-                showDetailsDialog('[' + this.exportName + '] import result details', JSON.stringify(this.result, null, 2));
+                showDetailsDialog('Import result details', JSON.stringify(this.result, null, 2));
             };
             super.init().
                 addAction('CLOSE', closeCallback).
@@ -233,7 +233,7 @@ function createNodesRoute() {
             data: JSON.stringify({
                 repositoryName: RcdHistoryRouter.getParameters().repo,
                 branchName: RcdHistoryRouter.getParameters().branch,
-                nodePath: RcdHistoryRouter.getParameters().path ||   '/',
+                nodePath: RcdHistoryRouter.getParameters().path || '/',
                 exportName: exportName
             }),
             contentType: 'application/json; charset=utf-8'
