@@ -1,7 +1,8 @@
 function createDumpsRoute() {
     const breadcrumbsLayout = new RcdMaterialBreadcrumbsLayout().init().
         addBreadcrumb(new RcdMaterialBreadcrumb('Data Toolbox', () => RcdHistoryRouter.setState()).init()).
-        addBreadcrumb(new RcdMaterialBreadcrumb('System dumps').init());
+        addBreadcrumb(new RcdMaterialBreadcrumb('System dumps').init()).
+        addChild(new RcdGoogleMaterialIconArea('help', displayHelp).init().setTooltip('Help'));
 
     const tableCard = new RcdMaterialTableCard('System dumps').init().
         addColumn('Dump name').
@@ -145,5 +146,26 @@ function createDumpsRoute() {
             infoDialog.close();
             retrieveDumps();
         });
+    }
+
+    function displayHelp() {
+        const definition = 'A system dump is an export of your entire data (contents, users, groups and roles) from your Enonic XP server to a serialized format.<br/>' +
+                           'While a node/content export focuses on a given node and its children, a system dump is used to export an entire system (all repositories/branches/nodes). ' +
+                           'This makes dumps well suited for migrating your data to another installation.<br/>' +
+                           'Warning: The current export/dump mechanism does not export old versions of your data. You will loose the version history of your contents.<br/>' +
+                           'See <a href="http://xp.readthedocs.io/en/stable/operations/export.html">Export and Import</a> for more information.';
+
+        const viewDefinition = 'This view lists all the system dumps located in $XP_HOME/data/dump. ' +
+                               'You can delete, load or archive (ZIP) and download existing dumps. ' +
+                               'You can also generate a new dump of your system or upload a previously archived and downloaded dump.';
+
+        const helpModalDialog = new HelpDialog('System Dumps', [definition, viewDefinition]).
+            init().
+            addActionDefinition('add_circle', 'Generate a system dump into $XP_HOME/data/dump/[dump-name]').
+            addActionDefinition('refresh', 'Load the selected system dumps into Enonic XP').
+            addActionDefinition('file_download', 'Zip the selected dumps and download the archive').
+            addActionDefinition('file_upload', 'Upload archived dumps and unzip them into $XP_HOME/data/dump').
+            addActionDefinition('delete', 'Delete the selected system dumps.').
+            open();
     }
 }

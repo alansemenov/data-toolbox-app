@@ -18,3 +18,33 @@
 .rcd-material-table-cell {
   word-break: break-all;
 }
+
+.rcd-material-breadcrumbs-layout {
+  flex-direction: row;
+  justify-content: space-between;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.rcd-material-dialog {
+  max-width: ~"calc(100% - 32px)";
+}
+
+.help-dialog {
+  @media (min-width: @rcd-material-min-tablet-width) {
+    max-width: @rcd-material-min-tablet-width;
+  }
+  
+  .help-definition {
+    margin-bottom: 8px;
+  }
+
+  .help-action-definition :extend(.rcd-flex-hbox) {
+    flex-shrink: 0;
+    margin-bottom: 8px;
+    i {
+      margin-right: 8px;
+    }
+  }
+}
+

@@ -12,8 +12,8 @@ function createPresentationRoute() {
                 'See <a href="http://xp.readthedocs.io/en/stable/operations/export.html">Export and Import</a> for more information.');
 
     const dumpsSectionContent = new RcdPElement().init().
-        setText('A system dump is an export of your entire data (contents, users, groups and roles) from your Enonic XP server to a serialized format. ' +
-                'While the node export/import focuses on a given content, the dump/load is used to export an entire system (all repositories and branches). ' +
+        setText('A system dump is an export of your entire data (contents, users, groups and roles) from your Enonic XP server to a serialized format.<br/>' +
+                'The difference between a node/content export and a system dump is what they export. A node/content export focuses on a given content and its childen while a system dump is used to export an entire system (all repositories/branches/nodes). ' +
                 'This makes dumps well suited for migrating your data to another installation. ' +
                 'Warning: The current dump mechanism does not export old versions of your data. You will loose the version history of your contents. ' +
                 'See <a href="http://xp.readthedocs.io/en/stable/operations/export.html">Export and Import</a> for more information.');
@@ -51,13 +51,7 @@ function createPresentationRoute() {
                 'If you need a tool to browse these repositories or if you need browsing based on queries, we recommend using the tool <a href="https://market.enonic.com/vendors/runar-myklebust/repoxplorer">repoXPlorer</a>.');
 
 
-    const layout = new RcdMaterialSectionLayout('Data Toolbox', sectionContent).init().
-        addSubSection('Node Exports', exportsSectionContent).
-        addSubSection('System Dumps', dumpsSectionContent).
-        addSubSection('Snapshots', snapshotsSectionContent).
-        addSubSection('Repositories', repositoriesSectionContent).
-        addSubSection('Branches', branchesSectionContent).
-        addSubSection('Nodes', nodesSectionContent);
+    const layout = new RcdMaterialSectionLayout('Data Toolbox', sectionContent).init();
 
     return {
         callback: (main) => {
