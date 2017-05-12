@@ -155,7 +155,7 @@ function createDumpsRoute() {
                            'Warning: The current export/dump mechanism does not export old versions of your data. You will loose the version history of your contents.<br/>' +
                            'See <a href="http://xp.readthedocs.io/en/stable/operations/export.html">Export and Import</a> for more information.';
 
-        const viewDefinition = 'This view lists all the system dumps located in $XP_HOME/data/dump. ' +
+        const viewDefinition = 'The view lists all the system dumps located in $XP_HOME/data/dump. ' +
                                'You can delete, load or archive (ZIP) and download existing dumps. ' +
                                'You can also generate a new dump of your system or upload a previously archived and downloaded dump.';
 

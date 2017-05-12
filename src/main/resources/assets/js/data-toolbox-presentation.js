@@ -15,27 +15,13 @@ function createPresentationRoute() {
                 addChild(this.text).addClickListener(() => RcdHistoryRouter.setState(this.state));
         }
     }
-
-
-    const sectionContent = new RcdPElement().init().
-        setText('Data toolbox provides a web interface to visualize and manipulate your Enonic XP data.<br/> ' +
-                'The repositories view provides a tree representation of your repositories/branches/nodes. ' +
-                'The 3 others views will help you manage your node exports, system dumps and snapshots. ' +
-                'A widget is also included to allow to export content directly from the Content studio.');
-
+    
     const exportsSectionContent = new RcdPElement().init().
         setText('A node export is a serialization of a given content/node. ' +
                 'This makes node exports well suited for transferring a specific content to another installation. ' +
                 'Warning: The current export mechanism does not export old versions of your data. You will loose the version history of your contents. ' +
                 'See <a href="http://xp.readthedocs.io/en/stable/operations/export.html">Export and Import</a> for more information.');
-
-    const dumpsSectionContent = new RcdPElement().init().
-        setText('A system dump is an export of your entire data (contents, users, groups and roles) from your Enonic XP server to a serialized format.<br/>' +
-                'The difference between a node/content export and a system dump is what they export. A node/content export focuses on a given content and its childen while a system dump is used to export an entire system (all repositories/branches/nodes). ' +
-                'This makes dumps well suited for migrating your data to another installation. ' +
-                'Warning: The current dump mechanism does not export old versions of your data. You will loose the version history of your contents. ' +
-                'See <a href="http://xp.readthedocs.io/en/stable/operations/export.html">Export and Import</a> for more information.');
-
+    
     const snapshotsSectionContent = new RcdPElement().init().
         setText('A snapshot is a record of your Enonic XP indexes at a particular point in time. ' +
                 'Your first snapshot will be a complete copy of your indexes, but all subsequent snapshots will save the delta between the existing snapshots and the current state.' +
