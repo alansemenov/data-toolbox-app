@@ -66,7 +66,13 @@
     .view-summary :extend(.rcd-flex-vbox, .rcd-clickable) {
       text-align: center;
       img {
-        margin-bottom: 8px;
+        background-color: @rcd-primary-color;
+        padding: 8px;
+      }
+      p {
+        border: solid 2px  @rcd-primary-color;
+        padding: 8px;
+        min-height: 60px;
       }
       @media (max-width: @rcd-material-max-mobile-width) {
         padding: @rcd-material-layout-mobile-margin / 2;
