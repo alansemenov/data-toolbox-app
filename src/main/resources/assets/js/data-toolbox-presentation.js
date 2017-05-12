@@ -54,14 +54,12 @@ function createPresentationRoute() {
 
 
     const image = new RcdImageIcon(config.assetsUrl + '/icons/application.svg').init();
-    const title = new RcdH1Element().init().
-        setText('Data toolbox');
     const subTitle = new RcdH2Element().init().
         setText('A web interface to visualize and manipulate your Enonic XP data');
+
     const layout = new RcdMaterialLayout().init().
         addClass('presentation-view').
         addChild(image).
-        addChild(title).
         addChild(subTitle);
 
     return {
