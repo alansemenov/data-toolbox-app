@@ -1,4 +1,6 @@
 function createPresentationRoute() {
+
+
     const sectionContent = new RcdPElement().init().
         setText('Data toolbox provides a web interface to visualize and manipulate your Enonic XP data.<br/> ' +
                 'The repositories view provides a tree representation of your repositories/branches/nodes. ' +
@@ -51,7 +53,16 @@ function createPresentationRoute() {
                 'If you need a tool to browse these repositories or if you need browsing based on queries, we recommend using the tool <a href="https://market.enonic.com/vendors/runar-myklebust/repoxplorer">repoXPlorer</a>.');
 
 
-    const layout = new RcdMaterialSectionLayout('Data Toolbox', sectionContent).init();
+    const image = new RcdImageIcon(config.assetsUrl + '/icons/application.svg').init();
+    const title = new RcdH1Element().init().
+        setText('Data toolbox');
+    const subTitle = new RcdH2Element().init().
+        setText('A web interface to visualize and manipulate your Enonic XP data');
+    const layout = new RcdMaterialLayout().init().
+        addClass('presentation-view').
+        addChild(image).
+        addChild(title).
+        addChild(subTitle);
 
     return {
         callback: (main) => {
