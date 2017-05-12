@@ -101,7 +101,7 @@ function createRepositoriesRoute() {
 
         const viewDefinition = 'The view lists all the repositories. Click on a row to display the repository branches.';
 
-        const helpModalDialog = new HelpDialog('Repositories', [definition, viewDefinition]).
+        new HelpDialog('Repositories', [definition, viewDefinition]).
             init().
             addActionDefinition('add_circle', 'Create a repository with default settings').
             addActionDefinition('delete', 'Delete the selected repositories.').

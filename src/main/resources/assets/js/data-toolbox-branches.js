@@ -1,5 +1,6 @@
 function createBranchesRoute() {
-    const breadcrumbsLayout = new RcdMaterialBreadcrumbsLayout().init();
+    const breadcrumbsLayout = new RcdMaterialBreadcrumbsLayout().init().
+        addChild(new RcdGoogleMaterialIconArea('help', displayHelp).init().setTooltip('Help'));
 
     const tableCard = new RcdMaterialTableCard('Branches').init().
         addColumn('Branch name').
@@ -100,5 +101,22 @@ function createBranchesRoute() {
             setBreadcrumbs([new RcdMaterialBreadcrumb('Data Toolbox', () => RcdHistoryRouter.setState()).init(),
                 new RcdMaterialBreadcrumb('Repositories', () => RcdHistoryRouter.setState('repositories')).init(),
                 new RcdMaterialBreadcrumb(RcdHistoryRouter.getParameters().repo).init()]);
+    }
+
+    function displayHelp() {
+        const definition = 'A branch is a set of data in a repository.  All repositories have a default branch called master. ' +
+                           'Any number of branches can be added to facilitate your data. ' +
+                           'For example, the cms-repo repository contains two branches:' +
+                           '"draft" containing the content as seen in the Content Studio and ' +
+                           '"master" containing the published content served by the portal.<br/>' +
+                           'See <a href="http://xp.readthedocs.io/en/stable/developer/node-domain/branch.html">Branch</a> for more information.';
+
+        const viewDefinition = 'The view lists all the branches of the repository. Click on a row to display the root node.';
+
+        new HelpDialog('Branches', [definition, viewDefinition]).
+            init().
+            addActionDefinition('add_circle', 'Create a branch with default settings').
+            addActionDefinition('delete', 'Delete the selected branches.').
+            open();
     }
 }

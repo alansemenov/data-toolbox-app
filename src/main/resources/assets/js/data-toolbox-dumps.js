@@ -159,7 +159,7 @@ function createDumpsRoute() {
                                'You can delete, load or archive (ZIP) and download existing dumps. ' +
                                'You can also generate a new dump of your system or upload a previously archived and downloaded dump.';
 
-        const helpModalDialog = new HelpDialog('System Dumps', [definition, viewDefinition]).
+        new HelpDialog('System Dumps', [definition, viewDefinition]).
             init().
             addActionDefinition('add_circle', 'Generate a system dump into $XP_HOME/data/dump/[dump-name]').
             addActionDefinition('refresh', 'Load the selected system dumps into Enonic XP').

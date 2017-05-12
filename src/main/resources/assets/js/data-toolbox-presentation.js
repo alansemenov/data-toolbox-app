@@ -28,14 +28,6 @@ function createPresentationRoute() {
                 'This makes snapshots optimized for repetitive saves and allow to quickly rollback to a previous state in one click. It is also used, in addition to blobs backup, for backing up your data. ' +
                 'See <a href="http://xp.readthedocs.io/en/stable/operations/backup.html#backing-up-indexes">Backing up indexes</a> for more information.');
 
-    const repositoriesSectionContent = new RcdPElement().init().
-        setText('Enonic XP data is split in repositories. ' +
-                'Data stored in a repository will typically belong to a common domain. ' +
-                'Enonic XP uses by default 2 repositories. ' +
-                '"system-repo", the core repository, contains the users, groups, roles, references to other repositories, installed application, ... ' +
-                '"cms-repo", the content domain repository, contains the data managed by Content Studio. ' +
-                'See <a href="http://xp.readthedocs.io/en/stable/developer/node-domain/repository.html">Repository</a> for more information.');
-
     const branchesSectionContent = new RcdPElement().init().
         setText('A branch is a set of data in a repository. ' +
                 'All repositories have a default branch called master. ' +
