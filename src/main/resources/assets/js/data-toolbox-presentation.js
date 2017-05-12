@@ -15,13 +15,13 @@ function createPresentationRoute() {
                 addChild(this.text).addClickListener(() => RcdHistoryRouter.setState(this.state));
         }
     }
-    
+
     const exportsSectionContent = new RcdPElement().init().
         setText('A node export is a serialization of a given content/node. ' +
                 'This makes node exports well suited for transferring a specific content to another installation. ' +
                 'Warning: The current export mechanism does not export old versions of your data. You will loose the version history of your contents. ' +
                 'See <a href="http://xp.readthedocs.io/en/stable/operations/export.html">Export and Import</a> for more information.');
-    
+
     const snapshotsSectionContent = new RcdPElement().init().
         setText('A snapshot is a record of your Enonic XP indexes at a particular point in time. ' +
                 'Your first snapshot will be a complete copy of your indexes, but all subsequent snapshots will save the delta between the existing snapshots and the current state.' +
@@ -60,11 +60,11 @@ function createPresentationRoute() {
         setText('A web interface to visualize and manipulate your Enonic XP data');
 
     const repositoriesViewSummary = new ViewSummary('repositories', 'repositories.svg',
-        'Browse and manage your repositories, branches and nodes.').init();
+        'Browse and manage your <b>repositories</b>, branches and nodes.').init();
     const snapshotsViewSummary = new ViewSummary('snapshots', 'snapshots.svg',
-        'Record the state of your indexes at specific times. Rollback to these snapshots when needed.').init();
-    const exportsViewSummary = new ViewSummary('exports', 'exports.svg', 'Manage your node exports.').init();
-    const dumpsViewSummary = new ViewSummary('dumps', 'dumps.svg', 'Manage your system dumps.').init();
+        'Record the state of your indexes at specific times. Rollback to these <b>snapshots</b> when needed.').init();
+    const exportsViewSummary = new ViewSummary('exports', 'exports.svg', 'Manage your <b>node exports</b>.').init();
+    const dumpsViewSummary = new ViewSummary('dumps', 'dumps.svg', 'Manage your <b>system dumps</b>.').init();
     const viewSummaries = new RcdDivElement().init().
         addClass('view-summaries').
         addChild(repositoriesViewSummary).
