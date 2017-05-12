@@ -1,5 +1,20 @@
 function createPresentationRoute() {
 
+    class ViewSummary extends RcdDivElement {
+        constructor(iconFileName, text) {
+            super();
+            this.icon = new RcdImageIcon(config.assetsUrl + '/icons/views/' + iconFileName).init();
+            this.text = new RcdPElement().init().setText(text);
+        }
+
+        init() {
+            return super.init().
+                addClass('view-summary').
+                addChild(this.icon).
+                addChild(this.text);
+        }
+    }
+
 
     const sectionContent = new RcdPElement().init().
         setText('Data toolbox provides a web interface to visualize and manipulate your Enonic XP data.<br/> ' +
@@ -57,10 +72,23 @@ function createPresentationRoute() {
     const subTitle = new RcdH2Element().init().
         setText('A web interface to visualize and manipulate your Enonic XP data');
 
+    const repositoriesViewSummary = new ViewSummary('repositories.svg', 'Browse and manage your repositories, branches and nodes.').init();
+    const snapshotsViewSummary = new ViewSummary('snapshots.svg',
+        'Record the state of your indexes at specific times. Rollback to these snapshots when needed.').init();
+    const exportsViewSummary = new ViewSummary('exports.svg', 'Browse and manage your repositories, branches and nodes.').init();
+    const dumpsViewSummary = new ViewSummary('dumps.svg', 'Browse and manage your repositories, branches and nodes.').init();
+    const viewSummaries = new RcdDivElement().init().
+        addClass('view-summaries').
+        addChild(repositoriesViewSummary).
+        addChild(snapshotsViewSummary).
+        addChild(exportsViewSummary).
+        addChild(dumpsViewSummary);
+
     const layout = new RcdMaterialLayout().init().
         addClass('presentation-view').
         addChild(image).
-        addChild(subTitle);
+        addChild(subTitle).
+        addChild(viewSummaries);
 
     return {
         callback: (main) => {

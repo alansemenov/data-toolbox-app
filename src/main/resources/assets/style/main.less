@@ -54,11 +54,26 @@
     text-align: center;
     font-size: 16px;
     margin-top: 8px;
+    color: #2a5c88;
   }
 
-  .presentation-view-summaries :extend(.rcd-flex-hbox) {
-    justify-content: space-around;
-    margin-top: 8px;
+  .view-summaries :extend(.rcd-flex-hbox) {
+    margin-top: @rcd-material-layout-margin;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    opacity: 0.87;
+
+    .view-summary :extend(.rcd-flex-vbox) {
+      text-align: center;
+      @media (max-width: @rcd-material-max-mobile-width) {
+        padding: @rcd-material-layout-mobile-margin / 2;
+        width: 50%;
+      }
+      @media (min-width: @rcd-material-min-tablet-width) {
+        padding: @rcd-material-layout-margin / 2;
+        width: 25%;
+      }
+    }
   }
 }
 
