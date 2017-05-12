@@ -25,7 +25,8 @@ function createNodesRoute() {
         }
     }
 
-    const breadcrumbsLayout = new RcdMaterialBreadcrumbsLayout().init();
+    const breadcrumbsLayout = new RcdMaterialBreadcrumbsLayout().init().
+        addChild(new RcdGoogleMaterialIconArea('help', displayHelp).init().setTooltip('Help'));
 
     const tableCard = new RcdMaterialTableCard('Nodes').init().
         addColumn('Node name').
@@ -283,5 +284,25 @@ function createNodesRoute() {
         } else {
             app.setTitle(branchName);
         }
+    }
+
+    function displayHelp() {
+        const definition = 'A Node represents a single storable entity of data. ' +
+                           'It can be compared to a row in sql or a document in document oriented storage models.<br/>' +
+                           'See <a href="http://xp.readthedocs.io/en/stable/developer/node-domain/nodes.html">Nodes</a> for more information. ';
+
+        const structureDefinition = 'This tool represent nodes in a tree structure. ' +
+                                    'While this solution is adapted to repositories like cms-repo or system-repo, ' +
+                                    'it may be problematic for custom repositories or for nodes with too many children. ' +
+                                    'Filtering will be available in the future, but if this representation is blocking we recommend using the tool ' +
+                                    '<a href="https://market.enonic.com/vendors/runar-myklebust/repoxplorer">repoXPlorer</a>.';
+
+        const viewDefinition = 'The view lists in a table all the sub nodes of the current node (or branch). Click on a row to display its sub nodes.';
+        new HelpDialog('Nodes', [definition, viewDefinition]).
+            init().
+            addActionDefinition('file_download', 'Zip the selected dumps and download the archive').
+            addActionDefinition('file_upload', 'Upload archived dumps and unzip them into $XP_HOME/data/dump').
+            addActionDefinition('delete', 'Delete the selected system dumps.').
+            open();
     }
 }

@@ -99,7 +99,7 @@ function createRepositoriesRoute() {
                            '"cms-repo", the content domain repository, contains the data managed by Content Studio.<br/>' +
                            'See <a href="http://xp.readthedocs.io/en/stable/developer/node-domain/repository.html">Repository</a> for more information.';
 
-        const viewDefinition = 'The view lists all the repositories. Click on a row to display the repository branches.';
+        const viewDefinition = 'The view lists in a table all the repositories. Click on a row to display its branches.';
 
         new HelpDialog('Repositories', [definition, viewDefinition]).
             init().

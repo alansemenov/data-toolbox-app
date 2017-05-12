@@ -111,7 +111,7 @@ function createBranchesRoute() {
                            '"master" containing the published content served by the portal.<br/>' +
                            'See <a href="http://xp.readthedocs.io/en/stable/developer/node-domain/branch.html">Branch</a> for more information.';
 
-        const viewDefinition = 'The view lists all the branches of the repository. Click on a row to display the root node.';
+        const viewDefinition = 'The view lists in a table all the branches of the current repository. Click on a row to display its root node.';
 
         new HelpDialog('Branches', [definition, viewDefinition]).
             init().
