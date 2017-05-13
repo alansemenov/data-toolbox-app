@@ -21,7 +21,7 @@ function createDumpsRoute() {
     return {
         state: 'dumps',
         name: 'System Dumps',
-        iconArea: new RcdGoogleMaterialIconArea('file_download').init(),
+        iconArea: new RcdGoogleMaterialIconArea('import_export').init(),
         callback: (main) => {
             main.addChild(breadcrumbsLayout).addChild(layout);
             retrieveDumps();

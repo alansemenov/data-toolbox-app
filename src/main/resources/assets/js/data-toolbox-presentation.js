@@ -31,7 +31,7 @@ function createPresentationRoute() {
     const snapshotsViewSummary = new ViewSummary('snapshots', 'snapshots.svg',
         'Record the state of your indexes at specific times. Rollback to these <b>snapshots</b> when needed.').init();
     const exportsViewSummary = new ViewSummary('exports', 'exports.svg', 'Manage your <b>node exports</b>.').init();
-    const dumpsViewSummary = new ViewSummary('dumps', 'dumps.svg', 'Generate and manage your <b>system dumps</b>.').init();
+    const dumpsViewSummary = new ViewSummary('dumps', 'exports.svg', 'Generate and manage your <b>system dumps</b>.').init();
     const viewSummaries = new RcdDivElement().init().
         addClass('view-summaries').
         addChild(repositoriesViewSummary).
