@@ -161,11 +161,11 @@ function createDumpsRoute() {
 
         new HelpDialog('System Dumps', [definition, viewDefinition]).
             init().
-            addActionDefinition('add_circle', 'Generate a system dump into $XP_HOME/data/dump/[dump-name]').
-            addActionDefinition('refresh', 'Load the selected system dumps into Enonic XP').
-            addActionDefinition('file_download', 'Zip the selected dumps and download the archive').
-            addActionDefinition('file_upload', 'Upload archived dumps and unzip them into $XP_HOME/data/dump').
-            addActionDefinition('delete', 'Delete the selected system dumps.').
+            addActionDefinition({iconName: 'add_circle', definition: 'Generate a system dump into $XP_HOME/data/dump/[dump-name]'}).
+            addActionDefinition({iconName: 'refresh', definition: 'Load the selected system dumps into Enonic XP'}).
+            addActionDefinition({iconName: 'file_download', definition: 'Zip the selected dumps and download the archive'}).
+            addActionDefinition({iconName: 'file_upload', definition: 'Upload archived dumps and unzip them into $XP_HOME/data/dump'}).
+            addActionDefinition({iconName: 'delete', definition: 'Delete the selected system dumps.'}).
             open();
     }
 }

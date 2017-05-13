@@ -42,10 +42,14 @@
   .help-action-definition :extend(.rcd-flex-hbox) {
     flex-shrink: 0;
     margin-bottom: 8px;
-    i {
+    i, .image {
       margin-right: 8px;
     }
+    .image {
+      opacity: @rcd-icon-dark-active-opacity;
+    }
   }
+  
 }
 
 .presentation-view {

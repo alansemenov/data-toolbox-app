@@ -21,11 +21,15 @@ class HelpDialog extends RcdMaterialModalDialog {
         return this;
     }
 
-    addActionDefinition(iconName, definition) {
+    addActionDefinition(params) {
         const actionDefinition = new RcdDivElement().init().
-            addClass('help-action-definition').
-            addChild(new RcdGoogleMaterialIcon(iconName).init()).
-            addChild(new RcdPElement().init().setText(definition));
+            addClass('help-action-definition');
+        if (params.iconName) {
+            actionDefinition.addChild(new RcdGoogleMaterialIcon(params.iconName).init());
+        } else if (params.iconSrc) {
+            actionDefinition.addChild(new RcdImageIcon(params.iconSrc).init().addClass('image'));
+        }
+        actionDefinition.addChild(new RcdPElement().init().setText(params.definition));
         return this.addItem(actionDefinition);
     }
 }

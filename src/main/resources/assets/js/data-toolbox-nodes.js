@@ -298,11 +298,17 @@ function createNodesRoute() {
                                     '<a href="https://market.enonic.com/vendors/runar-myklebust/repoxplorer">repoXPlorer</a>.';
 
         const viewDefinition = 'The view lists in a table all the sub nodes of the current node (or branch). Click on a row to display its sub nodes.';
-        new HelpDialog('Nodes', [definition, viewDefinition]).
+        new HelpDialog('Nodes', [definition,structureDefinition, viewDefinition]).
             init().
-            addActionDefinition('file_download', 'Zip the selected dumps and download the archive').
-            addActionDefinition('file_upload', 'Upload archived dumps and unzip them into $XP_HOME/data/dump').
-            addActionDefinition('delete', 'Delete the selected system dumps.').
+            addActionDefinition({
+                iconSrc: config.assetsUrl + '/icons/export-icon.svg',
+                definition: 'Export the selected node into $XP_HOME/data/export/[export-name]. The display will switch to the Exports view.'
+            }).
+            addActionDefinition({
+                iconSrc: config.assetsUrl + '/icons/import-icon.svg',
+                definition: 'Import previously exported nodes as children under the current node (or as root node)'
+            }).
+            addActionDefinition({iconName: 'delete', definition: 'Delete the selected nodes.'}).
             open();
     }
 }

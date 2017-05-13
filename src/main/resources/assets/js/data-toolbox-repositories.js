@@ -103,8 +103,8 @@ function createRepositoriesRoute() {
 
         new HelpDialog('Repositories', [definition, viewDefinition]).
             init().
-            addActionDefinition('add_circle', 'Create a repository with default settings').
-            addActionDefinition('delete', 'Delete the selected repositories.').
+            addActionDefinition({iconName: 'add_circle', definition: 'Create a repository with default settings'}).
+            addActionDefinition({iconName: 'delete', definition: 'Delete the selected repositories.'}).
             open();
     }
 }
