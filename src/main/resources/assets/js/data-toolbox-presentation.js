@@ -28,25 +28,6 @@ function createPresentationRoute() {
                 'This makes snapshots optimized for repetitive saves and allow to quickly rollback to a previous state in one click. It is also used, in addition to blobs backup, for backing up your data. ' +
                 'See <a href="http://xp.readthedocs.io/en/stable/operations/backup.html#backing-up-indexes">Backing up indexes</a> for more information.');
 
-    const branchesSectionContent = new RcdPElement().init().
-        setText('A branch is a set of data in a repository. ' +
-                'All repositories have a default branch called master. ' +
-                'Any number of branches could be added to facilitate your data. ' +
-                'For example, the cms-repo repository contains two branches: ' +
-                '"draft" containing the content as seen in the Content Studio and ' +
-                '"master" containing the published content served by the portal. ' +
-                'See <a href="http://xp.readthedocs.io/en/stable/developer/node-domain/branch.html">Branch</a> for more information.');
-
-    const nodesSectionContent = new RcdPElement().init().
-        setText('A Node represents a single storable entity of data. ' +
-                'It can be compared to a row in sql or a document in document oriented storage models. ' +
-                'See <a href="http://xp.readthedocs.io/en/stable/developer/node-domain/nodes.html">Nodes</a> for more information. ' +
-                'The nodes are represented here in a tree structure. ' +
-                'While this solution is adapted to repositories like cms-repo or system-repo, ' +
-                'it may be problematic for repositories not following a tree structure or for nodes with too many children. ' +
-                'If you need a tool to browse these repositories or if you need browsing based on queries, we recommend using the tool <a href="https://market.enonic.com/vendors/runar-myklebust/repoxplorer">repoXPlorer</a>.');
-
-
     const image = new RcdImageIcon(config.assetsUrl + '/icons/application.svg').init();
     const subTitle = new RcdH2Element().init().
         setText('A web interface to visualize and manage your Enonic XP data');

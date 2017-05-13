@@ -1,7 +1,8 @@
 function createSnapshotsRoute() {
     const breadcrumbsLayout = new RcdMaterialBreadcrumbsLayout().init().
         addBreadcrumb(new RcdMaterialBreadcrumb('Data Toolbox', () => RcdHistoryRouter.setState()).init()).
-        addBreadcrumb(new RcdMaterialBreadcrumb('Snapshots').init());
+        addBreadcrumb(new RcdMaterialBreadcrumb('Snapshots').init()).
+        addChild(new RcdGoogleMaterialIconArea('help', displayHelp).init().setTooltip('Help'));
 
     const tableCard = new RcdMaterialTableCard('Snapshots').init().
         addColumn('Snapshot name').
@@ -100,5 +101,22 @@ function createSnapshotsRoute() {
         }).done(handleResultError).fail(handleAjaxError).always(() => {
             infoDialog.close();
         });
+    }
+
+    function displayHelp() {
+        const definition = 'A snapshot is a record of your Enonic XP indexes at a particular point in time. ' +
+                           'Your first snapshot will be a complete copy of your indexes, but all subsequent snapshots will save the delta between the existing snapshots and the current state.' +
+                           'This makes snapshots optimized for repetitive saves and allow to quickly rollback to a previous state in one click. It is also used, in addition to blobs backup (not covered by this tool), for backing up your data. ' +
+                           'See <a href="http://xp.readthedocs.io/en/stable/operations/backup.html#backing-up-indexes">Backing up indexes</a> for more information.';
+
+        const viewDefinition = 'The view lists in a table all the snapshots. ' +
+                               'You can generate a new snapshot, restore the indexes to a previous state or delete existing snapshots.';
+
+        new HelpDialog('Snaphots', [definition, viewDefinition]).
+            init().
+            addActionDefinition({iconName: 'add_circle', definition: 'Generate a snapshot of the indexes'}).
+            addActionDefinition({iconName: 'restore', definition: 'Restore the indexes to the selected snapshot'}).
+            addActionDefinition({iconName: 'delete', definition: 'Delete the selected snapshots.'}).
+            open();
     }
 }
