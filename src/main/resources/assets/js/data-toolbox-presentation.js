@@ -49,7 +49,7 @@ function createPresentationRoute() {
 
     const image = new RcdImageIcon(config.assetsUrl + '/icons/application.svg').init();
     const subTitle = new RcdH2Element().init().
-        setText('A web interface to visualize and manipulate your Enonic XP data');
+        setText('A web interface to visualize and manage your Enonic XP data');
 
     const repositoriesViewSummary = new ViewSummary('repositories', 'repositories.svg',
         'Browse and manage your <b>repositories</b>, branches and nodes.').init();
