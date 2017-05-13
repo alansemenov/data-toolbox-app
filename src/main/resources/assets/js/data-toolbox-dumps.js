@@ -157,7 +157,7 @@ function createDumpsRoute() {
 
         const viewDefinition = 'The view lists in a table all the system dumps located in $XP_HOME/data/dump. ' +
                                'You can delete, load or archive (ZIP) and download existing dumps. ' +
-                               'You can also generate a new dump of your system or upload a previously archived and downloaded dump.';
+                               'You can also generate a new dump of your system or upload previously archived dumps.';
 
         new HelpDialog('System Dumps', [definition, viewDefinition]).
             init().

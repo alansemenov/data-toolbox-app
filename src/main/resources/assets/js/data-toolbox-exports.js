@@ -1,7 +1,9 @@
 function createExportsRoute() {
     const breadcrumbsLayout = new RcdMaterialBreadcrumbsLayout().init().
         addBreadcrumb(new RcdMaterialBreadcrumb('Data Toolbox', () => RcdHistoryRouter.setState()).init()).
-        addBreadcrumb(new RcdMaterialBreadcrumb('Node exports').init());
+        addBreadcrumb(new RcdMaterialBreadcrumb('Node exports').init()).
+        addChild(new RcdGoogleMaterialIconArea('help', displayHelp).init().setTooltip('Help'));
+
 
     const tableCard = new RcdMaterialTableCard('Node exports').init().
         addColumn('Export name').
@@ -104,5 +106,24 @@ function createExportsRoute() {
             infoDialog.close();
             retrieveExports();
         });
+    }
+
+    function displayHelp() {
+        const definition = 'A node export is a serialization of a given content/node and its children. ' +
+                           'This makes node exports well suited for transferring a specific content to another installation. ' +
+                           'Warning: The current export mechanism does not export old versions of your data. You will loose the version history of your contents. ' +
+                           'See <a href="http://xp.readthedocs.io/en/stable/operations/export.html">Export and Import</a> for more information.';
+
+        const viewDefinition = 'The view lists in a table all the node exports located in $XP_HOME/data/export. ' +
+                               'You can delete or archive (ZIP) and download existing exports. ' +
+                               'You can also upload previously archived exports.<br/>' +
+                               'Node exports can be generated and imported from the nodes view (Under "Repositories").';
+
+        new HelpDialog('Node Exports', [definition, viewDefinition]).
+            init().
+            addActionDefinition({iconName: 'file_download', definition: 'Zip the selected exports and download the archive'}).
+            addActionDefinition({iconName: 'file_upload', definition: 'Upload archived exports and unzip them into $XP_HOME/data/export'}).
+            addActionDefinition({iconName: 'delete', definition: 'Delete the selected node exports.'}).
+            open();
     }
 }

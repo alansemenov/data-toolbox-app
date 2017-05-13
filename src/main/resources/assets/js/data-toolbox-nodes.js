@@ -309,6 +309,7 @@ function createNodesRoute() {
                 definition: 'Import previously exported nodes as children under the current node (or as root node)'
             }).
             addActionDefinition({iconName: 'delete', definition: 'Delete the selected nodes.'}).
+            addActionDefinition({iconName: 'info', definition: 'Display the node content.'}).
             open();
     }
 }

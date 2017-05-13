@@ -22,12 +22,6 @@ function createPresentationRoute() {
                 'Warning: The current export mechanism does not export old versions of your data. You will loose the version history of your contents. ' +
                 'See <a href="http://xp.readthedocs.io/en/stable/operations/export.html">Export and Import</a> for more information.');
 
-    const snapshotsSectionContent = new RcdPElement().init().
-        setText('A snapshot is a record of your Enonic XP indexes at a particular point in time. ' +
-                'Your first snapshot will be a complete copy of your indexes, but all subsequent snapshots will save the delta between the existing snapshots and the current state.' +
-                'This makes snapshots optimized for repetitive saves and allow to quickly rollback to a previous state in one click. It is also used, in addition to blobs backup, for backing up your data. ' +
-                'See <a href="http://xp.readthedocs.io/en/stable/operations/backup.html#backing-up-indexes">Backing up indexes</a> for more information.');
-
     const image = new RcdImageIcon(config.assetsUrl + '/icons/application.svg').init();
     const subTitle = new RcdH2Element().init().
         setText('A web interface to visualize and manage your Enonic XP data');
