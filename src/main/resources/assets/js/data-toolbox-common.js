@@ -1,3 +1,4 @@
+//
 class HelpDialog extends RcdMaterialModalDialog {
     constructor(viewName, definitions = []) {
         super('Help: ' + viewName + ' view', undefined, true, true);

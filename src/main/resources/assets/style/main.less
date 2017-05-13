@@ -49,7 +49,7 @@
       opacity: @rcd-icon-dark-active-opacity;
     }
   }
-  
+
 }
 
 .presentation-view {
@@ -86,6 +86,14 @@
         width: calc(~"25%" - @rcd-material-layout-margin);
         margin: @rcd-material-layout-margin / 2;
       }
+    }
+  }
+}
+
+#exportWidgetContainer {
+  .rcd-material-table-card-icons :extend(.rcd-flex-hbox) {
+    .rcd-material-icon-area.disabled {
+      display: none;
     }
   }
 }

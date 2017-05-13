@@ -77,12 +77,14 @@ task mergeJsFwk( type: com.eriwen.gradle.js.tasks.CombineJsTask ) {
 task dirtyWidgetWorkaround( type: Copy, dependsOn: mergeJsFwk ) {
     def jsFwkFile = file( "${rootProject.buildDir}/resources/main/assets/js/rcd-jsfwk.js" )
     def jsFwkContent = jsFwkFile.exists() ? "\n" + jsFwkFile.getText( "UTF-8" ) : "error"
+    def dataToolboxCommonFile = file( "${rootProject.buildDir}/resources/main/assets/js/data-toolbox-common.js" )
+    def dataToolboxCommonContent = dataToolboxCommonFile.exists() ? "\n" + dataToolboxCommonFile.getText( "UTF-8" ) : "error"
     from "${rootProject.buildDir}/resources/main/assets/js"
     into "${rootProject.buildDir}/resources/main/assets/js"
     include 'export-template.js'
     rename( 'export-template.js', 'export.js' )
     filter( org.apache.tools.ant.filters.ReplaceTokens,
-            tokens: [widgetWorkAround: jsFwkContent] )
+            tokens: [widgetWorkAround: jsFwkContent, widgetWorkAround2: dataToolboxCommonContent] )
 }
 
 //TODO Replace by proper plugin

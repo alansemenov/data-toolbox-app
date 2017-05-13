@@ -1,5 +1,6 @@
 (function () {
     //@widgetWorkAround@
+    //@widgetWorkAround2@
     let tableCard;
     let exportWidgetContainer;
     const interval = setInterval(() => {
@@ -7,12 +8,14 @@
         if (exportWidgetContainer) {
             tableCard = new RcdMaterialTableCard('Exports').init().
                 addColumn('Export name').
-                addIconArea(new RcdGoogleMaterialIconArea('add_circle', createExport).init().setTooltip('Export content', exportWidgetContainer), {max: 0}).
+                addIconArea(new RcdImageIconArea(config.assetsUrl + '/icons/export-icon.svg', createExport).init().setTooltip('Export current content', exportWidgetContainer), {max: 0}).
                 addIconArea(new RcdGoogleMaterialIconArea('refresh', loadExports).init().setTooltip('Import selected exports', exportWidgetContainer), {min: 1}).
                 addIconArea(new RcdGoogleMaterialIconArea('delete', deleteExports).init().setTooltip('Delete selected exports', exportWidgetContainer), {min: 1}).
                 addIconArea(new RcdGoogleMaterialIconArea('file_download',
                     dowloadExports).init().setTooltip('Archive and download selected exports', exportWidgetContainer, RcdMaterialTooltipAlignment.RIGHT), {min: 1}).
                 addIconArea(new RcdGoogleMaterialIconArea('file_upload', uploadExports).init().setTooltip('Upload and unarchive exports', exportWidgetContainer, RcdMaterialTooltipAlignment.RIGHT),
+                {max: 0}).
+                addIconArea(new RcdGoogleMaterialIconArea('help', displayHelp).init().setTooltip('Help', exportWidgetContainer),
                 {max: 0});
             
             retrieveExports();
@@ -144,6 +147,25 @@
             infoDialog.close();
             retrieveExports();
         });
+    }
+
+    function displayHelp() {
+        const definition = 'A content export is a serialization of a given content and its children. ' +
+                           'This makes content exports well suited for transferring a specific content to another installation. ' +
+                           'Warning: The current export mechanism does not export old versions of your data. You will loose the version history of your contents. ' +
+                           'See <a href="http://xp.readthedocs.io/en/stable/operations/export.html">Export and Import</a> for more information.';
+
+        const viewDefinition = 'The widget lists in a table all the content exports located in $XP_HOME/data/export. ' +
+                               'You can export the current content or upload previously archived exports' +
+                               'Import previously exported contents, will import them as children under the current content. ' +
+                               'You can also delete or archive (ZIP) and download existing exports.';
+
+        new HelpDialog('Content Exports', [definition, viewDefinition]).
+            init().
+            addActionDefinition({iconName: 'file_download', definition: 'Zip the selected exports and download the archive'}).
+            addActionDefinition({iconName: 'file_upload', definition: 'Upload archived exports and unzip them into $XP_HOME/data/export'}).
+            addActionDefinition({iconName: 'delete', definition: 'Delete the selected node exports.'}).
+            open();
     }
 
     function handleResultError(result) {
