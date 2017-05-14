@@ -1,9 +1,15 @@
 # Data toolbox app
 
-Data toolbox provides a web interface to visualize and manipulate your Enonic XP data. 
-In Repositories, a tree representation of your repositories/branches/nodes is shown to allow to navigate through, display, export and import your nodes.
-The 3 others views will help you manage your exports, dumps and snapshots.
-A widget is also included to allow to export content directly from the Content studio.
+Data toolbox provides a web interface to visualize and manipulate your Enonic XP data.
+
+The admin tool contained allows you to:
+- Browse and manage your <b>repositories</b>, branches and nodes.
+- Record the state of your indexes at specific times. Rollback to these <b>snapshots</b> when needed.
+- Manage your <b>node exports</b>.
+- Generate and manage your <b>system dumps</b>.
+The Content Studio widget allows you to:
+- Generate and manage your <b>content exports</b>.
+
 
 ## Releases and Compatibility
 
@@ -18,5 +24,5 @@ A widget is also included to allow to export content directly from the Content s
 | 1.0.6 | 6.7.3 - 6.9.Z | [Download](https://dl.bintray.com/rcd-systems/rcd-repo/systems/rcd/enonic/datatoolbox/1.0.6/datatoolbox-1.0.6.jar) |
 | 1.1.0 | 6.9.0 - 6.9.Z | [Download](https://dl.bintray.com/rcd-systems/rcd-repo/systems/rcd/enonic/datatoolbox/1.1.0/datatoolbox-1.1.0.jar) |
 | 1.1.1 | 6.9.0 - 6.9.Z | [Download](https://dl.bintray.com/rcd-systems/rcd-repo/systems/rcd/enonic/datatoolbox/1.1.1/datatoolbox-1.1.1.jar) |
-| 1.2.0 | 6.10.0 | [Download](https://dl.bintray.com/rcd-systems/rcd-repo/systems/rcd/enonic/datatoolbox/1.2.0/datatoolbox-1.2.0.jar) |
+| 1.2.0 | 6.10.0 - 6.Y.Z | [Download](https://dl.bintray.com/rcd-systems/rcd-repo/systems/rcd/enonic/datatoolbox/1.2.0/datatoolbox-1.2.0.jar) |
 
