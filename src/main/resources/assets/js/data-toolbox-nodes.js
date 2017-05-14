@@ -1,30 +1,4 @@
 function createNodesRoute() {
-
-    class ImportResultDialog extends RcdMaterialModalDialog {
-        constructor(exportName, importResult) {
-            super('Import result', 'Added nodes: ' + importResult.addedNodeCount + '\n' +
-                                   'Updated nodes: ' + importResult.updatedNodeCount + '\n' +
-                                   'Imported binaries: ' + importResult.importedBinaryCount + '\n' +
-                                   'Errors: ' + importResult.errorCount, true, true);
-            this.exportName = exportName;
-            this.result = importResult;
-        }
-
-        init() {
-            const closeCallback = () =>  this.close();
-            const detailsCallback = () => {
-                this.close();
-                showDetailsDialog('Import result details', JSON.stringify(this.result, null, 2));
-            };
-            super.init().
-                addAction('CLOSE', closeCallback).
-                addAction('DETAILS', detailsCallback).
-                addKeyUpListener('Enter', detailsCallback).
-                addKeyUpListener('Escape', closeCallback);
-            return this;
-        }
-    }
-
     const breadcrumbsLayout = new RcdMaterialBreadcrumbsLayout().init().
         addChild(new RcdGoogleMaterialIconArea('help', displayHelp).init().setTooltip('Help'));
 

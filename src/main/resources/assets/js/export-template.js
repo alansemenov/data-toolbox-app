@@ -89,7 +89,13 @@
                 exportNames: exportNames
             }),
             contentType: 'application/json; charset=utf-8'
-        }).done(handleResultError).fail(handleAjaxError).always(() => {
+        }).done(function (result) {
+            if (handleResultError(result)) {
+                const importResult = result.success[exportNames[0]]; //TODO Handle multiple export
+                new ImportResultDialog(exportNames[0], importResult, 'content').init().
+                    open();
+            }
+        }).fail(handleAjaxError).always(() => {
             infoDialog.close();
             retrieveExports();
         });
@@ -220,6 +226,12 @@
 
     function showSelectionDialog(params) {
         return new RcdMaterialSelectionDialog(params).
+            init().
+            open();
+    }
+    
+    function showDetailsDialog(title, text, callback) {
+        return new RcdMaterialDetailsDialog({title: title, text: text, callback: callback}).
             init().
             open();
     }
