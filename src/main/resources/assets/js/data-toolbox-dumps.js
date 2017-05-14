@@ -153,7 +153,7 @@ function createDumpsRoute() {
                            'While a node/content export focuses on a given node and its children, a system dump is used to export an entire system (all repositories/branches/nodes). ' +
                            'This makes dumps well suited for migrating your data to another installation.<br/>' +
                            'Warning: The current export/dump mechanism does not export old versions of your data. You will loose the version history of your contents.<br/>' +
-                           'See <a href="http://xp.readthedocs.io/en/stable/operations/export.html">Export and Import</a> for more information.';
+                           'See <a class="rcd-material-link" href="http://xp.readthedocs.io/en/stable/operations/export.html">Export and Import</a> for more information.';
 
         const viewDefinition = 'The view lists in a table all the system dumps located in $XP_HOME/data/dump. ' +
                                'You can delete, load or archive (ZIP) and download existing dumps. ' +

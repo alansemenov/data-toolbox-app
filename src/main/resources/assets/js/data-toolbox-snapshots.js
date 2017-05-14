@@ -107,7 +107,7 @@ function createSnapshotsRoute() {
         const definition = 'A snapshot is a record of your Enonic XP indexes at a particular point in time. ' +
                            'Your first snapshot will be a complete copy of your indexes, but all subsequent snapshots will save the delta between the existing snapshots and the current state.' +
                            'This makes snapshots optimized for repetitive saves and allow to quickly rollback to a previous state in one click. It is also used, in addition to blobs backup (not covered by this tool), for backing up your data. ' +
-                           'See <a href="http://xp.readthedocs.io/en/stable/operations/backup.html#backing-up-indexes">Backing up indexes</a> for more information.';
+                           'See <a class="rcd-material-link" href="http://xp.readthedocs.io/en/stable/operations/backup.html#backing-up-indexes">Backing up indexes</a> for more information.';
 
         const viewDefinition = 'The view lists in a table all the snapshots. ' +
                                'You can generate a new snapshot, restore the indexes to a previous state or delete existing snapshots.';

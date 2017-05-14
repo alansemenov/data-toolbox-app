@@ -1,11 +1,11 @@
 function createNodesRoute() {
 
-    class RcdMaterialNodeImportResultDialog extends RcdMaterialModalDialog {
+    class ImportResultDialog extends RcdMaterialModalDialog {
         constructor(exportName, importResult) {
             super('Import result', 'Added nodes: ' + importResult.addedNodeCount + '\n' +
                                    'Updated nodes: ' + importResult.updatedNodeCount + '\n' +
                                    'Imported binaries: ' + importResult.importedBinaryCount + '\n' +
-                                   'Errors: ' + importResult.errorCount, true);
+                                   'Errors: ' + importResult.errorCount, true, true);
             this.exportName = exportName;
             this.result = importResult;
         }
@@ -237,7 +237,8 @@ function createNodesRoute() {
         }).done(function (result) {
             if (handleResultError(result)) {
                 const importResult = result.success[exportName];
-                new RcdMaterialNodeImportResultDialog(exportName, importResult).init().open();
+                new ImportResultDialog(exportName, importResult).init().
+                    open();
             }
         }).fail(handleAjaxError).always(() => {
             infoDialog.close();
@@ -289,16 +290,16 @@ function createNodesRoute() {
     function displayHelp() {
         const definition = 'A Node represents a single storable entity of data. ' +
                            'It can be compared to a row in sql or a document in document oriented storage models.<br/>' +
-                           'See <a href="http://xp.readthedocs.io/en/stable/developer/node-domain/nodes.html">Nodes</a> for more information. ';
+                           'See <a class="rcd-material-link" href="http://xp.readthedocs.io/en/stable/developer/node-domain/nodes.html">Nodes</a> for more information. ';
 
         const structureDefinition = 'This tool represent nodes in a tree structure. ' +
                                     'While this solution is adapted to repositories like cms-repo or system-repo, ' +
                                     'it may be problematic for custom repositories or for nodes with too many children. ' +
                                     'Filtering will be available in the future, but if this representation is blocking we recommend using the tool ' +
-                                    '<a href="https://market.enonic.com/vendors/runar-myklebust/repoxplorer">repoXPlorer</a>.';
+                                    '<a class="rcd-material-link" href="https://market.enonic.com/vendors/runar-myklebust/repoxplorer">repoXPlorer</a>.';
 
         const viewDefinition = 'The view lists in a table all the sub nodes of the current node (or branch). Click on a row to display its sub nodes.';
-        new HelpDialog('Nodes', [definition,structureDefinition, viewDefinition]).
+        new HelpDialog('Nodes', [definition, structureDefinition, viewDefinition]).
             init().
             addActionDefinition({
                 iconSrc: config.assetsUrl + '/icons/export-icon.svg',

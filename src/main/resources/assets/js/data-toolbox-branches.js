@@ -109,7 +109,7 @@ function createBranchesRoute() {
                            'For example, the cms-repo repository contains two branches:' +
                            '"draft" containing the content as seen in the Content Studio and ' +
                            '"master" containing the published content served by the portal.<br/>' +
-                           'See <a href="http://xp.readthedocs.io/en/stable/developer/node-domain/branch.html">Branch</a> for more information.';
+                           'See <a class="rcd-material-link" href="http://xp.readthedocs.io/en/stable/developer/node-domain/branch.html">Branch</a> for more information.';
 
         const viewDefinition = 'The view lists in a table all the branches of the current repository. Click on a row to display its root node.';
 
