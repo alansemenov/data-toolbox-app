@@ -91,8 +91,7 @@
             contentType: 'application/json; charset=utf-8'
         }).done(function (result) {
             if (handleResultError(result)) {
-                const importResult = result.success[exportNames[0]]; //TODO Handle multiple export
-                new ImportResultDialog(exportNames[0], importResult, 'content').init().
+                new ImportResultDialog(exportNames, result.success, 'content').init().
                     open();
             }
         }).fail(handleAjaxError).always(() => {

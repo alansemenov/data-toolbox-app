@@ -210,8 +210,7 @@ function createNodesRoute() {
             contentType: 'application/json; charset=utf-8'
         }).done(function (result) {
             if (handleResultError(result)) {
-                const importResult = result.success[exportName];
-                new ImportResultDialog(exportName, importResult).init().
+                new ImportResultDialog([exportName], result.success).init().
                     open();
             }
         }).fail(handleAjaxError).always(() => {
