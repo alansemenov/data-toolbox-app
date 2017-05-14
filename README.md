@@ -11,7 +11,7 @@ The admin tool contained allows you to:
 The Content Studio widget allows you to:
 - Generate and manage your <b>content exports</b>.
 
-Starting from version 2.0.0, help dialogs will be present to give you more information about each functionality.
+Starting from version 2.0.0, help dialogs are present to give you more information about each functionality.
 
 ## Releases and Compatibility
 
@@ -27,4 +27,5 @@ Starting from version 2.0.0, help dialogs will be present to give you more infor
 | 1.1.0 | 6.9.0 - 6.9.Z | [Download](https://dl.bintray.com/rcd-systems/rcd-repo/systems/rcd/enonic/datatoolbox/1.1.0/datatoolbox-1.1.0.jar) |
 | 1.1.1 | 6.9.0 - 6.9.Z | [Download](https://dl.bintray.com/rcd-systems/rcd-repo/systems/rcd/enonic/datatoolbox/1.1.1/datatoolbox-1.1.1.jar) |
 | 1.2.0 | 6.10.0 - 6.Y.Z | [Download](https://dl.bintray.com/rcd-systems/rcd-repo/systems/rcd/enonic/datatoolbox/1.2.0/datatoolbox-1.2.0.jar) |
+| 2.0.0-beta-1 | 6.10.0 - 6.Y.Z | [Download](https://dl.bintray.com/rcd-systems/rcd-repo/systems/rcd/enonic/datatoolbox/2.0.0-beta-1/datatoolbox-2.0.0-beta-1.jar) |
 
