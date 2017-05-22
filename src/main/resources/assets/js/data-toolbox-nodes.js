@@ -128,13 +128,39 @@ function createNodesRoute() {
             }),
             contentType: 'application/json; charset=utf-8'
         }).done(function (result) {
-            console.log(result);
             if (handleResultError(result)) {
-                showDetailsDialog('Node [' + nodeKey + ']', JSON.stringify(result.success, null, 2));
+                const formattedJson = formatJson(result.success, '');
+                showDetailsDialog('Node [' + nodeKey + ']', formattedJson);
             }
         }).fail(handleAjaxError).always(() => {
             infoDialog.close();
         });
+    }
+
+    function formatJson(value, tab) {
+        if (typeof value === 'string') {
+            return '"<a class=json-string>' + value + '</a>"';
+        } else if (typeof value === "number") {
+            return '<a class=json-number>' + value + '</a>';
+        } else if (typeof value === "boolean") {
+            return '<a class=json-boolean>' + value + '</a>';
+        } else if (Array.isArray(value)) {
+            let formattedArray = '[\n';
+            value.forEach(arrayElement => {
+                formattedArray += tab + '  ' + formatJson(arrayElement, tab + '  ') + ',\n';
+            });
+            formattedArray += tab + ']';
+            return formattedArray;
+        } else if (typeof value === "object") {
+            let formattedObject = '{\n';
+            for (var attributeName in value) {
+                formattedObject += tab + '  "' + attributeName + '": ' + formatJson(value[attributeName], tab + '  ') + ',\n';
+            }
+            formattedObject += tab + '}';
+            return formattedObject;
+        } else {
+            return value;
+        }
     }
 
     function exportNode() {
