@@ -146,15 +146,19 @@ function createNodesRoute() {
             return '<a class=json-boolean>' + value + '</a>';
         } else if (Array.isArray(value)) {
             let formattedArray = '[\n';
-            value.forEach(arrayElement => {
-                formattedArray += tab + '  ' + formatJson(arrayElement, tab + '  ') + ',\n';
-            });
+            for (let i = 0; i < value.length; i++) {
+                const arrayElement = value[i];
+                formattedArray += tab + '  ' + formatJson(arrayElement, tab + '  ') + (i < (value.length - 1) ? ',' : '') + '\n';
+            }
             formattedArray += tab + ']';
             return formattedArray;
         } else if (typeof value === "object") {
             let formattedObject = '{\n';
-            for (var attributeName in value) {
-                formattedObject += tab + '  "' + attributeName + '": ' + formatJson(value[attributeName], tab + '  ') + ',\n';
+            const attributeNames = Object.keys(value);
+            for (let i = 0; i < attributeNames.length; i++) {
+                const attributeName = attributeNames[i];
+                formattedObject += tab + '  "' + attributeName + '": ' + formatJson(value[attributeName], tab + '  ') +
+                                   (i < (attributeNames.length - 1) ? ',' : '') + '\n';
             }
             formattedObject += tab + '}';
             return formattedObject;
