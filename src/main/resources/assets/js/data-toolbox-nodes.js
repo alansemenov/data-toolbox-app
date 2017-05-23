@@ -137,7 +137,8 @@ function createNodesRoute() {
         }).done(function (result) {
             if (handleResultError(result)) {
                 const formattedJson = formatJson(result.success, '');
-                showDetailsDialog('Node [' + nodeKey + ']', formattedJson);
+                showDetailsDialog('Node [' + nodeKey + ']', formattedJson).
+                    addClass('node-details-dialog');
             }
         }).fail(handleAjaxError).always(() => {
             infoDialog.close();
