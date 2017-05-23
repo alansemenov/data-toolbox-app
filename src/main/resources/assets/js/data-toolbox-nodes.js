@@ -8,9 +8,11 @@ function createNodesRoute() {
         addColumn('', {icon: true}).
         addIconArea(new RcdImageIconArea(config.assetsUrl + '/icons/export-icon.svg', exportNode).init().setTooltip('Export selected node'),
         {min: 1, max: 1}).
-        addIconArea(new RcdImageIconArea(config.assetsUrl + '/icons/import-icon.svg', importNode).init().setTooltip('Import node export',
-            undefined, RcdMaterialTooltipAlignment.RIGHT), {max: 0}).
-        addIconArea(new RcdGoogleMaterialIconArea('delete', deleteNodes).init().setTooltip('Delete selected nodes'), {min: 1});
+        addIconArea(new RcdImageIconArea(config.assetsUrl + '/icons/import-icon.svg', importNode).init().setTooltip('Import node export'),
+        {max: 0}).
+        addIconArea(new RcdGoogleMaterialIconArea('sort', sortNodes).init().setTooltip('Sort nodes'), {max: 0}).
+        addIconArea(new RcdGoogleMaterialIconArea('delete', deleteNodes).init().setTooltip('Delete selected nodes', undefined,
+            RcdMaterialTooltipAlignment.RIGHT), {min: 1});
     const layout = new RcdMaterialLayout().init().
         addChild(tableCard);
 
@@ -33,7 +35,8 @@ function createNodesRoute() {
                 branchName: RcdHistoryRouter.getParameters().branch,
                 parentPath: RcdHistoryRouter.getParameters().path,
                 start: RcdHistoryRouter.getParameters().start,
-                count: RcdHistoryRouter.getParameters().count
+                count: RcdHistoryRouter.getParameters().count,
+                sort: RcdHistoryRouter.getParameters().sort
             }),
             contentType: 'application/json; charset=utf-8'
         }).done(function (result) {
@@ -68,15 +71,19 @@ function createNodesRoute() {
                 const startInt = parseInt(RcdHistoryRouter.getParameters().start);
                 const countInt = parseInt(RcdHistoryRouter.getParameters().count);
                 const previousCallback = () => RcdHistoryRouter.
-                    setState('nodes?repo=' + RcdHistoryRouter.getParameters().repo + '&branch=' + RcdHistoryRouter.getParameters().branch +
+                    setState('nodes?repo=' + RcdHistoryRouter.getParameters().repo +
+                             '&branch=' + RcdHistoryRouter.getParameters().branch +
                              '&path=' + RcdHistoryRouter.getParameters().path +
                              '&start=' + Math.max(0, startInt - countInt) +
-                             '&count=' + RcdHistoryRouter.getParameters().count);
+                             '&count=' + RcdHistoryRouter.getParameters().count +
+                             '&sort=' + RcdHistoryRouter.getParameters().sort);
                 const nextCallback = () => RcdHistoryRouter.
-                    setState('nodes?repo=' + RcdHistoryRouter.getParameters().repo + '&branch=' + RcdHistoryRouter.getParameters().branch +
+                    setState('nodes?repo=' + RcdHistoryRouter.getParameters().repo +
+                             '&branch=' + RcdHistoryRouter.getParameters().branch +
                              '&path=' + RcdHistoryRouter.getParameters().path +
                              '&start=' + (startInt + countInt) +
-                             '&count=' + RcdHistoryRouter.getParameters().count);
+                             '&count=' + RcdHistoryRouter.getParameters().count +
+                             '&sort=' + RcdHistoryRouter.getParameters().sort);
                 tableCard.setFooter({
                     start: RcdHistoryRouter.getParameters().start ? parseInt(RcdHistoryRouter.getParameters().start) : 0,
                     count: result.success.hits.length,
@@ -165,6 +172,22 @@ function createNodesRoute() {
         } else {
             return value;
         }
+    }
+
+    function sortNodes() {
+        showInputDialog({
+            title: "Sort nodes",
+            ok: "SORT",
+            label: "Sort expression",
+            placeholder: '',
+            value: RcdHistoryRouter.getParameters().sort || '',
+            callback: (value) => RcdHistoryRouter.
+                setState('nodes?repo=' + RcdHistoryRouter.getParameters().repo +
+                         '&branch=' + RcdHistoryRouter.getParameters().branch +
+                         '&path=' + RcdHistoryRouter.getParameters().path +
+                         '&start=0&count=' + RcdHistoryRouter.getParameters().count +
+                         '&sort=' + value)
+        });
     }
 
     function exportNode() {
@@ -301,7 +324,7 @@ function createNodesRoute() {
                                     'Filtering will be available in the future, but if this representation is blocking we recommend using the tool ' +
                                     '<a class="rcd-material-link" href="https://market.enonic.com/vendors/runar-myklebust/repoxplorer">repoXPlorer</a>.';
 
-        const viewDefinition = 'The view lists in a table all the sub nodes of the current node (or branch). Click on a row to display its sub nodes.';
+        const viewDefinition = 'The view lists in a table all the direct children nodes of the current node (or the root node for a branch). Click on a row to display its direct children.';
         new HelpDialog('Nodes', [definition, structureDefinition, viewDefinition]).
             init().
             addActionDefinition({
@@ -311,6 +334,11 @@ function createNodesRoute() {
             addActionDefinition({
                 iconSrc: config.assetsUrl + '/icons/import-icon.svg',
                 definition: 'Import previously exported nodes as children under the current node (or as root node)'
+            }).
+            addActionDefinition({
+                iconName: 'sort', definition: 'Sort the nodes based on an expression. ' +
+                                              'The sorting expression is composed of the node property to sort on and the direction: ascending or descending.' +
+                                              'Examples: "_timestamp DESC", "_name ASC"'
             }).
             addActionDefinition({iconName: 'delete', definition: 'Delete the selected nodes.'}).
             addActionDefinition({iconName: 'info', definition: 'Display the node content.'}).
