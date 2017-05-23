@@ -177,7 +177,7 @@ function createNodesRoute() {
     function sortNodes() {
         showInputDialog({
             title: "Sort nodes",
-            ok: "SORT",
+            confirmationLabel: "SORT",
             label: "Sort expression",
             placeholder: '',
             value: RcdHistoryRouter.getParameters().sort || '',
@@ -197,7 +197,7 @@ function createNodesRoute() {
         const defaultExportName = nodeName + '-' + toLocalDateTimeFormat(new Date(), '-', '-');
         showInputDialog({
             title: "Export node",
-            ok: "EXPORT",
+            confirmationLabel: "EXPORT",
             label: "Export name",
             placeholder: defaultExportName,
             value: defaultExportName,

@@ -47,14 +47,14 @@ function createSnapshotsRoute() {
 
     function createSnapshot() {
         const defaultSnapshotName = 'snapshot-' + toLocalDateTimeFormat(new Date(), '-', '-');
-        new RcdMaterialInputDialog({
+        showInputDialog({
             title: 'Create snapshot',
             label: 'Snapshot name',
             placeholder: defaultSnapshotName,
             value: defaultSnapshotName,
             confirmationLabel: 'CREATE',
             callback: (value) => doCreateSnapshot(value || defaultSnapshotName)
-        }).init().open();
+        });
     }
 
     function doCreateSnapshot(snapshotName) {

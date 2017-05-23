@@ -53,7 +53,7 @@
         const defaultExportName = config.contentName + '-' + toLocalDateTimeFormat(new Date(), '-', '-');
         showInputDialog({
             title: "Export content",
-            ok: "CREATE",
+            confirmationLabel: "CREATE",
             label: "Export name",
             placeholder: defaultExportName,
             value: defaultExportName,

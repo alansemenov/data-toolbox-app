@@ -50,14 +50,14 @@ function createRepositoriesRoute() {
 
     function createRepository() {
         const defaultRepositoryName = 'repository-' + toLocalDateTimeFormat(new Date(), '-', '-').toLowerCase();
-        new RcdMaterialInputDialog({
+        showInputDialog({
             title: 'Create repository',
             label: 'Repository name',
             placeholder: defaultRepositoryName,
             value: defaultRepositoryName,
             confirmationLabel: 'CREATE',
             callback: (value) => doCreateRepository(value || defaultRepositoryName)
-        }).init().open();
+        });
     }
 
     function doCreateRepository(repositoryName) {

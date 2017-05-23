@@ -50,14 +50,14 @@ function createDumpsRoute() {
 
     function createDump() {
         const defaultDumpName = 'dump-' + toLocalDateTimeFormat(new Date(), '-', '-');
-        new RcdMaterialInputDialog({
+        showInputDialog({
             title: 'Create dump',
             label: 'Dump name',
             placeholder: defaultDumpName,
             value: defaultDumpName,
             confirmationLabel: 'CREATE',
             callback: (value) => doCreateDump(value || defaultDumpName)
-        }).init().open();
+        });
     }
 
     function doCreateDump(dumpName) {

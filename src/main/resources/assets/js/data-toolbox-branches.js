@@ -52,14 +52,14 @@ function createBranchesRoute() {
 
     function createBranch() {
         const defaultBranchName = 'branch-' + toLocalDateTimeFormat(new Date(), '-', '-').toLowerCase();
-        new RcdMaterialInputDialog({
+        showInputDialog({
             title: 'Create branch',
             label: 'Branch name',
             placeholder: defaultBranchName,
             value: defaultBranchName,
             confirmationLabel: 'CREATE',
             callback: (value) => doCreateBranch(value || defaultBranchName)
-        }).init().open();
+        });
     }
 
     function doCreateBranch(branchName) {
