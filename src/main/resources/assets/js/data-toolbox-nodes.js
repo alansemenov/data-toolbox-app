@@ -31,12 +31,12 @@ function createNodesRoute() {
             method: 'POST',
             url: config.servicesUrl + '/node-getchildren',
             data: JSON.stringify({
-                repositoryName: RcdHistoryRouter.getParameters().repo,
-                branchName: RcdHistoryRouter.getParameters().branch,
-                parentPath: RcdHistoryRouter.getParameters().path,
-                start: RcdHistoryRouter.getParameters().start,
-                count: RcdHistoryRouter.getParameters().count,
-                sort: RcdHistoryRouter.getParameters().sort
+                repositoryName: getRepoParameter(),
+                branchName: getBranchParameter(),
+                parentPath: getPathParameter(),
+                start: getStartParameter(),
+                count: getCountParameter(),
+                sort: getSortParameter()
             }),
             contentType: 'application/json; charset=utf-8'
         }).done(function (result) {
@@ -61,31 +61,29 @@ function createNodesRoute() {
                         addClass('rcd-clickable').
                         addClickListener(() => {
                             RcdHistoryRouter.
-                                setState('nodes?repo=' + RcdHistoryRouter.getParameters().repo + '&branch=' +
-                                         RcdHistoryRouter.getParameters().branch +
-                                         '&path=' + node._path + '&start=0&count=50');
+                                setState('nodes?repo=' + getRepoParameter() + '&branch=' + getBranchParameter() + '&path=' + node._path);
                         });
                     row.checkbox.addClickListener((event) => event.stopPropagation());
                 });
 
-                const startInt = parseInt(RcdHistoryRouter.getParameters().start);
-                const countInt = parseInt(RcdHistoryRouter.getParameters().count);
+                const startInt = parseInt(getStartParameter());
+                const countInt = parseInt(getCountParameter());
                 const previousCallback = () => RcdHistoryRouter.
-                    setState('nodes?repo=' + RcdHistoryRouter.getParameters().repo +
-                             '&branch=' + RcdHistoryRouter.getParameters().branch +
-                             '&path=' + RcdHistoryRouter.getParameters().path +
+                    setState('nodes?repo=' + getRepoParameter() +
+                             '&branch=' + getBranchParameter() +
+                             '&path=' + getPathParameter() +
                              '&start=' + Math.max(0, startInt - countInt) +
-                             '&count=' + RcdHistoryRouter.getParameters().count +
-                             '&sort=' + (RcdHistoryRouter.getParameters().sort || ''));
+                             '&count=' + getCountParameter() +
+                             '&sort=' + getSortParameter());
                 const nextCallback = () => RcdHistoryRouter.
-                    setState('nodes?repo=' + RcdHistoryRouter.getParameters().repo +
-                             '&branch=' + RcdHistoryRouter.getParameters().branch +
-                             '&path=' + RcdHistoryRouter.getParameters().path +
+                    setState('nodes?repo=' + getRepoParameter() +
+                             '&branch=' + getBranchParameter() +
+                             '&path=' + getPathParameter() +
                              '&start=' + (startInt + countInt) +
-                             '&count=' + RcdHistoryRouter.getParameters().count +
-                             '&sort=' + (RcdHistoryRouter.getParameters().sort || ''));
+                             '&count=' + getCountParameter() +
+                             '&sort=' + getSortParameter());
                 tableCard.setFooter({
-                    start: RcdHistoryRouter.getParameters().start ? parseInt(RcdHistoryRouter.getParameters().start) : 0,
+                    start: parseInt(getStartParameter()),
                     count: result.success.hits.length,
                     total: result.success.total,
                     previousCallback: previousCallback,
@@ -108,8 +106,8 @@ function createNodesRoute() {
             method: 'POST',
             url: config.servicesUrl + '/node-delete',
             data: JSON.stringify({
-                repositoryName: RcdHistoryRouter.getParameters().repo,
-                branchName: RcdHistoryRouter.getParameters().branch,
+                repositoryName: getRepoParameter(),
+                branchName: getBranchParameter(),
                 keys: nodeKeys
             }),
             contentType: 'application/json; charset=utf-8'
@@ -129,8 +127,8 @@ function createNodesRoute() {
             method: 'POST',
             url: config.servicesUrl + '/node-get',
             data: JSON.stringify({
-                repositoryName: RcdHistoryRouter.getParameters().repo,
-                branchName: RcdHistoryRouter.getParameters().branch,
+                repositoryName: getRepoParameter(),
+                branchName: getBranchParameter(),
                 key: nodeKey
             }),
             contentType: 'application/json; charset=utf-8'
@@ -181,20 +179,20 @@ function createNodesRoute() {
             confirmationLabel: "SORT",
             label: "Sort expression",
             placeholder: '',
-            value: RcdHistoryRouter.getParameters().sort || '',
+            value: getSortParameter(),
             callback: (value) => RcdHistoryRouter.
-                setState('nodes?repo=' + RcdHistoryRouter.getParameters().repo +
-                         '&branch=' + RcdHistoryRouter.getParameters().branch +
-                         '&path=' + RcdHistoryRouter.getParameters().path +
-                         '&start=0&count=' + RcdHistoryRouter.getParameters().count +
+                setState('nodes?repo=' + getRepoParameter() +
+                         '&branch=' + getBranchParameter() +
+                         '&path=' + getPathParameter() +
+                         '&start=0&count=' + getCountParameter() +
                          '&sort=' + value)
         });
     }
 
     function exportNode() {
-        const nodeName = RcdHistoryRouter.getParameters().path
+        const nodeName = getPathParameter()
             ? (tableCard.getSelectedRows().map((row) => row.attributes['name'])[0] || 'export')
-            : RcdHistoryRouter.getParameters().repo + '-' + RcdHistoryRouter.getParameters().branch;
+            : getRepoParameter() + '-' + getBranchParameter();
         const defaultExportName = nodeName + '-' + toLocalDateTimeFormat(new Date(), '-', '-');
         showInputDialog({
             title: "Export node",
@@ -212,8 +210,8 @@ function createNodesRoute() {
             method: 'POST',
             url: config.servicesUrl + '/node-export',
             data: JSON.stringify({
-                repositoryName: RcdHistoryRouter.getParameters().repo,
-                branchName: RcdHistoryRouter.getParameters().branch,
+                repositoryName: getRepoParameter(),
+                branchName: getBranchParameter(),
                 nodePath: tableCard.getSelectedRows().map((row) => row.attributes['path'])[0],
                 exportName: exportName
             }),
@@ -256,9 +254,9 @@ function createNodesRoute() {
             method: 'POST',
             url: config.servicesUrl + '/node-import',
             data: JSON.stringify({
-                repositoryName: RcdHistoryRouter.getParameters().repo,
-                branchName: RcdHistoryRouter.getParameters().branch,
-                nodePath: RcdHistoryRouter.getParameters().path || '/',
+                repositoryName: getRepoParameter(),
+                branchName: getBranchParameter(),
+                nodePath: getPathParameter() || '/',
                 exportName: exportName
             }),
             contentType: 'application/json; charset=utf-8'
@@ -274,9 +272,9 @@ function createNodesRoute() {
     }
 
     function refreshBreadcrumbs() {
-        const repositoryName = RcdHistoryRouter.getParameters().repo;
-        const branchName = RcdHistoryRouter.getParameters().branch;
-        const path = RcdHistoryRouter.getParameters().path;
+        const repositoryName = getRepoParameter();
+        const branchName = getBranchParameter();
+        const path = getPathParameter();
 
         breadcrumbsLayout.
             setBreadcrumbs([new RcdMaterialBreadcrumb('Data Toolbox', () => RcdHistoryRouter.setState()).init(),
@@ -285,12 +283,11 @@ function createNodesRoute() {
                     () => RcdHistoryRouter.setState('branches?repo=' + repositoryName)).init(),
                 new RcdMaterialBreadcrumb(branchName, path &&
                                                       (() => RcdHistoryRouter.setState('nodes?repo=' + repositoryName +
-                                                                                       '&branch=' + branchName +
-                                                                                       '&start=0&count=50'))).init()]);
+                                                                                       '&branch=' + branchName))).init()]);
 
         if (path) {
             breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb('root', path !== '/'
-                ? (() => RcdHistoryRouter.setState('nodes?repo=' + repositoryName + '&branch=' + branchName + '&path=/&start=0&count=50'))
+                ? (() => RcdHistoryRouter.setState('nodes?repo=' + repositoryName + '&branch=' + branchName))
                 : undefined).init());
 
             if (path === '/') {
@@ -305,7 +302,7 @@ function createNodesRoute() {
                     const constCurrentPath = currentPath;
                     breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb(subPathElement, index < array.length - 1
                         ? (() => RcdHistoryRouter.setState('nodes?repo=' + repositoryName + '&branch=' + branchName +
-                                                           '&path=' + constCurrentPath +'&start=0&count=50'))
+                                                           '&path=' + constCurrentPath))
                         : undefined).init());
                 });
 
@@ -313,6 +310,30 @@ function createNodesRoute() {
         } else {
             app.setTitle(branchName);
         }
+    }
+
+    function getRepoParameter() {
+        return RcdHistoryRouter.getParameters().repo;
+    }
+
+    function getBranchParameter() {
+        return RcdHistoryRouter.getParameters().branch;
+    }
+
+    function getPathParameter() {
+        return RcdHistoryRouter.getParameters().path;
+    }
+
+    function getStartParameter() {
+        return RcdHistoryRouter.getParameters().start || '0';
+    }
+
+    function getCountParameter() {
+        return RcdHistoryRouter.getParameters().count || '50';
+    }
+
+    function getSortParameter() {
+        return RcdHistoryRouter.getParameters().sort || '';
     }
 
     function displayHelp() {

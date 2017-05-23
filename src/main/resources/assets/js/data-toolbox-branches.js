@@ -38,9 +38,7 @@ function createBranchesRoute() {
                             setAttribute('branch', branch).
                             addClass('rcd-clickable').
                             addClickListener(() => {
-                                RcdHistoryRouter.setState('nodes?repo=' +
-                                                          RcdHistoryRouter.getParameters().repo + '&branch=' +
-                                                          branch + '&start=0&count=50');
+                                RcdHistoryRouter.setState('nodes?repo=' + RcdHistoryRouter.getParameters().repo + '&branch=' + branch);
                             });
                         row.checkbox.addClickListener((event) => event.stopPropagation());
                     });
