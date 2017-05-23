@@ -76,14 +76,14 @@ function createNodesRoute() {
                              '&path=' + RcdHistoryRouter.getParameters().path +
                              '&start=' + Math.max(0, startInt - countInt) +
                              '&count=' + RcdHistoryRouter.getParameters().count +
-                             '&sort=' + RcdHistoryRouter.getParameters().sort);
+                             '&sort=' + (RcdHistoryRouter.getParameters().sort || ''));
                 const nextCallback = () => RcdHistoryRouter.
                     setState('nodes?repo=' + RcdHistoryRouter.getParameters().repo +
                              '&branch=' + RcdHistoryRouter.getParameters().branch +
                              '&path=' + RcdHistoryRouter.getParameters().path +
                              '&start=' + (startInt + countInt) +
                              '&count=' + RcdHistoryRouter.getParameters().count +
-                             '&sort=' + RcdHistoryRouter.getParameters().sort);
+                             '&sort=' + (RcdHistoryRouter.getParameters().sort || ''));
                 tableCard.setFooter({
                     start: RcdHistoryRouter.getParameters().start ? parseInt(RcdHistoryRouter.getParameters().start) : 0,
                     count: result.success.hits.length,
@@ -285,11 +285,12 @@ function createNodesRoute() {
                     () => RcdHistoryRouter.setState('branches?repo=' + repositoryName)).init(),
                 new RcdMaterialBreadcrumb(branchName, path &&
                                                       (() => RcdHistoryRouter.setState('nodes?repo=' + repositoryName +
-                                                                                       '&branch=' + branchName))).init()]);
+                                                                                       '&branch=' + branchName +
+                                                                                       '&start=0&count=50'))).init()]);
 
         if (path) {
             breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb('root', path !== '/'
-                ? (() => RcdHistoryRouter.setState('nodes?repo=' + repositoryName + '&branch=' + branchName + '&path=/'))
+                ? (() => RcdHistoryRouter.setState('nodes?repo=' + repositoryName + '&branch=' + branchName + '&path=/&start=0&count=50'))
                 : undefined).init());
 
             if (path === '/') {
@@ -304,7 +305,7 @@ function createNodesRoute() {
                     const constCurrentPath = currentPath;
                     breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb(subPathElement, index < array.length - 1
                         ? (() => RcdHistoryRouter.setState('nodes?repo=' + repositoryName + '&branch=' + branchName +
-                                                           '&path=' + constCurrentPath))
+                                                           '&path=' + constCurrentPath +'&start=0&count=50'))
                         : undefined).init());
                 });
 
