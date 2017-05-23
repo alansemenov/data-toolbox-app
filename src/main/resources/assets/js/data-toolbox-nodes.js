@@ -139,7 +139,7 @@ function createNodesRoute() {
 
     function formatJson(value, tab) {
         if (typeof value === 'string') {
-            return '"<a class=json-string>' + value + '</a>"';
+            return '<a class=json-string>"' + value + '"</a>';
         } else if (typeof value === "number") {
             return '<a class=json-number>' + value + '</a>';
         } else if (typeof value === "boolean") {
