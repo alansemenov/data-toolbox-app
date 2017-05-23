@@ -98,7 +98,7 @@ function createNodesRoute() {
     }
 
     function deleteNodes() {
-        showConfirmationDialog("Delete selected nodes?", doDeleteNodes);
+        showConfirmationDialog("Delete selected nodes?", 'DELETE', doDeleteNodes);
     }
 
     function doDeleteNodes() {
@@ -242,7 +242,7 @@ function createNodesRoute() {
     function selectNodeExport(exportNames) {
         showSelectionDialog({
             title: "Select node export",
-            ok: "IMPORT",
+            confirmationLabel: "IMPORT",
             label: "Export name",
             options: exportNames,
             callback: (value) => doImportNode(value)

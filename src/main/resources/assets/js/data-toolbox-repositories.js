@@ -76,7 +76,7 @@ function createRepositoriesRoute() {
     }
 
     function deleteRepositories() {
-        showConfirmationDialog("Delete selected repositories?", doDeleteRepositories);
+        showConfirmationDialog("Delete selected repositories?", 'DELETE', doDeleteRepositories);
     }
 
     function doDeleteRepositories() {

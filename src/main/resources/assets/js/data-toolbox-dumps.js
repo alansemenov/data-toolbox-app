@@ -76,7 +76,7 @@ function createDumpsRoute() {
     }
 
     function deleteDumps() {
-        showConfirmationDialog("Delete selected dumps?", doDeleteDumps);
+        showConfirmationDialog('Delete selected dumps?', 'DELETE', doDeleteDumps);
     }
 
     function doDeleteDumps() {

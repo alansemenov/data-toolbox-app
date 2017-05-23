@@ -34,8 +34,8 @@ function showInfoDialog(text) {
         open();
 }
 
-function showConfirmationDialog(text, callback) {
-    return new RcdMaterialConfirmationDialog({text: text, callback: callback}).
+function showConfirmationDialog(text, confirmationLabel, callback) {
+    return new RcdMaterialConfirmationDialog({text: text, confirmationLabel: confirmationLabel, callback: callback}).
         init().
         open();
 }

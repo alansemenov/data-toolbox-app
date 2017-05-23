@@ -101,7 +101,7 @@
     }
 
     function deleteExports() {
-        showConfirmationDialog("Delete selected exports?", doDeleteExports);
+        showConfirmationDialog("Delete selected exports?", 'DELETE', doDeleteExports);
     }
 
     function doDeleteExports() {
@@ -211,8 +211,8 @@
             open(exportWidgetContainer);
     }
 
-    function showConfirmationDialog(text, callback) {
-        return new RcdMaterialConfirmationDialog({text: text, callback: callback}).
+    function showConfirmationDialog(text, confirmationLabel, callback) {
+        return new RcdMaterialConfirmationDialog({text: text, confirmationLabel: confirmationLabel, callback: callback}).
             init().
             open();
     }
@@ -228,7 +228,7 @@
             init().
             open();
     }
-    
+
     function showDetailsDialog(title, text, callback) {
         return new RcdMaterialDetailsDialog({title: title, text: text, callback: callback}).
             init().

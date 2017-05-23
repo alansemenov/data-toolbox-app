@@ -73,7 +73,7 @@ function createSnapshotsRoute() {
     }
 
     function deleteSnapshots() {
-        showConfirmationDialog("Delete selected snapshots?", doDeleteSnapshots);
+        showConfirmationDialog("Delete selected snapshots?", 'DELETE', doDeleteSnapshots);
     }
 
     function doDeleteSnapshots() {

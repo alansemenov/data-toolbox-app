@@ -49,7 +49,7 @@ function createExportsRoute() {
     }
 
     function deleteExports() {
-        showConfirmationDialog("Delete selected exports?", doDeleteExports);
+        showConfirmationDialog('Delete selected exports?', 'DELETE', doDeleteExports);
     }
 
     function doDeleteExports() {

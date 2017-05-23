@@ -79,11 +79,11 @@ function createBranchesRoute() {
     }
 
     function deleteBranches() {
-        showConfirmationDialog("Delete selected branches?", doDeleteBranches);
+        showConfirmationDialog('Delete selected branches?', 'DELETE', doDeleteBranches);
     }
 
     function doDeleteBranches() {
-        const infoDialog = showInfoDialog("Deleting selected branches...");
+        const infoDialog = showInfoDialog('Deleting selected branches...');
         const branchNames = tableCard.getSelectedRows().map((row) => row.attributes['branch']);
         $.ajax({
             method: 'POST',
