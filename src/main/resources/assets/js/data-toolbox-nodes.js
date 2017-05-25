@@ -10,6 +10,7 @@ function createNodesRoute() {
         {min: 1, max: 1}).
         addIconArea(new RcdImageIconArea(config.assetsUrl + '/icons/import-icon.svg', importNode).init().setTooltip('Import node export'),
         {max: 0}).
+        addIconArea(new RcdGoogleMaterialIconArea('filter_list', filterNodes).init().setTooltip('Filter nodes'), {max: 0}).
         addIconArea(new RcdGoogleMaterialIconArea('sort', sortNodes).init().setTooltip('Sort nodes'), {max: 0}).
         addIconArea(new RcdGoogleMaterialIconArea('delete', deleteNodes).init().setTooltip('Delete selected nodes', undefined,
             RcdMaterialTooltipAlignment.RIGHT), {min: 1});
@@ -36,6 +37,7 @@ function createNodesRoute() {
                 parentPath: getPathParameter(),
                 start: getStartParameter(),
                 count: getCountParameter(),
+                filter: getFilterParameter(),
                 sort: getSortParameter()
             }),
             contentType: 'application/json; charset=utf-8'
@@ -74,6 +76,7 @@ function createNodesRoute() {
                              '&path=' + getPathParameter() +
                              '&start=' + Math.max(0, startInt - countInt) +
                              '&count=' + getCountParameter() +
+                             '&filter=' + getFilterParameter() +
                              '&sort=' + getSortParameter());
                 const nextCallback = () => RcdHistoryRouter.
                     setState('nodes?repo=' + getRepoParameter() +
@@ -81,6 +84,7 @@ function createNodesRoute() {
                              '&path=' + getPathParameter() +
                              '&start=' + (startInt + countInt) +
                              '&count=' + getCountParameter() +
+                             '&filter=' + getFilterParameter() +
                              '&sort=' + getSortParameter());
                 tableCard.setFooter({
                     start: parseInt(getStartParameter()),
@@ -173,19 +177,37 @@ function createNodesRoute() {
         }
     }
 
+    function filterNodes() {
+        showInputDialog({
+            title: "Filter nodes",
+            confirmationLabel: "FILTER",
+            label: "Query expression",
+            placeholder: '',
+            value: decodeURIComponent(getFilterParameter()),
+            callback: (value) => RcdHistoryRouter.
+                setState('nodes?repo=' + getRepoParameter() +
+                         '&branch=' + getBranchParameter() +
+                         '&path=' + getPathParameter() +
+                         '&start=0&count=' + getCountParameter() +
+                         '&filter=' + encodeURIComponent(value) +
+                         '&sort=' + getSortParameter())
+        });
+    }
+
     function sortNodes() {
         showInputDialog({
             title: "Sort nodes",
             confirmationLabel: "SORT",
             label: "Sort expression",
             placeholder: '',
-            value: getSortParameter(),
+            value: decodeURIComponent(getSortParameter()),
             callback: (value) => RcdHistoryRouter.
                 setState('nodes?repo=' + getRepoParameter() +
                          '&branch=' + getBranchParameter() +
                          '&path=' + getPathParameter() +
                          '&start=0&count=' + getCountParameter() +
-                         '&sort=' + value)
+                         '&filter=' + getFilterParameter() +
+                         '&sort=' + encodeURIComponent(value))
         });
     }
 
@@ -332,6 +354,10 @@ function createNodesRoute() {
         return RcdHistoryRouter.getParameters().count || '50';
     }
 
+    function getFilterParameter() {
+        return RcdHistoryRouter.getParameters().filter || '';
+    }
+
     function getSortParameter() {
         return RcdHistoryRouter.getParameters().sort || '';
     }
@@ -339,12 +365,12 @@ function createNodesRoute() {
     function displayHelp() {
         const definition = 'A Node represents a single storable entity of data. ' +
                            'It can be compared to a row in sql or a document in document oriented storage models.<br/>' +
-                           'See <a class="rcd-material-link" href="http://xp.readthedocs.io/en/stable/developer/node-domain/nodes.html">Nodes</a> for more information. ';
+                           'See <a class="rcd-material-link" href="http://xp.readthedocs.io/en/6.10/developer/node-domain/nodes.html">Nodes</a> for more information. ';
 
         const structureDefinition = 'This tool represent nodes in a tree structure. ' +
                                     'While this solution is adapted to repositories like cms-repo or system-repo, ' +
                                     'it may be problematic for custom repositories or for nodes with too many children. ' +
-                                    'Filtering will be available in the future, but if this representation is blocking we recommend using the tool ' +
+                                    'Node search for all paths will be available in the future, but if this representation is blocking we recommend using the tool ' +
                                     '<a class="rcd-material-link" href="https://market.enonic.com/vendors/runar-myklebust/repoxplorer">repoXPlorer</a>.';
 
         const viewDefinition = 'The view lists in a table all the direct children nodes of the current node (or the root node for a branch). Click on a row to display its direct children.';
@@ -359,8 +385,13 @@ function createNodesRoute() {
                 definition: 'Import previously exported nodes as children under the current node (or as root node)'
             }).
             addActionDefinition({
+                iconName: 'filter_list', definition: 'Filter the nodes based on a query expression. ' +
+                                                     'Example: "_id = \'role:system.admin"\'. ' +
+                                                     'See <a class="rcd-material-link" href="http://xp.readthedocs.io/en/6.10/reference/query-language.html#compareexpr">Query language</a> for more information.'
+            }).
+            addActionDefinition({
                 iconName: 'sort', definition: 'Sort the nodes based on an expression. ' +
-                                              'The sorting expression is composed of the node property to sort on and the direction: ascending or descending.' +
+                                              'The sorting expression is composed of a node field to sort on and the direction: ascending or descending.' +
                                               'Examples: "_timestamp DESC", "_name ASC"'
             }).
             addActionDefinition({iconName: 'delete', definition: 'Delete the selected nodes.'}).

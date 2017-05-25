@@ -7,35 +7,47 @@ exports.post = function (req) {
     var parentPath = body.parentPath;
     var start = body.start || 0;
     var count = body.count || 50;
-    var sort = body.sort;
+    var filter = body.filter ? decodeURIComponent(body.filter) : undefined;
+    var sort = body.sort ? decodeURIComponent(body.sort) : undefined;
 
-    var result = runSafely(getChildren, [repositoryName, branchName, parentPath, start, count, sort]);
+    var result = runSafely(getChildren, [repositoryName, branchName, parentPath, start, count, filter, sort]);
     return {
         contentType: 'application/json',
         body: result
     };
 };
 
-function getChildren(repositoryName, branchName, parentPath, start, count, sort) {
+function getChildren(repositoryName, branchName, parentPath, start, count, filter, sort) {
     var repoConnection = nodeLib.connect({
         repoId: repositoryName,
         branch: branchName
     });
 
     if (parentPath) {
-        var findChildrenResult = repoConnection.findChildren({
-            parentKey: parentPath,
-            start: start,
-            count: count,
-            childOrder: sort
-        });
+        var result;
+        if (filter) {
+            result = repoConnection.query({
+                query: '_parentPath = \'' + parentPath + '\' AND ' + filter,
+                start: start,
+                count: count,
+                sort: sort
+            });
+        } else {
+            result = repoConnection.findChildren({
+                parentKey: parentPath,
+                start: start,
+                count: count,
+                childOrder: sort
+            });
+        }
+
         return {
             success: {
-                hits: findChildrenResult.hits.map(function (findChildrenResult) {
-                    return repoConnection.get(findChildrenResult.id);
+                hits: result.hits.map(function (resultHit) {
+                    return repoConnection.get(resultHit.id);
                 }),
-                count: findChildrenResult.count,
-                total: findChildrenResult.total
+                count: result.count,
+                total: result.total
             }
         };
     } else {
@@ -58,7 +70,7 @@ function runSafely(runnable, parameters) {
         return runnable.apply(null, parameters);
     } catch (e) {
         return {
-            error: 'Error while getitng node children: ' + e.message
+            error: 'Error while getting children nodes: ' + e.message
         }
     }
 }
