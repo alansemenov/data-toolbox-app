@@ -139,7 +139,8 @@ public class RcdExportScriptBean
         {
             addedNodesResult.add( "..." );
         }
-        nodeImportResult.getUpdateNodes().stream().
+        nodeImportResult.getUpdateNodes().
+            stream().
             limit( RESULT_DETAILS_COUNT ).
             forEach( nodePath -> updatedNodesResult.add( nodePath.toString() ) );
         if ( updatedNodesResult.size() == RESULT_DETAILS_COUNT )
