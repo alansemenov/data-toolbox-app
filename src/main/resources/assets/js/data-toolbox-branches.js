@@ -38,9 +38,7 @@ function createBranchesRoute() {
                             setAttribute('branch', branch).
                             addClass('rcd-clickable').
                             addClickListener(() => {
-                                RcdHistoryRouter.setState('nodes?repo=' +
-                                                          RcdHistoryRouter.getParameters().repo + '&branch=' +
-                                                          branch + '&start=0&count=50');
+                                RcdHistoryRouter.setState('nodes?repo=' + RcdHistoryRouter.getParameters().repo + '&branch=' + branch);
                             });
                         row.checkbox.addClickListener((event) => event.stopPropagation());
                     });
@@ -52,14 +50,14 @@ function createBranchesRoute() {
 
     function createBranch() {
         const defaultBranchName = 'branch-' + toLocalDateTimeFormat(new Date(), '-', '-').toLowerCase();
-        new RcdMaterialInputDialog({
+        showInputDialog({
             title: 'Create branch',
             label: 'Branch name',
             placeholder: defaultBranchName,
             value: defaultBranchName,
             confirmationLabel: 'CREATE',
             callback: (value) => doCreateBranch(value || defaultBranchName)
-        }).init().open();
+        });
     }
 
     function doCreateBranch(branchName) {
@@ -79,11 +77,11 @@ function createBranchesRoute() {
     }
 
     function deleteBranches() {
-        showConfirmationDialog("Delete selected branches?", doDeleteBranches);
+        showConfirmationDialog('Delete selected branches?', 'DELETE', doDeleteBranches);
     }
 
     function doDeleteBranches() {
-        const infoDialog = showInfoDialog("Deleting selected branches...");
+        const infoDialog = showInfoDialog('Deleting selected branches...');
         const branchNames = tableCard.getSelectedRows().map((row) => row.attributes['branch']);
         $.ajax({
             method: 'POST',
@@ -109,7 +107,7 @@ function createBranchesRoute() {
                            'For example, the cms-repo repository contains two branches:' +
                            '"draft" containing the content as seen in the Content Studio and ' +
                            '"master" containing the published content served by the portal.<br/>' +
-                           'See <a class="rcd-material-link" href="http://xp.readthedocs.io/en/stable/developer/node-domain/branch.html">Branch</a> for more information.';
+                           'See <a class="rcd-material-link" href="http://xp.readthedocs.io/en/6.10/developer/node-domain/branch.html">Branch</a> for more information.';
 
         const viewDefinition = 'The view lists in a table all the branches of the current repository. Click on a row to display its root node.';
 

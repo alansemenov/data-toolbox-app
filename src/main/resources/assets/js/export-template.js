@@ -53,7 +53,7 @@
         const defaultExportName = config.contentName + '-' + toLocalDateTimeFormat(new Date(), '-', '-');
         showInputDialog({
             title: "Export content",
-            ok: "CREATE",
+            confirmationLabel: "CREATE",
             label: "Export name",
             placeholder: defaultExportName,
             value: defaultExportName,
@@ -101,7 +101,7 @@
     }
 
     function deleteExports() {
-        showConfirmationDialog("Delete selected exports?", doDeleteExports);
+        showConfirmationDialog("Delete selected exports?", 'DELETE', doDeleteExports);
     }
 
     function doDeleteExports() {
@@ -164,7 +164,7 @@
         const definition = 'A content export is a serialization of a given content and its children. ' +
                            'This makes content exports well suited for transferring a specific content to another installation. ' +
                            'Warning: The current export mechanism does not export old versions of your data. You will loose the version history of your contents. ' +
-                           'See <a class="rcd-material-link" href="http://xp.readthedocs.io/en/stable/operations/export.html">Export and Import</a> for more information.';
+                           'See <a class="rcd-material-link" href="http://xp.readthedocs.io/en/6.10/operations/export.html">Export and Import</a> for more information.';
 
         const viewDefinition = 'The widget lists in a table all the exports located in $XP_HOME/data/export. ' +
                                'You can export the current content or upload previously archived exports' +
@@ -189,6 +189,7 @@
 
     function handleResultError(result) {
         if (result.error) {
+            console.log(result.error);
             new RcdMaterialSnackbar(result.error).init().open(exportWidgetContainer);
             return false;
         }
@@ -196,13 +197,15 @@
     }
 
     function handleAjaxError(jqXHR) {
+        let errorMessage;
         if (jqXHR.status) {
-            new RcdMaterialSnackbar('Error ' + jqXHR.status + ': ' + jqXHR.statusText).
-                init().open(exportWidgetContainer);
+            errorMessage = 'Error ' + jqXHR.status + ': ' + jqXHR.statusText;
         } else {
-            new RcdMaterialSnackbar('Connection refused').
-                init().open(exportWidgetContainer);
+            errorMessage = 'Connection refused';
         }
+        console.log(errorMessage);
+        new RcdMaterialSnackbar(errorMessage).
+            init().open(exportWidgetContainer);
     }
 
     function showInfoDialog(text) {
@@ -211,8 +214,8 @@
             open(exportWidgetContainer);
     }
 
-    function showConfirmationDialog(text, callback) {
-        return new RcdMaterialConfirmationDialog({text: text, callback: callback}).
+    function showConfirmationDialog(text, confirmationLabel, callback) {
+        return new RcdMaterialConfirmationDialog({text: text, confirmationLabel: confirmationLabel, callback: callback}).
             init().
             open();
     }
@@ -228,7 +231,7 @@
             init().
             open();
     }
-    
+
     function showDetailsDialog(title, text, callback) {
         return new RcdMaterialDetailsDialog({title: title, text: text, callback: callback}).
             init().

@@ -20,7 +20,7 @@ function createPresentationRoute() {
         setText('A node export is a serialization of a given content/node. ' +
                 'This makes node exports well suited for transferring a specific content to another installation. ' +
                 'Warning: The current export mechanism does not export old versions of your data. You will loose the version history of your contents. ' +
-                'See <a class="rcd-material-link" href="http://xp.readthedocs.io/en/stable/operations/export.html">Export and Import</a> for more information.');
+                'See <a class="rcd-material-link" href="http://xp.readthedocs.io/en/6.10/operations/export.html">Export and Import</a> for more information.');
 
     const image = new RcdImageIcon(config.assetsUrl + '/icons/application.svg').init();
     const subTitle = new RcdH2Element().init().

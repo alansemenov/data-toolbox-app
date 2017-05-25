@@ -8,9 +8,12 @@ function createNodesRoute() {
         addColumn('', {icon: true}).
         addIconArea(new RcdImageIconArea(config.assetsUrl + '/icons/export-icon.svg', exportNode).init().setTooltip('Export selected node'),
         {min: 1, max: 1}).
-        addIconArea(new RcdImageIconArea(config.assetsUrl + '/icons/import-icon.svg', importNode).init().setTooltip('Import node export',
-            undefined, RcdMaterialTooltipAlignment.RIGHT), {max: 0}).
-        addIconArea(new RcdGoogleMaterialIconArea('delete', deleteNodes).init().setTooltip('Delete selected nodes'), {min: 1});
+        addIconArea(new RcdImageIconArea(config.assetsUrl + '/icons/import-icon.svg', importNode).init().setTooltip('Import node export'),
+        {max: 0}).
+        addIconArea(new RcdGoogleMaterialIconArea('filter_list', filterNodes).init().setTooltip('Filter nodes'), {max: 0}).
+        addIconArea(new RcdGoogleMaterialIconArea('sort', sortNodes).init().setTooltip('Sort nodes'), {max: 0}).
+        addIconArea(new RcdGoogleMaterialIconArea('delete', deleteNodes).init().setTooltip('Delete selected nodes', undefined,
+            RcdMaterialTooltipAlignment.RIGHT), {min: 1});
     const layout = new RcdMaterialLayout().init().
         addChild(tableCard);
 
@@ -29,11 +32,13 @@ function createNodesRoute() {
             method: 'POST',
             url: config.servicesUrl + '/node-getchildren',
             data: JSON.stringify({
-                repositoryName: RcdHistoryRouter.getParameters().repo,
-                branchName: RcdHistoryRouter.getParameters().branch,
-                parentPath: RcdHistoryRouter.getParameters().path,
-                start: RcdHistoryRouter.getParameters().start,
-                count: RcdHistoryRouter.getParameters().count
+                repositoryName: getRepoParameter(),
+                branchName: getBranchParameter(),
+                parentPath: getPathParameter(),
+                start: getStartParameter(),
+                count: getCountParameter(),
+                filter: getFilterParameter(),
+                sort: getSortParameter()
             }),
             contentType: 'application/json; charset=utf-8'
         }).done(function (result) {
@@ -58,27 +63,31 @@ function createNodesRoute() {
                         addClass('rcd-clickable').
                         addClickListener(() => {
                             RcdHistoryRouter.
-                                setState('nodes?repo=' + RcdHistoryRouter.getParameters().repo + '&branch=' +
-                                         RcdHistoryRouter.getParameters().branch +
-                                         '&path=' + node._path + '&start=0&count=50');
+                                setState('nodes?repo=' + getRepoParameter() + '&branch=' + getBranchParameter() + '&path=' + node._path);
                         });
                     row.checkbox.addClickListener((event) => event.stopPropagation());
                 });
 
-                const startInt = parseInt(RcdHistoryRouter.getParameters().start);
-                const countInt = parseInt(RcdHistoryRouter.getParameters().count);
+                const startInt = parseInt(getStartParameter());
+                const countInt = parseInt(getCountParameter());
                 const previousCallback = () => RcdHistoryRouter.
-                    setState('nodes?repo=' + RcdHistoryRouter.getParameters().repo + '&branch=' + RcdHistoryRouter.getParameters().branch +
-                             '&path=' + RcdHistoryRouter.getParameters().path +
+                    setState('nodes?repo=' + getRepoParameter() +
+                             '&branch=' + getBranchParameter() +
+                             '&path=' + getPathParameter() +
                              '&start=' + Math.max(0, startInt - countInt) +
-                             '&count=' + RcdHistoryRouter.getParameters().count);
+                             '&count=' + getCountParameter() +
+                             '&filter=' + getFilterParameter() +
+                             '&sort=' + getSortParameter());
                 const nextCallback = () => RcdHistoryRouter.
-                    setState('nodes?repo=' + RcdHistoryRouter.getParameters().repo + '&branch=' + RcdHistoryRouter.getParameters().branch +
-                             '&path=' + RcdHistoryRouter.getParameters().path +
+                    setState('nodes?repo=' + getRepoParameter() +
+                             '&branch=' + getBranchParameter() +
+                             '&path=' + getPathParameter() +
                              '&start=' + (startInt + countInt) +
-                             '&count=' + RcdHistoryRouter.getParameters().count);
+                             '&count=' + getCountParameter() +
+                             '&filter=' + getFilterParameter() +
+                             '&sort=' + getSortParameter());
                 tableCard.setFooter({
-                    start: RcdHistoryRouter.getParameters().start ? parseInt(RcdHistoryRouter.getParameters().start) : 0,
+                    start: parseInt(getStartParameter()),
                     count: result.success.hits.length,
                     total: result.success.total,
                     previousCallback: previousCallback,
@@ -91,7 +100,7 @@ function createNodesRoute() {
     }
 
     function deleteNodes() {
-        showConfirmationDialog("Delete selected nodes?", doDeleteNodes);
+        showConfirmationDialog("Delete selected nodes?", 'DELETE', doDeleteNodes);
     }
 
     function doDeleteNodes() {
@@ -101,8 +110,8 @@ function createNodesRoute() {
             method: 'POST',
             url: config.servicesUrl + '/node-delete',
             data: JSON.stringify({
-                repositoryName: RcdHistoryRouter.getParameters().repo,
-                branchName: RcdHistoryRouter.getParameters().branch,
+                repositoryName: getRepoParameter(),
+                branchName: getBranchParameter(),
                 keys: nodeKeys
             }),
             contentType: 'application/json; charset=utf-8'
@@ -122,29 +131,94 @@ function createNodesRoute() {
             method: 'POST',
             url: config.servicesUrl + '/node-get',
             data: JSON.stringify({
-                repositoryName: RcdHistoryRouter.getParameters().repo,
-                branchName: RcdHistoryRouter.getParameters().branch,
+                repositoryName: getRepoParameter(),
+                branchName: getBranchParameter(),
                 key: nodeKey
             }),
             contentType: 'application/json; charset=utf-8'
         }).done(function (result) {
-            console.log(result);
             if (handleResultError(result)) {
-                showDetailsDialog('Node [' + nodeKey + ']', JSON.stringify(result.success, null, 2));
+                const formattedJson = formatJson(result.success, '');
+                showDetailsDialog('Node [' + nodeKey + ']', formattedJson).
+                    addClass('node-details-dialog');
             }
         }).fail(handleAjaxError).always(() => {
             infoDialog.close();
         });
     }
 
+    function formatJson(value, tab) {
+        if (typeof value === 'string') {
+            return '<a class=json-string>"' + value + '"</a>';
+        } else if (typeof value === "number") {
+            return '<a class=json-number>' + value + '</a>';
+        } else if (typeof value === "boolean") {
+            return '<a class=json-boolean>' + value + '</a>';
+        } else if (Array.isArray(value)) {
+            let formattedArray = '[\n';
+            for (let i = 0; i < value.length; i++) {
+                const arrayElement = value[i];
+                formattedArray += tab + '  ' + formatJson(arrayElement, tab + '  ') + (i < (value.length - 1) ? ',' : '') + '\n';
+            }
+            formattedArray += tab + ']';
+            return formattedArray;
+        } else if (typeof value === "object") {
+            let formattedObject = '{\n';
+            const attributeNames = Object.keys(value);
+            for (let i = 0; i < attributeNames.length; i++) {
+                const attributeName = attributeNames[i];
+                formattedObject += tab + '  "' + attributeName + '": ' + formatJson(value[attributeName], tab + '  ') +
+                                   (i < (attributeNames.length - 1) ? ',' : '') + '\n';
+            }
+            formattedObject += tab + '}';
+            return formattedObject;
+        } else {
+            return value;
+        }
+    }
+
+    function filterNodes() {
+        showInputDialog({
+            title: "Filter nodes",
+            confirmationLabel: "FILTER",
+            label: "Query expression",
+            placeholder: '',
+            value: decodeURIComponent(getFilterParameter()),
+            callback: (value) => RcdHistoryRouter.
+                setState('nodes?repo=' + getRepoParameter() +
+                         '&branch=' + getBranchParameter() +
+                         '&path=' + getPathParameter() +
+                         '&start=0&count=' + getCountParameter() +
+                         '&filter=' + encodeURIComponent(value) +
+                         '&sort=' + getSortParameter())
+        });
+    }
+
+    function sortNodes() {
+        showInputDialog({
+            title: "Sort nodes",
+            confirmationLabel: "SORT",
+            label: "Sort expression",
+            placeholder: '',
+            value: decodeURIComponent(getSortParameter()),
+            callback: (value) => RcdHistoryRouter.
+                setState('nodes?repo=' + getRepoParameter() +
+                         '&branch=' + getBranchParameter() +
+                         '&path=' + getPathParameter() +
+                         '&start=0&count=' + getCountParameter() +
+                         '&filter=' + getFilterParameter() +
+                         '&sort=' + encodeURIComponent(value))
+        });
+    }
+
     function exportNode() {
-        const nodeName = RcdHistoryRouter.getParameters().path
+        const nodeName = getPathParameter()
             ? (tableCard.getSelectedRows().map((row) => row.attributes['name'])[0] || 'export')
-            : RcdHistoryRouter.getParameters().repo + '-' + RcdHistoryRouter.getParameters().branch;
+            : getRepoParameter() + '-' + getBranchParameter();
         const defaultExportName = nodeName + '-' + toLocalDateTimeFormat(new Date(), '-', '-');
         showInputDialog({
             title: "Export node",
-            ok: "EXPORT",
+            confirmationLabel: "EXPORT",
             label: "Export name",
             placeholder: defaultExportName,
             value: defaultExportName,
@@ -158,8 +232,8 @@ function createNodesRoute() {
             method: 'POST',
             url: config.servicesUrl + '/node-export',
             data: JSON.stringify({
-                repositoryName: RcdHistoryRouter.getParameters().repo,
-                branchName: RcdHistoryRouter.getParameters().branch,
+                repositoryName: getRepoParameter(),
+                branchName: getBranchParameter(),
                 nodePath: tableCard.getSelectedRows().map((row) => row.attributes['path'])[0],
                 exportName: exportName
             }),
@@ -189,7 +263,7 @@ function createNodesRoute() {
     function selectNodeExport(exportNames) {
         showSelectionDialog({
             title: "Select node export",
-            ok: "IMPORT",
+            confirmationLabel: "IMPORT",
             label: "Export name",
             options: exportNames,
             callback: (value) => doImportNode(value)
@@ -202,9 +276,9 @@ function createNodesRoute() {
             method: 'POST',
             url: config.servicesUrl + '/node-import',
             data: JSON.stringify({
-                repositoryName: RcdHistoryRouter.getParameters().repo,
-                branchName: RcdHistoryRouter.getParameters().branch,
-                nodePath: RcdHistoryRouter.getParameters().path || '/',
+                repositoryName: getRepoParameter(),
+                branchName: getBranchParameter(),
+                nodePath: getPathParameter() || '/',
                 exportName: exportName
             }),
             contentType: 'application/json; charset=utf-8'
@@ -220,9 +294,9 @@ function createNodesRoute() {
     }
 
     function refreshBreadcrumbs() {
-        const repositoryName = RcdHistoryRouter.getParameters().repo;
-        const branchName = RcdHistoryRouter.getParameters().branch;
-        const path = RcdHistoryRouter.getParameters().path;
+        const repositoryName = getRepoParameter();
+        const branchName = getBranchParameter();
+        const path = getPathParameter();
 
         breadcrumbsLayout.
             setBreadcrumbs([new RcdMaterialBreadcrumb('Data Toolbox', () => RcdHistoryRouter.setState()).init(),
@@ -235,7 +309,7 @@ function createNodesRoute() {
 
         if (path) {
             breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb('root', path !== '/'
-                ? (() => RcdHistoryRouter.setState('nodes?repo=' + repositoryName + '&branch=' + branchName + '&path=/'))
+                ? (() => RcdHistoryRouter.setState('nodes?repo=' + repositoryName + '&branch=' + branchName))
                 : undefined).init());
 
             if (path === '/') {
@@ -260,18 +334,46 @@ function createNodesRoute() {
         }
     }
 
+    function getRepoParameter() {
+        return RcdHistoryRouter.getParameters().repo;
+    }
+
+    function getBranchParameter() {
+        return RcdHistoryRouter.getParameters().branch;
+    }
+
+    function getPathParameter() {
+        return RcdHistoryRouter.getParameters().path;
+    }
+
+    function getStartParameter() {
+        return RcdHistoryRouter.getParameters().start || '0';
+    }
+
+    function getCountParameter() {
+        return RcdHistoryRouter.getParameters().count || '50';
+    }
+
+    function getFilterParameter() {
+        return RcdHistoryRouter.getParameters().filter || '';
+    }
+
+    function getSortParameter() {
+        return RcdHistoryRouter.getParameters().sort || '';
+    }
+
     function displayHelp() {
         const definition = 'A Node represents a single storable entity of data. ' +
                            'It can be compared to a row in sql or a document in document oriented storage models.<br/>' +
-                           'See <a class="rcd-material-link" href="http://xp.readthedocs.io/en/stable/developer/node-domain/nodes.html">Nodes</a> for more information. ';
+                           'See <a class="rcd-material-link" href="http://xp.readthedocs.io/en/6.10/developer/node-domain/nodes.html">Nodes</a> for more information. ';
 
         const structureDefinition = 'This tool represent nodes in a tree structure. ' +
                                     'While this solution is adapted to repositories like cms-repo or system-repo, ' +
                                     'it may be problematic for custom repositories or for nodes with too many children. ' +
-                                    'Filtering will be available in the future, but if this representation is blocking we recommend using the tool ' +
+                                    'Node search for all paths will be available in the future, but if this representation is blocking we recommend using the tool ' +
                                     '<a class="rcd-material-link" href="https://market.enonic.com/vendors/runar-myklebust/repoxplorer">repoXPlorer</a>.';
 
-        const viewDefinition = 'The view lists in a table all the sub nodes of the current node (or branch). Click on a row to display its sub nodes.';
+        const viewDefinition = 'The view lists in a table all the direct children nodes of the current node (or the root node for a branch). Click on a row to display its direct children.';
         new HelpDialog('Nodes', [definition, structureDefinition, viewDefinition]).
             init().
             addActionDefinition({
@@ -281,6 +383,16 @@ function createNodesRoute() {
             addActionDefinition({
                 iconSrc: config.assetsUrl + '/icons/import-icon.svg',
                 definition: 'Import previously exported nodes as children under the current node (or as root node)'
+            }).
+            addActionDefinition({
+                iconName: 'filter_list', definition: 'Filter the nodes based on a query expression. ' +
+                                                     'Example: "_id = \'role:system.admin"\'. ' +
+                                                     'See <a class="rcd-material-link" href="http://xp.readthedocs.io/en/6.10/reference/query-language.html#compareexpr">Query language</a> for more information.'
+            }).
+            addActionDefinition({
+                iconName: 'sort', definition: 'Sort the nodes based on an expression. ' +
+                                              'The sorting expression is composed of a node field to sort on and the direction: ascending or descending.' +
+                                              'Examples: "_timestamp DESC", "_name ASC"'
             }).
             addActionDefinition({iconName: 'delete', definition: 'Delete the selected nodes.'}).
             addActionDefinition({iconName: 'info', definition: 'Display the node content.'}).

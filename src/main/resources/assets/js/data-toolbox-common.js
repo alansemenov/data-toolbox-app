@@ -84,7 +84,7 @@ class ImportResultDialog extends RcdMaterialModalDialog {
             }
             const result = this.result[this.exportNames[i]];
             const addedNodes = this.type === 'content' ? result.addedNodes.map(nodePathToContentPath) : result.addedNodes;
-            const updatedNodes = this.type === 'content' ? result.updatedNodes.map(nodePathToContentPath) : result.addedNodes;
+            const updatedNodes = this.type === 'content' ? result.updatedNodes.map(nodePathToContentPath) : result.updatedNodes;
 
             text += '# added ' + this.type + 's: ' + result.addedNodeCount + '\n' +
                     '# updated ' + this.type + 's: ' + result.updatedNodeCount + '\n' +

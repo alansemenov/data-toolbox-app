@@ -12,6 +12,7 @@ function createApp() {
 
 function handleResultError(result) {
     if (result.error) {
+        console.log(result.error);
         new RcdMaterialSnackbar(result.error).init().open();
         return false;
     }
@@ -19,13 +20,15 @@ function handleResultError(result) {
 }
 
 function handleAjaxError(jqXHR) {
+    let errorMessage;
     if (jqXHR.status) {
-        new RcdMaterialSnackbar('Error ' + jqXHR.status + ': ' + jqXHR.statusText).
-            init().open();
+        errorMessage = 'Error ' + jqXHR.status + ': ' + jqXHR.statusText;
     } else {
-        new RcdMaterialSnackbar('Connection refused').
-            init().open();
+        errorMessage = 'Connection refused';
     }
+    console.log(errorMessage);
+    new RcdMaterialSnackbar(errorMessage).
+        init().open();
 }
 
 function showInfoDialog(text) {
@@ -34,8 +37,8 @@ function showInfoDialog(text) {
         open();
 }
 
-function showConfirmationDialog(text, callback) {
-    return new RcdMaterialConfirmationDialog({text: text, callback: callback}).
+function showConfirmationDialog(text, confirmationLabel, callback) {
+    return new RcdMaterialConfirmationDialog({text: text, confirmationLabel: confirmationLabel, callback: callback}).
         init().
         open();
 }

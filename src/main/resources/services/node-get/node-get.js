@@ -1,4 +1,5 @@
 var nodeLib = require('/lib/xp/node');
+var escapeLib = require('/lib/escape');
 
 exports.post = function (req) {
     var body = JSON.parse(req.body);
@@ -19,8 +20,11 @@ function getInfo(repositoryName, branchName, key) {
         branch: branchName
     });
 
+    var result = repoConnection.get(key);
+    var escapedResult = escapeLib.escapeHtml(result);
+
     return {
-        success: repoConnection.get(key)
+        success: escapedResult
     };
 }
 

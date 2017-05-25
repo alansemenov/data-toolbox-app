@@ -47,14 +47,14 @@ function createSnapshotsRoute() {
 
     function createSnapshot() {
         const defaultSnapshotName = 'snapshot-' + toLocalDateTimeFormat(new Date(), '-', '-');
-        new RcdMaterialInputDialog({
+        showInputDialog({
             title: 'Create snapshot',
             label: 'Snapshot name',
             placeholder: defaultSnapshotName,
             value: defaultSnapshotName,
             confirmationLabel: 'CREATE',
             callback: (value) => doCreateSnapshot(value || defaultSnapshotName)
-        }).init().open();
+        });
     }
 
     function doCreateSnapshot(snapshotName) {
@@ -73,7 +73,7 @@ function createSnapshotsRoute() {
     }
 
     function deleteSnapshots() {
-        showConfirmationDialog("Delete selected snapshots?", doDeleteSnapshots);
+        showConfirmationDialog("Delete selected snapshots?", 'DELETE', doDeleteSnapshots);
     }
 
     function doDeleteSnapshots() {
@@ -107,7 +107,7 @@ function createSnapshotsRoute() {
         const definition = 'A snapshot is a record of your Enonic XP indexes at a particular point in time. ' +
                            'Your first snapshot will be a complete copy of your indexes, but all subsequent snapshots will save the delta between the existing snapshots and the current state.' +
                            'This makes snapshots optimized for repetitive saves and allow to quickly rollback to a previous state in one click. It is also used, in addition to blobs backup (not covered by this tool), for backing up your data. ' +
-                           'See <a class="rcd-material-link" href="http://xp.readthedocs.io/en/stable/operations/backup.html#backing-up-indexes">Backing up indexes</a> for more information.';
+                           'See <a class="rcd-material-link" href="http://xp.readthedocs.io/en/6.10/operations/backup.html#backing-up-indexes">Backing up indexes</a> for more information.';
 
         const viewDefinition = 'The view lists in a table all the snapshots. ' +
                                'You can generate a new snapshot, restore the indexes to a previous state or delete existing snapshots.';

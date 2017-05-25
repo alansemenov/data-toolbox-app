@@ -50,14 +50,14 @@ function createRepositoriesRoute() {
 
     function createRepository() {
         const defaultRepositoryName = 'repository-' + toLocalDateTimeFormat(new Date(), '-', '-').toLowerCase();
-        new RcdMaterialInputDialog({
+        showInputDialog({
             title: 'Create repository',
             label: 'Repository name',
             placeholder: defaultRepositoryName,
             value: defaultRepositoryName,
             confirmationLabel: 'CREATE',
             callback: (value) => doCreateRepository(value || defaultRepositoryName)
-        }).init().open();
+        });
     }
 
     function doCreateRepository(repositoryName) {
@@ -76,7 +76,7 @@ function createRepositoriesRoute() {
     }
 
     function deleteRepositories() {
-        showConfirmationDialog("Delete selected repositories?", doDeleteRepositories);
+        showConfirmationDialog("Delete selected repositories?", 'DELETE', doDeleteRepositories);
     }
 
     function doDeleteRepositories() {
@@ -97,7 +97,7 @@ function createRepositoriesRoute() {
         const definition = 'Enonic XP data is split in repositories. Enonic XP uses by default 2 repositories:<br/>' +
                            '"system-repo", the core repository, contains the users, groups, roles, installed application, settings of repositories, ...<br/>' +
                            '"cms-repo", the content domain repository, contains the data managed by Content Studio.<br/>' +
-                           'See <a class="rcd-material-link" href="http://xp.readthedocs.io/en/stable/developer/node-domain/repository.html">Repository</a> for more information.';
+                           'See <a class="rcd-material-link" href="http://xp.readthedocs.io/en/6.10/developer/node-domain/repository.html">Repository</a> for more information.';
 
         const viewDefinition = 'The view lists in a table all the repositories. Click on a row to display its branches.';
 
