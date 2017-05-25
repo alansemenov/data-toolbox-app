@@ -189,6 +189,7 @@
 
     function handleResultError(result) {
         if (result.error) {
+            console.log(result.error);
             new RcdMaterialSnackbar(result.error).init().open(exportWidgetContainer);
             return false;
         }
@@ -196,13 +197,15 @@
     }
 
     function handleAjaxError(jqXHR) {
+        let errorMessage;
         if (jqXHR.status) {
-            new RcdMaterialSnackbar('Error ' + jqXHR.status + ': ' + jqXHR.statusText).
-                init().open(exportWidgetContainer);
+            errorMessage = 'Error ' + jqXHR.status + ': ' + jqXHR.statusText;
         } else {
-            new RcdMaterialSnackbar('Connection refused').
-                init().open(exportWidgetContainer);
+            errorMessage = 'Connection refused';
         }
+        console.log(errorMessage);
+        new RcdMaterialSnackbar(errorMessage).
+            init().open(exportWidgetContainer);
     }
 
     function showInfoDialog(text) {
