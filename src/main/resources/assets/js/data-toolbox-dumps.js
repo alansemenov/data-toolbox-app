@@ -8,7 +8,7 @@ function createDumpsRoute() {
         addColumn('Dump name').
         addColumn('Timestamp', {classes: ['non-mobile-cell']}).
         addIconArea(new RcdGoogleMaterialIconArea('add_circle', createDump).init().setTooltip('Generate a system dump'), {max: 0}).
-        addIconArea(new RcdGoogleMaterialIconArea('refresh', loadDumps).init().setTooltip('Load selected system dumps'), {min: 1}).
+        addIconArea(new RcdGoogleMaterialIconArea('refresh', loadDumps).init().setTooltip('Load selected system dumps'), {min: 1, max: 1}).
         addIconArea(new RcdGoogleMaterialIconArea('file_download',
             dowloadDumps).init().setTooltip('Archive and download selected system dumps'), {min: 1}).
         addIconArea(new RcdGoogleMaterialIconArea('file_upload', uploadDumps).init().setTooltip('Upload and unarchive system dumps',
@@ -95,11 +95,11 @@ function createDumpsRoute() {
 
     function loadDumps() {
         const infoDialog = showInfoDialog("Loading dumps...");
-        const dumpNames = tableCard.getSelectedRows().map((row) => row.attributes['dump']);
+        const dumpName = tableCard.getSelectedRows().map((row) => row.attributes['dump'])[0];
         $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/dump-load',
-            data: JSON.stringify({dumpNames: dumpNames}),
+            data: JSON.stringify({dumpName: dumpName}),
             contentType: 'application/json; charset=utf-8'
         }).done(handleResultError).fail(handleAjaxError).always(() => {
             infoDialog.close();
