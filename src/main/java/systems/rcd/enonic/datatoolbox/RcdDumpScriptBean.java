@@ -90,7 +90,7 @@ public class RcdDumpScriptBean
                 maxVersions( null ).
                 build();
 
-            dumpServiceSupplier.get().dumpSystem( params );
+            dumpServiceSupplier.get().dump( params );
             return createSuccessResult();
         }, "Error while creating dump" );
     }
@@ -115,7 +115,8 @@ public class RcdDumpScriptBean
         return getDumpDirectoryPath().
             resolve( dumpName ).
             resolve( "export.properties" ).
-            toFile().exists();
+            toFile().
+            exists();
     }
 
     private void loadUsingExportService( final String dumpName )
@@ -135,7 +136,7 @@ public class RcdDumpScriptBean
             dumpName( dumpName ).
             includeVersions( true ).
             build();
-        dumpServiceSupplier.get().loadSystemDump( systemLoadParams );
+        dumpServiceSupplier.get().load( systemLoadParams );
     }
 
     private void initializeRepo( final Repository repository )
