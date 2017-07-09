@@ -8,7 +8,8 @@ function createDumpsRoute() {
         addColumn('Dump name').
         addColumn('Timestamp', {classes: ['non-mobile-cell']}).
         addColumn('Version', {classes: ['non-mobile-cell', 'version-cell']}).
-        addIconArea(new RcdGoogleMaterialIconArea('add_circle', createDump).init().setTooltip('Generate a system dump'), {max: 0}).
+        addIconArea(new RcdImageIconArea(config.assetsUrl + '/icons/dump.svg', createDump).init().setTooltip('Generate a system dump'),
+        {max: 0}).
         addIconArea(new RcdGoogleMaterialIconArea('refresh', loadDump).init().setTooltip('Load selected system dump'), {min: 1, max: 1}).
         addIconArea(new RcdGoogleMaterialIconArea('file_download',
             dowloadDumps).init().setTooltip('Archive and download selected system dumps'), {min: 1}).
