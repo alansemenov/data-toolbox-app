@@ -9,7 +9,7 @@ function createDumpsRoute() {
         addColumn('Timestamp', {classes: ['non-mobile-cell']}).
         addColumn('Version', {classes: ['non-mobile-cell', 'version-cell']}).
         addIconArea(new RcdGoogleMaterialIconArea('add_circle', createDump).init().setTooltip('Generate a system dump'), {max: 0}).
-        addIconArea(new RcdGoogleMaterialIconArea('refresh', loadDumps).init().setTooltip('Load selected system dumps'), {min: 1, max: 1}).
+        addIconArea(new RcdGoogleMaterialIconArea('refresh', loadDump).init().setTooltip('Load selected system dump'), {min: 1, max: 1}).
         addIconArea(new RcdGoogleMaterialIconArea('file_download',
             dowloadDumps).init().setTooltip('Archive and download selected system dumps'), {min: 1}).
         addIconArea(new RcdGoogleMaterialIconArea('file_upload', uploadDumps).init().setTooltip('Upload and unarchive system dumps',
@@ -42,7 +42,8 @@ function createDumpsRoute() {
                             addCell(dump.name).
                             addCell(toLocalDateTimeFormat(new Date(dump.timestamp)), {classes: ['non-mobile-cell']}).
                             addCell(dump.version, {classes: ['non-mobile-cell', 'version-cell']}).
-                            setAttribute('dump', dump.name);
+                            setAttribute('dump', dump.name).
+                            setAttribute('type', dump.type);
                     });
             }
         }).fail(handleAjaxError).always(() => {
@@ -95,9 +96,19 @@ function createDumpsRoute() {
         });
     }
 
-    function loadDumps() {
-        const infoDialog = showInfoDialog("Loading dumps...");
+    function loadDump() {
         const dumpName = tableCard.getSelectedRows().map((row) => row.attributes['dump'])[0];
+        const dumpType = tableCard.getSelectedRows().map((row) => row.attributes['type'])[0];
+        if ('export' === dumpType) {
+            doLoadDump(dumpName);
+        } else {
+            showConfirmationDialog('Loading this dump will delete all existing repositories', 'LOAD',
+                () => doLoadDump(dumpName));
+        }
+    }
+
+    function doLoadDump(dumpName) {
+        const infoDialog = showInfoDialog("Loading dump...");
         $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/dump-load',

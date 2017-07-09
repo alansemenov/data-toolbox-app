@@ -73,6 +73,7 @@ public class RcdDumpScriptBean
                         final RcdJsonObject dump = RcdJsonService.createJsonObject().
                             put( "name", dumpPath.getFileName().toString() ).
                             put( "timestamp", dumpPath.toFile().lastModified() ).
+                            put( "type", getDumpType( dumpPath ) ).
                             put( "version", getDumpVersion( dumpPath ) );
                         //put( "size", RcdFileService.getSize( dumpPath ) );
                         dumpsJsonArray.add( dump );
@@ -81,6 +82,26 @@ public class RcdDumpScriptBean
             }
             return createSuccessResult( dumpsJsonArray );
         }, "Error while listing dumps" );
+    }
+
+    private String getDumpType( final Path dumpPath )
+    {
+        try
+        {
+            if ( isExportDump( dumpPath ) )
+            {
+                return "export";
+            }
+            else if ( isVersionedDump( dumpPath ) )
+            {
+                return "versioned";
+            }
+        }
+        catch ( Exception e )
+        {
+            LOGGER.error( "Error while reading dump type", e );
+        }
+        return "";
     }
 
     private String getDumpVersion( final Path dumpPath )
