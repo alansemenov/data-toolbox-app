@@ -22,7 +22,7 @@ function createDumpsRoute() {
     return {
         state: 'dumps',
         name: 'System Dumps',
-        iconArea: new RcdGoogleMaterialIconArea('import_export').init(),
+        iconArea: new RcdImageIconArea(config.assetsUrl + '/icons/dump.svg').init(),
         callback: (main) => {
             main.addChild(breadcrumbsLayout).addChild(layout);
             retrieveDumps();
