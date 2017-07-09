@@ -13,7 +13,10 @@ import com.google.common.io.ByteSource;
 import systems.rcd.fwk.core.format.json.RcdJsonService;
 import systems.rcd.fwk.core.format.json.data.RcdJsonArray;
 import systems.rcd.fwk.core.format.json.data.RcdJsonObject;
+import systems.rcd.fwk.core.format.properties.RcdPropertiesService;
 import systems.rcd.fwk.core.io.file.RcdFileService;
+import systems.rcd.fwk.core.io.file.RcdTextFileService;
+import systems.rcd.fwk.core.script.js.RcdJavascriptService;
 import systems.rcd.fwk.core.util.zip.RcdZipService;
 
 import com.enonic.xp.branch.Branch;
@@ -69,7 +72,8 @@ public class RcdDumpScriptBean
                     {
                         final RcdJsonObject dump = RcdJsonService.createJsonObject().
                             put( "name", dumpPath.getFileName().toString() ).
-                            put( "timestamp", dumpPath.toFile().lastModified() );
+                            put( "timestamp", dumpPath.toFile().lastModified() ).
+                            put( "version", getDumpVersion( dumpPath ) );
                         //put( "size", RcdFileService.getSize( dumpPath ) );
                         dumpsJsonArray.add( dump );
                     }
@@ -77,6 +81,36 @@ public class RcdDumpScriptBean
             }
             return createSuccessResult( dumpsJsonArray );
         }, "Error while listing dumps" );
+    }
+
+    private String getDumpVersion( final Path dumpPath )
+    {
+        try
+        {
+            if ( isExportDump( dumpPath ) )
+            {
+                final String xpVersion = RcdPropertiesService.read( dumpPath.resolve( "export.properties" ) ).
+                    get( "xp.version" );
+                if ( xpVersion != null )
+                {
+                    return xpVersion;
+                }
+            }
+            else if ( isVersionedDump( dumpPath ) )
+            {
+                final String dumpJsonContent = RcdTextFileService.readAsString( dumpPath.resolve( "dump.json" ) );
+                final Object xpVersion = RcdJavascriptService.eval( "JSON.parse('" + dumpJsonContent + "').xpVersion" );
+                if ( xpVersion instanceof String )
+                {
+                    return (String) xpVersion;
+                }
+            }
+        }
+        catch ( Exception e )
+        {
+            LOGGER.error( "Error while reading dump version", e );
+        }
+        return "";
     }
 
     public String create( final String dumpName )
@@ -98,7 +132,7 @@ public class RcdDumpScriptBean
     public String load( final String dumpName )
     {
         return runSafely( () -> {
-            if ( isExport( dumpName ) )
+            if ( isExportDump( dumpName ) )
             {
                 loadUsingExportService( dumpName );
             }
@@ -110,11 +144,25 @@ public class RcdDumpScriptBean
         }, "Error while creating dump" );
     }
 
-    private boolean isExport( final String dumpName )
+    private boolean isExportDump( final String dumpName )
     {
-        return getDumpDirectoryPath().
-            resolve( dumpName ).
+        final Path dumpPath = getDumpDirectoryPath().
+            resolve( dumpName );
+        return isExportDump( dumpPath );
+    }
+
+    private boolean isExportDump( final Path dumpPath )
+    {
+        return dumpPath.
             resolve( "export.properties" ).
+            toFile().
+            exists();
+    }
+
+    private boolean isVersionedDump( final Path dumpPath )
+    {
+        return dumpPath.
+            resolve( "dump.json" ).
             toFile().
             exists();
     }
