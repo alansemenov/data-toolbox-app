@@ -86,7 +86,10 @@ function createBranchesRoute() {
         $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/branch-delete',
-            data: JSON.stringify({branchNames: branchNames}),
+            data: JSON.stringify({
+                repositoryName: RcdHistoryRouter.getParameters().repo,
+                branchNames: branchNames
+            }),
             contentType: 'application/json; charset=utf-8'
         }).done(handleResultError).fail(handleAjaxError).always(() => {
             infoDialog.close();

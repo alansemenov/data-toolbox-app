@@ -14,7 +14,7 @@ import com.enonic.xp.script.bean.ScriptBean;
 public class RcdScriptBean
     implements ScriptBean
 {
-    private final Logger LOGGER = LoggerFactory.getLogger( RcdScriptBean.class );
+    protected final Logger LOGGER = LoggerFactory.getLogger( RcdScriptBean.class );
 
     @Override
     public void initialize( final BeanContext context )
@@ -31,6 +31,19 @@ public class RcdScriptBean
         {
             LOGGER.error( errorMessage, e );
             return RcdJsonService.toString( createErrorResult( errorMessage ) );
+        }
+    }
+
+    protected String runSafelyNoDependency( final Supplier<String> supplier, final String errorMessage )
+    {
+        try
+        {
+            return supplier.get();
+        }
+        catch ( Exception e )
+        {
+            LOGGER.error( errorMessage, e );
+            return "{\"error\":\"" + errorMessage + "\"}";
         }
     }
 

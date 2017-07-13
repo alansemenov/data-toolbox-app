@@ -7,9 +7,9 @@
    xmlns="http://www.w3.org/2000/svg"
    version="1.1"
    id="svg2"
-   viewBox="0 0 48 48"
-   height="48"
-   width="48">
+   viewBox="0 0 24 24"
+   height="24"
+   width="24">
   <defs
      id="defs4" />
   <metadata
@@ -25,28 +25,27 @@
     </rdf:RDF>
   </metadata>
   <g
-     transform="translate(0,-1004.3622)"
+     transform="translate(0,-1028.3622)"
      id="layer1">
     <g
        transform="translate(-19.643102,1022.4601)"
        id="g4210"
        style="fill:#000000">
       <path
-         style="fill:#ffffff;fill-opacity:1"
-         d="m 23.643102,17.9021 20,0 0,-8.0000002 -20,0 z m 4,-6 4,0 0,4 -4,0 z m -4,-26 0,7.9999996 40,0 0,-7.9999996 z m 8,5.9999996 -4,0 0,-3.9999996 4,0 z m -8,14 40,0 0,-8 -40,0 z m 4,-5.99999995 4,0 0,3.99999995 -4,0 z"
+         d="m 21.643102,23.9021 10,0 0,-4 -10,0 z m 2,-3 2,0 0,2 -2,0 z m -2,-12.9999998 0,3.9999998 20,0 0,-3.9999998 z m 4,2.9999998 -2,0 0,-1.9999998 2,0 z m -4,7 20,0 0,-4 -20,0 z m 2,-3 2,0 0,2 -2,0 z"
          id="path4202" />
       <rect
-         y="11.902099"
-         x="47.643101"
-         height="12"
-         width="10"
+         y="20.9021"
+         x="33.643101"
+         height="6"
+         width="5"
          id="rect4233"
-         style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+         style="opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
       <path
-         transform="matrix(1.2071515,0,0,1.7423731,10.919578,-18.25269)"
+         transform="matrix(0.60357575,0,0,0.87118655,15.28134,5.8247051)"
          d="m 35.392015,26.489614 0,-11.478598 9.940757,5.739299 z"
          id="path4235"
-         style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+         style="opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
     </g>
   </g>
 </svg>

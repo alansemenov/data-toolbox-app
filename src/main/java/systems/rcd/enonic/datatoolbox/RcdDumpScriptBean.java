@@ -13,13 +13,19 @@ import com.google.common.io.ByteSource;
 import systems.rcd.fwk.core.format.json.RcdJsonService;
 import systems.rcd.fwk.core.format.json.data.RcdJsonArray;
 import systems.rcd.fwk.core.format.json.data.RcdJsonObject;
+import systems.rcd.fwk.core.format.properties.RcdPropertiesService;
 import systems.rcd.fwk.core.io.file.RcdFileService;
+import systems.rcd.fwk.core.io.file.RcdTextFileService;
+import systems.rcd.fwk.core.script.js.RcdJavascriptService;
 import systems.rcd.fwk.core.util.zip.RcdZipService;
 
 import com.enonic.xp.branch.Branch;
+import com.enonic.xp.context.Context;
 import com.enonic.xp.context.ContextAccessor;
 import com.enonic.xp.context.ContextBuilder;
-import com.enonic.xp.export.ExportNodesParams;
+import com.enonic.xp.dump.DumpService;
+import com.enonic.xp.dump.SystemDumpParams;
+import com.enonic.xp.dump.SystemLoadParams;
 import com.enonic.xp.export.ExportService;
 import com.enonic.xp.export.ImportNodesParams;
 import com.enonic.xp.home.HomeDir;
@@ -38,6 +44,8 @@ public class RcdDumpScriptBean
 {
     private Supplier<ExportService> exportServiceSupplier;
 
+    private Supplier<DumpService> dumpServiceSupplier;
+
     private Supplier<RepositoryService> repositoryServiceSupplier;
 
     private Supplier<NodeRepositoryService> nodeRepositoryServiceSupplier;
@@ -46,6 +54,7 @@ public class RcdDumpScriptBean
     public void initialize( final BeanContext context )
     {
         exportServiceSupplier = context.getService( ExportService.class );
+        dumpServiceSupplier = context.getService( DumpService.class );
         repositoryServiceSupplier = context.getService( RepositoryService.class );
         nodeRepositoryServiceSupplier = context.getService( NodeRepositoryService.class );
     }
@@ -63,7 +72,9 @@ public class RcdDumpScriptBean
                     {
                         final RcdJsonObject dump = RcdJsonService.createJsonObject().
                             put( "name", dumpPath.getFileName().toString() ).
-                            put( "timestamp", dumpPath.toFile().lastModified() );
+                            put( "timestamp", dumpPath.toFile().lastModified() ).
+                            put( "type", getDumpType( dumpPath ) ).
+                            put( "version", getDumpVersion( dumpPath ) );
                         //put( "size", RcdFileService.getSize( dumpPath ) );
                         dumpsJsonArray.add( dump );
                     }
@@ -73,84 +84,155 @@ public class RcdDumpScriptBean
         }, "Error while listing dumps" );
     }
 
-    public String create( final String dumpName )
+    private String getDumpType( final Path dumpPath )
     {
-        return runSafely( () -> {
-            for ( Repository repository : repositoryServiceSupplier.get().list() )
+        try
+        {
+            if ( isExportDump( dumpPath ) )
             {
-                for ( Branch branch : repository.getBranches() )
+                return "export";
+            }
+            else if ( isVersionedDump( dumpPath ) )
+            {
+                return "versioned";
+            }
+        }
+        catch ( Exception e )
+        {
+            LOGGER.error( "Error while reading dump type", e );
+        }
+        return "";
+    }
+
+    private String getDumpVersion( final Path dumpPath )
+    {
+        try
+        {
+            if ( isExportDump( dumpPath ) )
+            {
+                final String xpVersion = RcdPropertiesService.read( dumpPath.resolve( "export.properties" ) ).
+                    get( "xp.version" );
+                if ( xpVersion != null )
                 {
-                    create( dumpName, repository.getId(), branch );
+                    return xpVersion;
                 }
             }
-            return createSuccessResult();
-        }, "Error while creating dump" );
-    }
-
-    private void create( final String dumpName, final RepositoryId repositoryId, final Branch branch )
-    {
-        ContextBuilder.from( ContextAccessor.current() ).
-            repositoryId( repositoryId ).
-            branch( branch ).
-            build().
-            callWith( () -> {
-                final String targetDirectoryPath = getDumpDirectoryPath().
-                    resolve( dumpName ).
-                    resolve( repositoryId.toString() ).
-                    resolve( branch.getValue() ).
-                    toString();
-                final ExportNodesParams exportNodesParams = ExportNodesParams.create().
-                    sourceNodePath( NodePath.ROOT ).
-                    rootDirectory( getDumpDirectoryPath().resolve( dumpName ).toString() ).
-                    targetDirectory( targetDirectoryPath ).
-                    dryRun( false ).
-                    includeNodeIds( true ).
-                    build();
-
-                exportServiceSupplier.get().
-                    exportNodes( exportNodesParams );
-                return null;
-            } );
-    }
-
-    public String load( final String[] dumpNames )
-    {
-        return runSafely( () -> {
-            for ( final String dumpName : dumpNames )
+            else if ( isVersionedDump( dumpPath ) )
             {
-                load( dumpName );
-            }
-            return createSuccessResult();
-        }, "Error while creating dump" );
-    }
-
-    private void load( final String dumpName )
-    {
-        load( dumpName, SystemConstants.SYSTEM_REPO.getId(), SystemConstants.BRANCH_SYSTEM );
-        this.repositoryServiceSupplier.get().invalidateAll();
-
-        for ( Repository repository : repositoryServiceSupplier.get().list() )
-        {
-            initializeRepo( repository );
-            for ( Branch branch : repository.getBranches() )
-            {
-                if ( !isSystemRepoMaster( repository, branch ) )
+                final String dumpJsonContent = RcdTextFileService.readAsString( dumpPath.resolve( "dump.json" ) );
+                final Object xpVersion = RcdJavascriptService.eval( "JSON.parse('" + dumpJsonContent + "').xpVersion" );
+                if ( xpVersion instanceof String )
                 {
-                    load( dumpName, repository.getId(), branch );
+                    return (String) xpVersion;
                 }
             }
         }
+        catch ( Exception e )
+        {
+            LOGGER.error( "Error while reading dump version", e );
+        }
+        return "";
+    }
+
+    public String create( final String dumpName )
+    {
+        return runSafely( () -> {
+            final SystemDumpParams params = SystemDumpParams.create().
+                dumpName( dumpName ).
+                includeBinaries( true ).
+                includeVersions( true ).
+                maxAge( null ).
+                maxVersions( null ).
+                build();
+
+            dumpServiceSupplier.get().dump( params );
+            return createSuccessResult();
+        }, "Error while creating dump" );
+    }
+
+    public String load( final String dumpName )
+    {
+        return runSafelyNoDependency( () -> {
+            if ( isExportDump( dumpName ) )
+            {
+                loadUsingExportService( dumpName );
+            }
+            else
+            {
+                loadUsingSystemDumpService( dumpName );
+            }
+            return "{\"success\":true}";
+        }, "Error while creating dump" );
+    }
+
+    private boolean isExportDump( final String dumpName )
+    {
+        final Path dumpPath = getDumpDirectoryPath().
+            resolve( dumpName );
+        return isExportDump( dumpPath );
+    }
+
+    private boolean isExportDump( final Path dumpPath )
+    {
+        return dumpPath.
+            resolve( "export.properties" ).
+            toFile().
+            exists();
+    }
+
+    private boolean isVersionedDump( final Path dumpPath )
+    {
+        return dumpPath.
+            resolve( "dump.json" ).
+            toFile().
+            exists();
+    }
+
+    private void loadUsingExportService( final String dumpName )
+    {
+        importSystemRepo( dumpName );
+        this.repositoryServiceSupplier.get().invalidateAll();
+        for ( Repository repository : this.repositoryServiceSupplier.get().list() )
+        {
+            initializeRepo( repository );
+            importRepoBranches( repository, dumpName );
+        }
+    }
+
+    private void loadUsingSystemDumpService( final String dumpName )
+    {
+        final SystemLoadParams systemLoadParams = SystemLoadParams.create().
+            dumpName( dumpName ).
+            includeVersions( true ).
+            build();
+        dumpServiceSupplier.get().load( systemLoadParams );
     }
 
     private void initializeRepo( final Repository repository )
     {
-        if ( !this.nodeRepositoryServiceSupplier.get().isInitialized( repository.getId() ) )
+        if ( !nodeRepositoryServiceSupplier.get().isInitialized( repository.getId() ) )
         {
             final CreateRepositoryParams createRepositoryParams = CreateRepositoryParams.create().
                 repositoryId( repository.getId() ).
                 repositorySettings( repository.getSettings() ).
                 build();
-            this.nodeRepositoryServiceSupplier.get().create( createRepositoryParams );
+            nodeRepositoryServiceSupplier.get().create( createRepositoryParams );
+        }
+    }
+
+    private void importSystemRepo( final String dumpName )
+    {
+        importRepoBranch( SystemConstants.SYSTEM_REPO.getId(), SystemConstants.BRANCH_SYSTEM, dumpName );
+    }
+
+    private void importRepoBranches( final Repository repository, final String dumpName )
+    {
+        for ( Branch branch : repository.getBranches() )
+        {
+            if ( !isSystemRepoMaster( repository, branch ) )
+            {
+                importRepoBranch( repository.getId(), branch, dumpName );
+            }
         }
     }
 
@@ -159,29 +241,20 @@ public class RcdDumpScriptBean
         return SystemConstants.SYSTEM_REPO.equals( repository ) && SystemConstants.BRANCH_SYSTEM.equals( branch );
     }
 
-    private void load( final String dumpName, final RepositoryId repositoryId, final Branch branch )
+    private void importRepoBranch( final RepositoryId repositoryId, final Branch branch, final String dumpName )
     {
-        ContextBuilder.from( ContextAccessor.current() ).
-            repositoryId( repositoryId ).
-            branch( branch ).
-            build().
-            callWith( () -> {
-                final Path sourcePath = getDumpDirectoryPath().
-                    resolve( dumpName ).
-                    resolve( repositoryId.toString() ).
-                    resolve( branch.getValue() );
-                final ImportNodesParams importNodesParams = ImportNodesParams.create().
-                    targetNodePath( NodePath.ROOT ).
-                    source( VirtualFiles.from( sourcePath ) ).
-                    dryRun( false ).
-                    includeNodeIds( true ).
-                    includePermissions( true ).
-                    build();
-
-                exportServiceSupplier.get().
-                    importNodes( importNodesParams );
-                return null;
-            } );
+        final Path sourcePath = getDumpDirectoryPath().
+            resolve( dumpName ).
+            resolve( repositoryId.toString() ).
+            resolve( branch.getValue() );
+        final ImportNodesParams importNodesParams = ImportNodesParams.create().
+            source( VirtualFiles.from( sourcePath ) ).
+            targetNodePath( NodePath.ROOT ).
+            dryRun( false ).
+            includeNodeIds( true ).
+            includePermissions( true ).
+            build();
+        createContext( repositoryId, branch ).callWith( () -> exportServiceSupplier.get().importNodes( importNodesParams ) );
     }
 
     public String delete( final String... dumpNames )
@@ -229,5 +302,13 @@ public class RcdDumpScriptBean
             toFile().
             toPath().
             resolve( "data/dump" );
+    }
+
+    private Context createContext( final RepositoryId repositoryId, final Branch branch )
+    {
+        return ContextBuilder.from( ContextAccessor.current() ).
+            repositoryId( repositoryId ).
+            branch( branch ).
+            build();
     }
 }
