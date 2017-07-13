@@ -34,6 +34,19 @@ public class RcdScriptBean
         }
     }
 
+    protected String runSafelyNoDependency( final Supplier<String> supplier, final String errorMessage )
+    {
+        try
+        {
+            return supplier.get();
+        }
+        catch ( Exception e )
+        {
+            LOGGER.error( errorMessage, e );
+            return "{\"error\":\"" + errorMessage + "\"}";
+        }
+    }
+
     protected RcdJsonValue createErrorResult( final String errorMessage )
     {
         return RcdJsonService.createJsonObject().

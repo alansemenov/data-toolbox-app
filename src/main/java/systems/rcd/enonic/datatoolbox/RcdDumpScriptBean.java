@@ -152,7 +152,7 @@ public class RcdDumpScriptBean
 
     public String load( final String dumpName )
     {
-        return runSafely( () -> {
+        return runSafelyNoDependency( () -> {
             if ( isExportDump( dumpName ) )
             {
                 loadUsingExportService( dumpName );
@@ -161,7 +161,7 @@ public class RcdDumpScriptBean
             {
                 loadUsingSystemDumpService( dumpName );
             }
-            return createSuccessResult();
+            return "{\"success\":true}";
         }, "Error while creating dump" );
     }
 
