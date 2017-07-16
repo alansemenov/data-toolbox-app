@@ -47,12 +47,11 @@ class ImportResultDialog extends RcdMaterialModalDialog {
         const closeCallback = () =>  this.close();
         const detailsCallback = () => this.displayDetails();
 
-        
-        let addedNodeCount= 0;
-        let updatedNodeCount= 0;
-        let importedBinaryCount= 0;
-        let errorCount= 0;
-        for(let i = 0; i < this.exportNames.length; i++) {
+        let addedNodeCount = 0;
+        let updatedNodeCount = 0;
+        let importedBinaryCount = 0;
+        let errorCount = 0;
+        for (let i = 0; i < this.exportNames.length; i++) {
             const result = this.result[this.exportNames[i]];
             addedNodeCount += result.addedNodeCount;
             updatedNodeCount += result.updatedNodeCount;
@@ -64,7 +63,7 @@ class ImportResultDialog extends RcdMaterialModalDialog {
                         'Imported binaries: ' + importedBinaryCount + '\n' +
                         'Errors: ' + errorCount;
         const resultItem = new RcdTextElement(summary).init();
-        
+
         super.init().
             addItem(resultItem).
             addAction('CLOSE', closeCallback).
@@ -73,12 +72,12 @@ class ImportResultDialog extends RcdMaterialModalDialog {
             addKeyUpListener('Escape', closeCallback);
         return this;
     }
-    
+
     displayDetails() {
         this.close();
-        
+
         let text = '';
-        for(let i = 0; i < this.exportNames.length; i++) {
+        for (let i = 0; i < this.exportNames.length; i++) {
             if (this.exportNames.length > 1) {
                 text += '<b>' + this.exportNames[i] + '</b>\n';
             }
@@ -96,6 +95,52 @@ class ImportResultDialog extends RcdMaterialModalDialog {
                     'Errors: ' + JSON.stringify(result.errors, null, 2) + '\n\n';
         }
         showDetailsDialog('Import result details', text);
+    }
+}
+
+class ExportResultDialog extends RcdMaterialModalDialog {
+    constructor(result, type = 'node') {
+        super('Export result', undefined, true, true);
+        this.result = result;
+        this.type = type;
+    }
+
+    init() {
+        const closeCallback = () =>  this.close();
+        const detailsCallback = () => this.displayDetails();
+
+        let exportedNodeCount = this.result.exportedNodeCount;
+        let exportedBinaryCount = this.result.exportedBinaryCount;
+        let errorCount = this.result.errorCount;
+
+        const summary = 'Exported ' + this.type + 's: ' + exportedNodeCount + '\n' +
+                        'Exported binaries: ' + exportedBinaryCount + '\n' +
+                        'Errors: ' + errorCount;
+        const resultItem = new RcdTextElement(summary).init();
+
+        super.init().
+            addItem(resultItem).
+            addAction('CLOSE', closeCallback).
+            addAction('DETAILS', detailsCallback).
+            addKeyUpListener('Enter', detailsCallback).
+            addKeyUpListener('Escape', closeCallback);
+        return this;
+    }
+
+    displayDetails() {
+        this.close();
+
+        let text = '';
+        const exportedNodes = this.type === 'content' ? this.result.exportedNodes.map(nodePathToContentPath) : this.result.exportedNodes;
+
+        text += '# exported ' + this.type + 's: ' + this.result.exportedNodeCount + '\n' +
+                '# exported binaries: ' + this.result.exportedBinaryCount + '\n' +
+                '# errors: ' + this.result.errorCount + '\n' +
+                'Exported ' + this.type + 's: ' + JSON.stringify(exportedNodes, null, 2) + '\n' +
+                'Exported binaries: ' + JSON.stringify(this.result.exportedBinaries, null, 2) + '\n' +
+                'Errors: ' + JSON.stringify(this.result.errors, null, 2) + '\n\n';
+
+        showDetailsDialog('Export result details', text);
     }
 }
 
