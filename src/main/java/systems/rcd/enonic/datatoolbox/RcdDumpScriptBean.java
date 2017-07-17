@@ -13,6 +13,7 @@ import com.google.common.io.ByteSource;
 import systems.rcd.fwk.core.format.json.RcdJsonService;
 import systems.rcd.fwk.core.format.json.data.RcdJsonArray;
 import systems.rcd.fwk.core.format.json.data.RcdJsonObject;
+import systems.rcd.fwk.core.format.json.data.RcdJsonValue;
 import systems.rcd.fwk.core.format.properties.RcdPropertiesService;
 import systems.rcd.fwk.core.io.file.RcdFileService;
 import systems.rcd.fwk.core.io.file.RcdTextFileService;
@@ -23,8 +24,11 @@ import com.enonic.xp.branch.Branch;
 import com.enonic.xp.context.Context;
 import com.enonic.xp.context.ContextAccessor;
 import com.enonic.xp.context.ContextBuilder;
+import com.enonic.xp.dump.BranchDumpResult;
 import com.enonic.xp.dump.DumpService;
+import com.enonic.xp.dump.RepoDumpResult;
 import com.enonic.xp.dump.SystemDumpParams;
+import com.enonic.xp.dump.SystemDumpResult;
 import com.enonic.xp.dump.SystemLoadParams;
 import com.enonic.xp.export.ExportService;
 import com.enonic.xp.export.ImportNodesParams;
@@ -145,9 +149,44 @@ public class RcdDumpScriptBean
                 maxVersions( null ).
                 build();
 
-            dumpServiceSupplier.get().dump( params );
-            return createSuccessResult();
+            final SystemDumpResult systemDumpResult = dumpServiceSupplier.get().dump( params );
+            final RcdJsonValue result = convertSystemDumpResultToJson( systemDumpResult );
+            return createSuccessResult( result );
         }, "Error while creating dump" );
+    }
+
+    private RcdJsonValue convertSystemDumpResultToJson( final SystemDumpResult systemDumpResult )
+    {
+        final RcdJsonObject result = RcdJsonService.createJsonObject();
+        for ( RepoDumpResult repoDumpResult : systemDumpResult )
+        {
+            result.put( repoDumpResult.getRepositoryId().toString(), convertRepoDumpResultToJson( repoDumpResult ) );
+        }
+        return result;
+    }
+
+    private RcdJsonValue convertRepoDumpResultToJson( final RepoDumpResult repoDumpResult )
+    {
+        final RcdJsonObject result = RcdJsonService.createJsonObject();
+        result.put( "version", repoDumpResult.getVersions() );
+        for ( BranchDumpResult branchDumpResult : repoDumpResult )
+        {
+            result.put( branchDumpResult.getBranch().toString(), convertBranchDumpResultToJson( branchDumpResult ) );
+        }
+        return result;
+    }
+
+    private RcdJsonValue convertBranchDumpResultToJson( final BranchDumpResult branchDumpResult )
+    {
+        final RcdJsonObject result = RcdJsonService.createJsonObject();
+        result.put( "successful", branchDumpResult.getSuccessful() );
+        if ( !branchDumpResult.getErrors().isEmpty() )
+        {
+            final RcdJsonArray errors = result.createArray( "errors" );
+            branchDumpResult.getErrors().
+                forEach( error -> errors.add( error.getMessage() ) );
+        }
+        return result;
     }
 
     public String load( final String dumpName )
