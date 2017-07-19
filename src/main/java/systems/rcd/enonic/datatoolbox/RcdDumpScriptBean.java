@@ -25,6 +25,7 @@ import com.enonic.xp.context.Context;
 import com.enonic.xp.context.ContextAccessor;
 import com.enonic.xp.context.ContextBuilder;
 import com.enonic.xp.dump.BranchDumpResult;
+import com.enonic.xp.dump.DumpError;
 import com.enonic.xp.dump.DumpService;
 import com.enonic.xp.dump.RepoDumpResult;
 import com.enonic.xp.dump.SystemDumpParams;
@@ -180,11 +181,11 @@ public class RcdDumpScriptBean
     {
         final RcdJsonObject result = RcdJsonService.createJsonObject();
         result.put( "successful", branchDumpResult.getSuccessful() );
+        result.put( "errorCount", branchDumpResult.getErrors().size() );
         if ( !branchDumpResult.getErrors().isEmpty() )
         {
             final RcdJsonArray errors = result.createArray( "errors" );
-            branchDumpResult.getErrors().
-                forEach( error -> errors.add( error.getMessage() ) );
+            limitedAddAll( branchDumpResult.getErrors().stream(), errors, error -> (( DumpError)error).getMessage() );
         }
         return result;
     }

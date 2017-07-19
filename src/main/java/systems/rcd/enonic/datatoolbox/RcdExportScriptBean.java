@@ -4,10 +4,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 
 import com.google.common.io.ByteSource;
@@ -42,8 +40,6 @@ import com.enonic.xp.vfs.VirtualFiles;
 public class RcdExportScriptBean
     extends RcdScriptBean
 {
-    private static final long RESULT_DETAILS_COUNT = 100;
-
     private Supplier<ExportService> exportServiceSupplier;
 
     private Supplier<RepositoryService> repositoryServiceSupplier;
@@ -116,16 +112,6 @@ public class RcdExportScriptBean
         limitedAddAll( nodeExportResult.getExportErrors().stream(), errorsResult, error -> error.toString() );
 
         return result;
-    }
-
-    private void limitedAddAll( final Stream<? extends Object> from, final RcdJsonArray to, final Function<Object, String> converter )
-    {
-        from.limit( RESULT_DETAILS_COUNT ).
-            forEach( error -> to.add( converter.apply( error ) ) );
-        if ( to.size() == RESULT_DETAILS_COUNT )
-        {
-            to.add( "..." );
-        }
     }
 
     public String load( final String[] exportNames, final String repositoryName, final String branchName, final String nodePathString )
