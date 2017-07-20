@@ -73,7 +73,12 @@ function createDumpsRoute() {
                 dumpName: dumpName || ('dump-' + toLocalDateTimeFormat(new Date(), '-', '-'))
             }),
             contentType: 'application/json; charset=utf-8'
-        }).done(handleResultError).fail(handleAjaxError).always(() => {
+        }).done(function (result) {
+            if (handleResultError(result)) {
+                new DumpResultDialog(result.success).init().
+                    open();
+            }
+        }).fail(handleAjaxError).always(() => {
             infoDialog.close();
             retrieveDumps();
         });

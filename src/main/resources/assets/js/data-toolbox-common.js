@@ -144,6 +144,84 @@ class ExportResultDialog extends RcdMaterialModalDialog {
     }
 }
 
+class DumpResultDialog extends RcdMaterialModalDialog {
+    constructor(result) {
+        super('Dump result', undefined, true, true);
+        this.result = result;
+    }
+
+    init() {
+        const closeCallback = () =>  this.close();
+        const errorsCallback = () => this.displayErrors();
+
+        let summary = '';
+        let dumpedNodeCount = 0;
+        let errorCount = 0;
+        for (let repositoryName in this.result) {
+            const repositoryDumpResult = this.result[repositoryName];
+            summary += '<b>Repository [' + repositoryName + ']</b>\n';
+            for (let branchName in repositoryDumpResult) {
+                if ('version' !== branchName) {
+                    const branchDumpResult = repositoryDumpResult[branchName];
+                    summary += 'Branch [' + branchName + ']: ' + branchDumpResult.successful +
+                               ' nodes dumped';
+                    if (branchDumpResult.errorCount > 0) {
+                        summary += ' and ' + branchDumpResult.errorCount + ' errors';
+                    }
+                    summary += '.\n';
+                    dumpedNodeCount += branchDumpResult.successful;
+                    errorCount += branchDumpResult.errorCount;
+                }
+            }
+            summary += '\n';
+        }
+
+        summary = 'Dumped nodes: ' + dumpedNodeCount + '\n' +
+                  'Errors: ' + errorCount + '\n\n'
+                  + summary;
+        const resultItem = new RcdTextElement(summary).init();
+
+        super.init().
+            addItem(resultItem).
+            addAction('CLOSE', closeCallback).
+            addKeyUpListener('Escape', closeCallback);
+
+        if (errorCount > 0) {
+            this.addAction('ERRORS', errorsCallback).
+                addKeyUpListener('Enter', errorsCallback);
+        } else {
+            this.addKeyUpListener('Enter', closeCallback);
+        }
+
+        return this;
+    }
+
+    displayErrors() {
+        this.close();
+
+        let text = '';
+        for (let repositoryName in this.result) {
+            const repositoryDumpResult = this.result[repositoryName];
+            for (let branchName in repositoryDumpResult) {
+                let branchText = '';
+                if ('version' !== branchName) {
+                    if (repositoryDumpResult[branchName].errors) {
+                        repositoryDumpResult[branchName].errors.forEach(error => {
+                            branchText += error + '\n';
+                        });
+                    }
+                    if (branchText) {
+                        text += '<b>Repository/Branch [' + repositoryName + '/' + branchName + ']</b>\n' + branchText;
+                    }
+                }
+
+            }
+        }
+
+        showDetailsDialog('Dump errors', text);
+    }
+}
+
 function nodePathToContentPath(nodePath) {
     if (!nodePath || !nodePath.startsWith('/content')) {
         return nodePath;
