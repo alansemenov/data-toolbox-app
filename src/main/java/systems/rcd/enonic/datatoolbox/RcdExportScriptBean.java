@@ -86,7 +86,6 @@ public class RcdExportScriptBean
                 targetDirectory( getExportDirectoryPath().resolve( exportName ).toString() ).
                 dryRun( false ).
                 includeNodeIds( true ).
-                includeVersions( true ).
                 build();
 
             createContext( repositoryName, branchName ).
