@@ -145,9 +145,10 @@ class ExportResultDialog extends RcdMaterialModalDialog {
 }
 
 class DumpResultDialog extends RcdMaterialModalDialog {
-    constructor(result) {
-        super('Dump result', undefined, true, true);
+    constructor(result, load) {
+        super((load ? 'Load' : 'Dump') + ' result', undefined, true, true);
         this.result = result;
+        this.load = load;
     }
 
     init() {
@@ -161,22 +162,20 @@ class DumpResultDialog extends RcdMaterialModalDialog {
             const repositoryDumpResult = this.result[repositoryName];
             summary += '<b>Repository [' + repositoryName + ']</b>\n';
             for (let branchName in repositoryDumpResult) {
-                if ('version' !== branchName) {
-                    const branchDumpResult = repositoryDumpResult[branchName];
-                    summary += 'Branch [' + branchName + ']: ' + branchDumpResult.successful +
-                               ' nodes dumped';
-                    if (branchDumpResult.errorCount > 0) {
-                        summary += ' and ' + branchDumpResult.errorCount + ' errors';
-                    }
-                    summary += '.\n';
-                    dumpedNodeCount += branchDumpResult.successful;
-                    errorCount += branchDumpResult.errorCount;
+                const branchDumpResult = repositoryDumpResult[branchName];
+                summary += 'Branch [' + branchName + ']: ' + branchDumpResult.successful +
+                           ' nodes ' + (this.load ? 'loaded' : 'dumped');
+                if (branchDumpResult.errorCount > 0) {
+                    summary += ' and ' + branchDumpResult.errorCount + ' errors';
                 }
+                summary += '.\n';
+                dumpedNodeCount += branchDumpResult.successful;
+                errorCount += branchDumpResult.errorCount;
             }
             summary += '\n';
         }
 
-        summary = 'Dumped nodes: ' + dumpedNodeCount + '\n' +
+        summary = (this.load ? 'Loaded' : 'Dumped') + ' nodes: ' + dumpedNodeCount + '\n' +
                   'Errors: ' + errorCount + '\n\n'
                   + summary;
         const resultItem = new RcdTextElement(summary).init();
@@ -204,21 +203,18 @@ class DumpResultDialog extends RcdMaterialModalDialog {
             const repositoryDumpResult = this.result[repositoryName];
             for (let branchName in repositoryDumpResult) {
                 let branchText = '';
-                if ('version' !== branchName) {
-                    if (repositoryDumpResult[branchName].errors) {
-                        repositoryDumpResult[branchName].errors.forEach(error => {
-                            branchText += error + '\n';
-                        });
-                    }
-                    if (branchText) {
-                        text += '<b>Repository/Branch [' + repositoryName + '/' + branchName + ']</b>\n' + branchText;
-                    }
+                if (repositoryDumpResult[branchName].errors) {
+                    repositoryDumpResult[branchName].errors.forEach(error => {
+                        branchText += error + '\n';
+                    });
                 }
-
+                if (branchText) {
+                    text += '<b>Repository/Branch [' + repositoryName + '/' + branchName + ']</b>\n' + branchText;
+                }
             }
         }
 
-        showDetailsDialog('Dump errors', text);
+        showDetailsDialog((this.load ? 'Load' : 'Dump') +' errors', text);
     }
 }
 
