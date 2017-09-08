@@ -18,8 +18,8 @@ public class RcdScriptBean
     implements ScriptBean
 {
     protected final Logger LOGGER = LoggerFactory.getLogger( RcdScriptBean.class );
-    
-    private static final long RESULT_DETAILS_COUNT = 100;
+
+    protected static final long RESULT_DETAILS_COUNT = 100;
 
     @Override
     public void initialize( final BeanContext context )
