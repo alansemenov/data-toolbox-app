@@ -9,8 +9,10 @@ import org.slf4j.LoggerFactory;
 
 import systems.rcd.fwk.core.format.json.RcdJsonService;
 import systems.rcd.fwk.core.format.json.data.RcdJsonArray;
+import systems.rcd.fwk.core.format.json.data.RcdJsonObject;
 import systems.rcd.fwk.core.format.json.data.RcdJsonValue;
 
+import com.enonic.xp.export.NodeImportResult;
 import com.enonic.xp.script.bean.BeanContext;
 import com.enonic.xp.script.bean.ScriptBean;
 
@@ -18,8 +20,8 @@ public class RcdScriptBean
     implements ScriptBean
 {
     protected final Logger LOGGER = LoggerFactory.getLogger( RcdScriptBean.class );
-    
-    private static final long RESULT_DETAILS_COUNT = 100;
+
+    protected static final long RESULT_DETAILS_COUNT = 100;
 
     @Override
     public void initialize( final BeanContext context )
@@ -79,5 +81,29 @@ public class RcdScriptBean
         {
             to.add( "..." );
         }
+    }
+    
+    protected RcdJsonValue convertNodeImportResultToJson( final NodeImportResult nodeImportResult )
+    {
+        final RcdJsonObject result = RcdJsonService.createJsonObject();
+
+        result.put( "addedNodeCount", nodeImportResult.getAddedNodes().getSize() );
+        result.put( "updatedNodeCount", nodeImportResult.getUpdateNodes().getSize() );
+        result.put( "importedBinaryCount", nodeImportResult.getExportedBinaries().size() );
+        result.put( "errorCount", nodeImportResult.getImportErrors().size() );
+
+        final RcdJsonArray addedNodesResult = result.createArray( "addedNodes" );
+        final RcdJsonArray updatedNodesResult = result.createArray( "updatedNodes" );
+        final RcdJsonArray importedBinariesResult = result.createArray( "importedBinaries" );
+        final RcdJsonArray errorsResult = result.createArray( "errors" );
+
+        limitedAddAll( nodeImportResult.getAddedNodes().stream(), addedNodesResult, nodePath -> nodePath.toString() );
+        limitedAddAll( nodeImportResult.getUpdateNodes().stream(), updatedNodesResult, nodePath -> nodePath.toString() );
+        limitedAddAll( nodeImportResult.getExportedBinaries().stream(), importedBinariesResult, binary -> (String) binary );
+        limitedAddAll( nodeImportResult.getImportErrors().stream(), errorsResult,
+                       error -> ( (NodeImportResult.ImportError) error ).getMessage() + " - " +
+                           ( (NodeImportResult.ImportError) error ).getException().toString() );
+
+        return result;
     }
 }

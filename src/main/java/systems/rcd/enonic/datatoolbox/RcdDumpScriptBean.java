@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.zip.ZipEntry;
@@ -25,14 +27,19 @@ import com.enonic.xp.context.Context;
 import com.enonic.xp.context.ContextAccessor;
 import com.enonic.xp.context.ContextBuilder;
 import com.enonic.xp.dump.BranchDumpResult;
+import com.enonic.xp.dump.BranchLoadResult;
 import com.enonic.xp.dump.DumpError;
 import com.enonic.xp.dump.DumpService;
+import com.enonic.xp.dump.LoadError;
 import com.enonic.xp.dump.RepoDumpResult;
+import com.enonic.xp.dump.RepoLoadResult;
 import com.enonic.xp.dump.SystemDumpParams;
 import com.enonic.xp.dump.SystemDumpResult;
 import com.enonic.xp.dump.SystemLoadParams;
+import com.enonic.xp.dump.SystemLoadResult;
 import com.enonic.xp.export.ExportService;
 import com.enonic.xp.export.ImportNodesParams;
+import com.enonic.xp.export.NodeImportResult;
 import com.enonic.xp.home.HomeDir;
 import com.enonic.xp.node.NodePath;
 import com.enonic.xp.repository.CreateRepositoryParams;
@@ -169,7 +176,6 @@ public class RcdDumpScriptBean
     private RcdJsonValue convertRepoDumpResultToJson( final RepoDumpResult repoDumpResult )
     {
         final RcdJsonObject result = RcdJsonService.createJsonObject();
-        result.put( "version", repoDumpResult.getVersions() );
         for ( BranchDumpResult branchDumpResult : repoDumpResult )
         {
             result.put( branchDumpResult.getBranch().toString(), convertBranchDumpResultToJson( branchDumpResult ) );
@@ -185,7 +191,7 @@ public class RcdDumpScriptBean
         if ( !branchDumpResult.getErrors().isEmpty() )
         {
             final RcdJsonArray errors = result.createArray( "errors" );
-            limitedAddAll( branchDumpResult.getErrors().stream(), errors, error -> (( DumpError)error).getMessage() );
+            limitedAddAll( branchDumpResult.getErrors().stream(), errors, error -> ( (DumpError) error ).getMessage() );
         }
         return result;
     }
@@ -195,14 +201,16 @@ public class RcdDumpScriptBean
         return runSafelyNoDependency( () -> {
             if ( isExportDump( dumpName ) )
             {
-                loadUsingExportService( dumpName );
+                final RcdJsonObject result = RcdJsonService.createJsonObject();
+                loadUsingExportService( dumpName, result );
+                return RcdJsonService.toString( createSuccessResult( result ) );
             }
             else
             {
-                loadUsingSystemDumpService( dumpName );
+                final SystemLoadResult systemLoadResult = loadUsingSystemDumpService( dumpName );
+                return convertSystemLoadResultToJson( systemLoadResult );
             }
-            return "{\"success\":true}";
-        }, "Error while creating dump" );
+        }, "Error while loading dump" );
     }
 
     private boolean isExportDump( final String dumpName )
@@ -228,24 +236,30 @@ public class RcdDumpScriptBean
             exists();
     }
 
-    private void loadUsingExportService( final String dumpName )
+    private void loadUsingExportService( final String dumpName, final RcdJsonObject result )
     {
-        importSystemRepo( dumpName );
+        final NodeImportResult systemRepoImportResult = importSystemRepo( dumpName );
+        result.createObject( "system" ).
+            put( "master", convertNodeImportResultToJson( systemRepoImportResult ) );
+
         this.repositoryServiceSupplier.get().invalidateAll();
         for ( Repository repository : this.repositoryServiceSupplier.get().list() )
         {
             initializeRepo( repository );
-            importRepoBranches( repository, dumpName );
+            RcdJsonObject repositoryResult = SystemConstants.SYSTEM_REPO.equals( repository )
+                ? (RcdJsonObject) result.get( "system" )
+                : result.createObject( repository.getId().toString() );
+            importRepoBranches( repository, dumpName, repositoryResult );
         }
     }
 
-    private void loadUsingSystemDumpService( final String dumpName )
+    private SystemLoadResult loadUsingSystemDumpService( final String dumpName )
     {
         final SystemLoadParams systemLoadParams = SystemLoadParams.create().
             dumpName( dumpName ).
             includeVersions( true ).
             build();
-        dumpServiceSupplier.get().load( systemLoadParams );
+        return dumpServiceSupplier.get().load( systemLoadParams );
     }
 
     private void initializeRepo( final Repository repository )
@@ -260,18 +274,19 @@ public class RcdDumpScriptBean
         }
     }
 
-    private void importSystemRepo( final String dumpName )
+    private NodeImportResult importSystemRepo( final String dumpName )
     {
-        importRepoBranch( SystemConstants.SYSTEM_REPO.getId(), SystemConstants.BRANCH_SYSTEM, dumpName );
+        return importRepoBranch( SystemConstants.SYSTEM_REPO.getId(), SystemConstants.BRANCH_SYSTEM, dumpName );
     }
 
-    private void importRepoBranches( final Repository repository, final String dumpName )
+    private void importRepoBranches( final Repository repository, final String dumpName, final RcdJsonObject result )
     {
         for ( Branch branch : repository.getBranches() )
         {
             if ( !isSystemRepoMaster( repository, branch ) )
             {
-                importRepoBranch( repository.getId(), branch, dumpName );
+                final NodeImportResult nodeImportResult = importRepoBranch( repository.getId(), branch, dumpName );
+                result.put( branch.getValue(), convertNodeImportResultToJson( nodeImportResult ) );
             }
         }
     }
@@ -281,7 +296,7 @@ public class RcdDumpScriptBean
         return SystemConstants.SYSTEM_REPO.equals( repository ) && SystemConstants.BRANCH_SYSTEM.equals( branch );
     }
 
-    private void importRepoBranch( final RepositoryId repositoryId, final Branch branch, final String dumpName )
+    private NodeImportResult importRepoBranch( final RepositoryId repositoryId, final Branch branch, final String dumpName )
     {
         final Path sourcePath = getDumpDirectoryPath().
             resolve( dumpName ).
@@ -294,7 +309,73 @@ public class RcdDumpScriptBean
             includeNodeIds( true ).
             includePermissions( true ).
             build();
-        createContext( repositoryId, branch ).callWith( () -> exportServiceSupplier.get().importNodes( importNodesParams ) );
+        return createContext( repositoryId, branch ).callWith( () -> exportServiceSupplier.get().importNodes( importNodesParams ) );
+    }
+
+    private String convertSystemLoadResultToJson( final SystemLoadResult systemLoadResult )
+    {
+        final StringBuilder result = new StringBuilder( "{\"success\":{" );
+        final Iterator<RepoLoadResult> repoLoadResultIterator = systemLoadResult.iterator();
+        while ( repoLoadResultIterator.hasNext() )
+        {
+            final RepoLoadResult repoLoadResult = repoLoadResultIterator.next();
+            result.append( "\"" ).
+                append( repoLoadResult.getRepositoryId().toString() ).
+                append( "\":{" );
+            convertRepoLoadResultToJson( repoLoadResult, result );
+            result.append( "}" );
+            if ( repoLoadResultIterator.hasNext() )
+            {
+                result.append( "," );
+            }
+        }
+        result.append( "}}" );
+        return result.toString();
+    }
+
+    private void convertRepoLoadResultToJson( final RepoLoadResult repoLoadResult, final StringBuilder result )
+    {
+        final Iterator<BranchLoadResult> repoLoadResultIterator = repoLoadResult.iterator();
+        while ( repoLoadResultIterator.hasNext() )
+        {
+            final BranchLoadResult branchLoadResult = repoLoadResultIterator.next();
+            result.append( "\"" ).
+                append( branchLoadResult.getBranch().toString() ).
+                append( "\":{" );
+            convertBranchLoadResultToJson( branchLoadResult, result );
+            result.append( "}" );
+            if ( repoLoadResultIterator.hasNext() )
+            {
+                result.append( "," );
+            }
+        }
+    }
+
+    private void convertBranchLoadResultToJson( final BranchLoadResult branchLoadResult, final StringBuilder result )
+    {
+        final List<LoadError> errors = branchLoadResult.getErrors();
+
+        result.append( "\"successful\":" ).
+            append( branchLoadResult.getSuccessful() ).
+            append( ",\"errorCount\":" ).
+            append( errors.size() );
+        if ( !errors.isEmpty() )
+        {
+            result.append( ",\"errors\":[" );
+            for ( int i = 0; i < errors.size() && i < RESULT_DETAILS_COUNT; i++ )
+            {
+                result.append( "\"" + errors.get( i ).getError() + "\"" );
+                if ( i < errors.size() - 1 )
+                {
+                    result.append( "," );
+                }
+            }
+            if ( errors.size() > RESULT_DETAILS_COUNT )
+            {
+                result.append( "\"...\"" );
+            }
+            result.append( "]" );
+        }
     }
 
     public String delete( final String... dumpNames )

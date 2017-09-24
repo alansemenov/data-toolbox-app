@@ -10,7 +10,8 @@ function createDumpsRoute() {
         addColumn('Version', {classes: ['non-mobile-cell', 'version-cell']}).
         addIconArea(new RcdGoogleMaterialIconArea('add_circle', createDump).init().setTooltip('Generate a system dump'),
         {max: 0}).
-        addIconArea(new RcdImageIconArea(config.assetsUrl + '/icons/load.svg', loadDump).init().setTooltip('Load selected system dump'), {min: 1, max: 1}).
+        addIconArea(new RcdImageIconArea(config.assetsUrl + '/icons/load.svg', loadDump).init().setTooltip('Load selected system dump'),
+        {min: 1, max: 1}).
         addIconArea(new RcdGoogleMaterialIconArea('file_download',
             dowloadDumps).init().setTooltip('Archive and download selected system dumps'), {min: 1}).
         addIconArea(new RcdGoogleMaterialIconArea('file_upload', uploadDumps).init().setTooltip('Upload and unarchive system dumps',
@@ -73,7 +74,7 @@ function createDumpsRoute() {
                 dumpName: dumpName || ('dump-' + toLocalDateTimeFormat(new Date(), '-', '-'))
             }),
             contentType: 'application/json; charset=utf-8'
-        }).done(function (result) {
+        }).done((result) => {
             if (handleResultError(result)) {
                 new DumpResultDialog(result.success).init().
                     open();
@@ -106,21 +107,31 @@ function createDumpsRoute() {
         const dumpName = tableCard.getSelectedRows().map((row) => row.attributes['dump'])[0];
         const dumpType = tableCard.getSelectedRows().map((row) => row.attributes['type'])[0];
         if ('export' === dumpType) {
-            doLoadDump(dumpName);
+            doLoadDump(dumpName, dumpType);
         } else {
             showConfirmationDialog('Loading this dump will delete all existing repositories', 'LOAD',
-                () => doLoadDump(dumpName));
+                () => doLoadDump(dumpName, dumpType));
         }
     }
 
-    function doLoadDump(dumpName) {
+    function doLoadDump(dumpName, dumpType) {
         const infoDialog = showInfoDialog("Loading dump...");
         $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/dump-load',
             data: JSON.stringify({dumpName: dumpName}),
             contentType: 'application/json; charset=utf-8'
-        }).done(handleResultError).fail(handleAjaxError).always(() => {
+        }).done((result) => {
+            if (handleResultError(result)) {
+                if (dumpType === 'export') {
+                    new LoadExportDumpDialog(result.success).init().
+                    open();
+                } else {
+                    new DumpResultDialog(result.success, true).init().
+                    open();
+                }
+            }
+        }).fail(handleAjaxError).always(() => {
             infoDialog.close();
         });
     }
