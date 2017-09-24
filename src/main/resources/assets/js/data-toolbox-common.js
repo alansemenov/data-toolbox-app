@@ -6,7 +6,7 @@ class HelpDialog extends RcdMaterialModalDialog {
     }
 
     init() {
-        const closeCallback = () =>  this.close();
+        const closeCallback = () => this.close();
         super.init().
             addAction('CLOSE', closeCallback).
             addKeyUpListener('Enter', closeCallback).
@@ -44,7 +44,7 @@ class ImportResultDialog extends RcdMaterialModalDialog {
     }
 
     init() {
-        const closeCallback = () =>  this.close();
+        const closeCallback = () => this.close();
         const detailsCallback = () => this.displayDetails();
 
         let addedNodeCount = 0;
@@ -98,6 +98,80 @@ class ImportResultDialog extends RcdMaterialModalDialog {
     }
 }
 
+class LoadExportDumpDialog extends RcdMaterialModalDialog {
+    constructor(result) {
+        super('Load result', undefined, true, true);
+        this.result = result;
+    }
+
+    init() {
+        const closeCallback = () => this.close();
+        const detailsCallback = () => this.displayDetails();
+
+        let summary = '';
+        let addedNodeCount = 0;
+        let updatedNodeCount = 0;
+        let importedBinaryCount = 0;
+        let errorCount = 0;
+
+        for (let repositoryName in this.result) {
+            const repositoryDumpResult = this.result[repositoryName];
+            for (let branchName in repositoryDumpResult) {
+                summary += '<b>Branch [' + repositoryName + '/' + branchName + ']</b>\n';
+                const branchDumpResult = repositoryDumpResult[branchName];
+
+                summary += 'Added nodes: ' + branchDumpResult.addedNodeCount + '\n' +
+                           'Updated nodes: ' + branchDumpResult.updatedNodeCount + '\n' +
+                           'Imported binaries: ' + branchDumpResult.importedBinaryCount + '\n' +
+                           'Errors: ' + branchDumpResult.errorCount + '\n\n';
+
+                addedNodeCount += branchDumpResult.addedNodeCount;
+                updatedNodeCount += branchDumpResult.updatedNodeCount;
+                importedBinaryCount += branchDumpResult.importedBinaryCount;
+                errorCount += branchDumpResult.errorCount;
+            }
+        }
+
+        summary = 'Added nodes: ' + addedNodeCount + '\n' +
+                  'Updated nodes: ' + updatedNodeCount + '\n' +
+                  'Imported binaries: ' + importedBinaryCount + '\n' +
+                  'Errors: ' + errorCount + '\n\n'
+                  + summary;
+        const resultItem = new RcdTextElement(summary).init();
+
+        super.init().
+            addItem(resultItem).
+            addAction('CLOSE', closeCallback).
+            addAction('DETAILS', detailsCallback).
+            addKeyUpListener('Enter', detailsCallback).
+            addKeyUpListener('Escape', closeCallback);
+        return this;
+    }
+
+    displayDetails() {
+        this.close();
+
+        let text = '';
+        for (let repositoryName in this.result) {
+            const repositoryDumpResult = this.result[repositoryName];
+            for (let branchName in repositoryDumpResult) {
+                text += '<b>Branch [' + repositoryName + '/' + branchName + ']</b>\n';
+                const branchDumpResult = repositoryDumpResult[branchName];
+                text += '# added nodes: ' + branchDumpResult.addedNodeCount + '\n' +
+                           '# updated nodes: ' + branchDumpResult.updatedNodeCount + '\n' +
+                           '# imported binaries: ' + branchDumpResult.importedBinaryCount + '\n' +
+                           '# errors: ' + branchDumpResult.errorCount + '\n' +
+                           'Added nodes: ' + JSON.stringify(branchDumpResult.addedNodes, null, 2) + '\n' +
+                           'Updated nodes: ' + JSON.stringify(branchDumpResult.updatedNodes, null, 2) + '\n' +
+                           'Imported binaries: ' + JSON.stringify(branchDumpResult.importedBinaries, null, 2) + '\n' +
+                           'Errors: ' + JSON.stringify(branchDumpResult.errors, null, 2) + '\n\n';
+            }
+        }
+        
+        showDetailsDialog('Load result details', text);
+    }
+}
+
 class ExportResultDialog extends RcdMaterialModalDialog {
     constructor(result, type = 'node') {
         super('Export result', undefined, true, true);
@@ -106,7 +180,7 @@ class ExportResultDialog extends RcdMaterialModalDialog {
     }
 
     init() {
-        const closeCallback = () =>  this.close();
+        const closeCallback = () => this.close();
         const detailsCallback = () => this.displayDetails();
 
         let exportedNodeCount = this.result.exportedNodeCount;
@@ -118,12 +192,8 @@ class ExportResultDialog extends RcdMaterialModalDialog {
                         'Errors: ' + errorCount;
         const resultItem = new RcdTextElement(summary).init();
 
-        super.init().
-            addItem(resultItem).
-            addAction('CLOSE', closeCallback).
-            addAction('DETAILS', detailsCallback).
-            addKeyUpListener('Enter', detailsCallback).
-            addKeyUpListener('Escape', closeCallback);
+        super.init().addItem(resultItem).addAction('CLOSE', closeCallback).addAction('DETAILS', detailsCallback).addKeyUpListener('Enter',
+            detailsCallback).addKeyUpListener('Escape', closeCallback);
         return this;
     }
 
@@ -152,7 +222,7 @@ class DumpResultDialog extends RcdMaterialModalDialog {
     }
 
     init() {
-        const closeCallback = () =>  this.close();
+        const closeCallback = () => this.close();
         const errorsCallback = () => this.displayErrors();
 
         let summary = '';
@@ -214,7 +284,7 @@ class DumpResultDialog extends RcdMaterialModalDialog {
             }
         }
 
-        showDetailsDialog((this.load ? 'Load' : 'Dump') +' errors', text);
+        showDetailsDialog((this.load ? 'Load' : 'Dump') + ' errors', text);
     }
 }
 

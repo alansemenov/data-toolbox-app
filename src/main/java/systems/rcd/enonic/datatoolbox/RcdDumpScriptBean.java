@@ -39,6 +39,7 @@ import com.enonic.xp.dump.SystemLoadParams;
 import com.enonic.xp.dump.SystemLoadResult;
 import com.enonic.xp.export.ExportService;
 import com.enonic.xp.export.ImportNodesParams;
+import com.enonic.xp.export.NodeImportResult;
 import com.enonic.xp.home.HomeDir;
 import com.enonic.xp.node.NodePath;
 import com.enonic.xp.repository.CreateRepositoryParams;
@@ -200,15 +201,16 @@ public class RcdDumpScriptBean
         return runSafelyNoDependency( () -> {
             if ( isExportDump( dumpName ) )
             {
-                loadUsingExportService( dumpName );
+                final RcdJsonObject result = RcdJsonService.createJsonObject();
+                loadUsingExportService( dumpName, result );
+                return RcdJsonService.toString( createSuccessResult( result ) );
             }
             else
             {
                 final SystemLoadResult systemLoadResult = loadUsingSystemDumpService( dumpName );
-                return convertSystemLoadResultToJson(systemLoadResult);
+                return convertSystemLoadResultToJson( systemLoadResult );
             }
-            return "{\"success\":true}";
-        }, "Error while creating dump" );
+        }, "Error while loading dump" );
     }
 
     private boolean isExportDump( final String dumpName )
@@ -234,14 +236,20 @@ public class RcdDumpScriptBean
             exists();
     }
 
-    private void loadUsingExportService( final String dumpName )
+    private void loadUsingExportService( final String dumpName, final RcdJsonObject result )
     {
-        importSystemRepo( dumpName );
+        final NodeImportResult systemRepoImportResult = importSystemRepo( dumpName );
+        result.createObject( "system" ).
+            put( "master", convertNodeImportResultToJson( systemRepoImportResult ) );
+
         this.repositoryServiceSupplier.get().invalidateAll();
         for ( Repository repository : this.repositoryServiceSupplier.get().list() )
         {
             initializeRepo( repository );
-            importRepoBranches( repository, dumpName );
+            RcdJsonObject repositoryResult = SystemConstants.SYSTEM_REPO.equals( repository )
+                ? (RcdJsonObject) result.get( "system" )
+                : result.createObject( repository.getId().toString() );
+            importRepoBranches( repository, dumpName, repositoryResult );
         }
     }
 
@@ -266,18 +274,19 @@ public class RcdDumpScriptBean
         }
     }
 
-    private void importSystemRepo( final String dumpName )
+    private NodeImportResult importSystemRepo( final String dumpName )
     {
-        importRepoBranch( SystemConstants.SYSTEM_REPO.getId(), SystemConstants.BRANCH_SYSTEM, dumpName );
+        return importRepoBranch( SystemConstants.SYSTEM_REPO.getId(), SystemConstants.BRANCH_SYSTEM, dumpName );
     }
 
-    private void importRepoBranches( final Repository repository, final String dumpName )
+    private void importRepoBranches( final Repository repository, final String dumpName, final RcdJsonObject result )
     {
         for ( Branch branch : repository.getBranches() )
         {
             if ( !isSystemRepoMaster( repository, branch ) )
             {
-                importRepoBranch( repository.getId(), branch, dumpName );
+                final NodeImportResult nodeImportResult = importRepoBranch( repository.getId(), branch, dumpName );
+                result.put( branch.getValue(), convertNodeImportResultToJson( nodeImportResult ) );
             }
         }
     }
@@ -287,7 +296,7 @@ public class RcdDumpScriptBean
         return SystemConstants.SYSTEM_REPO.equals( repository ) && SystemConstants.BRANCH_SYSTEM.equals( branch );
     }
 
-    private void importRepoBranch( final RepositoryId repositoryId, final Branch branch, final String dumpName )
+    private NodeImportResult importRepoBranch( final RepositoryId repositoryId, final Branch branch, final String dumpName )
     {
         final Path sourcePath = getDumpDirectoryPath().
             resolve( dumpName ).
@@ -300,7 +309,7 @@ public class RcdDumpScriptBean
             includeNodeIds( true ).
             includePermissions( true ).
             build();
-        createContext( repositoryId, branch ).callWith( () -> exportServiceSupplier.get().importNodes( importNodesParams ) );
+        return createContext( repositoryId, branch ).callWith( () -> exportServiceSupplier.get().importNodes( importNodesParams ) );
     }
 
     private String convertSystemLoadResultToJson( final SystemLoadResult systemLoadResult )

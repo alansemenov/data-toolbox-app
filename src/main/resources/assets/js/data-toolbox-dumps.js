@@ -107,14 +107,14 @@ function createDumpsRoute() {
         const dumpName = tableCard.getSelectedRows().map((row) => row.attributes['dump'])[0];
         const dumpType = tableCard.getSelectedRows().map((row) => row.attributes['type'])[0];
         if ('export' === dumpType) {
-            doLoadDump(dumpName);
+            doLoadDump(dumpName, dumpType);
         } else {
             showConfirmationDialog('Loading this dump will delete all existing repositories', 'LOAD',
-                () => doLoadDump(dumpName));
+                () => doLoadDump(dumpName, dumpType));
         }
     }
 
-    function doLoadDump(dumpName) {
+    function doLoadDump(dumpName, dumpType) {
         const infoDialog = showInfoDialog("Loading dump...");
         $.ajax({
             method: 'POST',
@@ -123,8 +123,13 @@ function createDumpsRoute() {
             contentType: 'application/json; charset=utf-8'
         }).done((result) => {
             if (handleResultError(result)) {
-                new DumpResultDialog(result.success, true).init().
+                if (dumpType === 'export') {
+                    new LoadExportDumpDialog(result.success).init().
                     open();
+                } else {
+                    new DumpResultDialog(result.success, true).init().
+                    open();
+                }
             }
         }).fail(handleAjaxError).always(() => {
             infoDialog.close();
