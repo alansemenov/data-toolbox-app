@@ -51,7 +51,7 @@ function createNodesRoute() {
                         event.stopPropagation();
                     }).
                         init().
-                        setTooltip('Display node details');
+                        setTooltip('Display as JSON');
 
                     const row = tableCard.createRow().
                         addCell(node._name).
