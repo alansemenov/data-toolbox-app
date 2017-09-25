@@ -54,8 +54,8 @@ function createNodesRoute() {
                         setTooltip('Display as JSON');
 
                     const row = tableCard.createRow().
-                        addCell(node._name).
-                        addCell(node._id, {classes: ['non-mobile-cell']}).
+                        addCell(node._name, {tooltip: {text:'Display children'}}).
+                        addCell(node._id, {classes: ['non-mobile-cell'],tooltip: {text:'Display children'}}).
                         addCell(retrieveNodeInfoIcon, {icon: true}).
                         setAttribute('id', node._id).
                         setAttribute('path', node._path).

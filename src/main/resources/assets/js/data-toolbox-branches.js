@@ -34,7 +34,7 @@ function createBranchesRoute() {
                 result.success.branches.sort((branch1, branch2) => branch1 - branch2).
                     forEach((branch) => {
                         const row = tableCard.createRow().
-                            addCell(branch).
+                            addCell(branch, {tooltip: {text:'Display root node'}}).
                             setAttribute('branch', branch).
                             addClass('rcd-clickable').
                             addClickListener(() => {

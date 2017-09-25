@@ -34,7 +34,7 @@ function createRepositoriesRoute() {
                 result.success.sort((repository1, repository2) => repository1.name - repository2.name).
                     forEach((repository) => {
                         const row = tableCard.createRow().
-                            addCell(repository.name).
+                            addCell(repository.name, {tooltip: {text:'Display branches'}}).
                             setAttribute('repository', repository.name).
                             addClass('rcd-clickable').
                             addClickListener(() => {
