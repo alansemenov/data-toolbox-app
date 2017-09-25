@@ -305,7 +305,7 @@ function createNodesRoute() {
 
         breadcrumbsLayout.
             setBreadcrumbs([new RcdMaterialBreadcrumb('Data Toolbox', () => RcdHistoryRouter.setState()).init(),
-                new RcdMaterialBreadcrumb('Repositories', () => RcdHistoryRouter.setState('repositories')).init(),
+                new RcdMaterialBreadcrumb('Data Tree', () => RcdHistoryRouter.setState('repositories')).init(),
                 new RcdMaterialBreadcrumb(repositoryName,
                     () => RcdHistoryRouter.setState('branches?repo=' + repositoryName)).init(),
                 new RcdMaterialBreadcrumb(branchName, path &&

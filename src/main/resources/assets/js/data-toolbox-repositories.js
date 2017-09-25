@@ -1,7 +1,7 @@
 function createRepositoriesRoute() {
     const breadcrumbsLayout = new RcdMaterialBreadcrumbsLayout().init().
         addBreadcrumb(new RcdMaterialBreadcrumb('Data Toolbox', () => RcdHistoryRouter.setState()).init()).
-        addBreadcrumb(new RcdMaterialBreadcrumb('Repositories').init()).
+        addBreadcrumb(new RcdMaterialBreadcrumb('Data Tree').init()).
         addChild(new RcdGoogleMaterialIconArea('help', displayHelp).init().setTooltip('Help'));
 
     const tableCard = new RcdMaterialTableCard('Repositories').init().
@@ -16,7 +16,7 @@ function createRepositoriesRoute() {
 
     return {
         state: 'repositories',
-        name: 'Repositories ',
+        name: 'Data Tree ',
         iconArea: new RcdGoogleMaterialIconArea('storage').init(),
         callback: (main) => {
             main.addChild(breadcrumbsLayout).addChild(layout);
