@@ -29,13 +29,12 @@ function createBranchesRoute() {
         }).done(function (result) {
             tableCard.deleteRows();
             
-            const parentRow = tableCard.createRow().
+            const parentRow = tableCard.createRow({selectable:false}).
                 addCell('..', {tooltip: {text:'Display repositories'}}).
                 addClass('rcd-clickable').
                 addClickListener(() => {
                     RcdHistoryRouter.setState('repositories');
                 });
-            parentRow.checkbox.addClickListener((event) => event.stopPropagation());
             
             if (handleResultError(result)) {
                 result.success.branches.sort((branch1, branch2) => branch1 - branch2).

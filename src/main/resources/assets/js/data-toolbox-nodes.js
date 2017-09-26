@@ -43,7 +43,7 @@ function createNodesRoute() {
         }).done(function (result) {
             tableCard.deleteRows();
 
-            const parentRow = tableCard.createRow().
+            const parentRow = tableCard.createRow({selectable:false}).
             addCell('..', {tooltip: {text:getPathParameter() ? 'Display parent' : 'Display branches' }}).
             addCell('', {classes: ['non-mobile-cell']}).
             addCell(null, {icon: true}).
@@ -51,7 +51,6 @@ function createNodesRoute() {
             addClickListener(() => {
                 RcdHistoryRouter.setState(getPathParameter() ? 'nodes?repo=' + getRepoParameter() + '&branch='  + getBranchParameter() + (getPathParameter() === '/' ? '' : '&path=' + getParentPath() ) : 'branches?repo=' + getRepoParameter() );
             });
-            parentRow.checkbox.addClickListener((event) => event.stopPropagation());
             
             if (handleResultError(result)) {
                 result.success.hits.forEach((node) => {
