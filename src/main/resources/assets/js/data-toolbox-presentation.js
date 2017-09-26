@@ -33,7 +33,7 @@ function createPresentationRoute() {
     const repositoriesViewSummary = new ViewSummary({
         state: 'repositories',
         name: 'Data Tree',
-        iconFileName: 'repositories.svg',
+        iconFileName: 'datatree.svg',
         text:'Browse and manage your repositories, branches and nodes.'
     }).init();
     const snapshotsViewSummary = new ViewSummary({

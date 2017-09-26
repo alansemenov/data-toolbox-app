@@ -15,7 +15,7 @@ function createRepositoriesRoute() {
     return {
         state: 'repositories',
         name: 'Data Tree ',
-        iconArea: new RcdGoogleMaterialIconArea('storage').init(),
+        iconArea: new RcdImageIconArea(config.assetsUrl + '/icons/datatree.svg').init(),
         callback: (main) => {
             main.addChild(breadcrumbsLayout).addChild(layout);
             retrieveRepositories();
