@@ -45,7 +45,7 @@ function createNodesRoute() {
             if (handleResultError(result)) {
                 result.success.hits.forEach((node) => {
 
-                    const retrieveNodeInfoIcon = new RcdGoogleMaterialIconArea('info', (source, event) => {
+                    const retrieveNodeInfoIcon = new RcdImageIconArea(config.assetsUrl + '/icons/json.svg', (source, event) => {
                         retrieveNodeInfo(node._id);
                         event.stopPropagation();
                     }).
