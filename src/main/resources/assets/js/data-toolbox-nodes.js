@@ -42,6 +42,17 @@ function createNodesRoute() {
             contentType: 'application/json; charset=utf-8'
         }).done(function (result) {
             tableCard.deleteRows();
+
+            const parentRow = tableCard.createRow().
+            addCell('..', {tooltip: {text:getPathParameter() ? 'Display parent' : 'Display branches' }}).
+            addCell('', {classes: ['non-mobile-cell']}).
+            addCell(null, {icon: true}).
+            addClass('rcd-clickable').
+            addClickListener(() => {
+                RcdHistoryRouter.setState(getPathParameter() ? 'nodes?repo=' + getRepoParameter() + '&branch='  + getBranchParameter() + (getPathParameter() === '/' ? '' : '&path=' + getParentPath() ) : 'branches?repo=' + getRepoParameter() );
+            });
+            parentRow.checkbox.addClickListener((event) => event.stopPropagation());
+            
             if (handleResultError(result)) {
                 result.success.hits.forEach((node) => {
 
@@ -53,7 +64,7 @@ function createNodesRoute() {
                         setTooltip('Display as JSON');
 
                     const row = tableCard.createRow().
-                        addCell(node._name, {tooltip: {text:'Display children'}}).
+                        addCell(node._name, {tooltip: {text:'Display node children'}}).
                         addCell(node._id, {classes: ['non-mobile-cell']}).
                         addCell(retrieveNodeInfoIcon, {icon: true}).
                         setAttribute('id', node._id).
@@ -348,6 +359,12 @@ function createNodesRoute() {
 
     function getPathParameter() {
         return RcdHistoryRouter.getParameters().path;
+    }
+
+    function getParentPath() {
+        const path = getPathParameter();
+        const parentPath = path && path.substring(0, path.lastIndexOf('/'));
+        return parentPath ? parentPath : '/';
     }
 
     function getStartParameter() {
