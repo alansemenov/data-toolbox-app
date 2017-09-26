@@ -10,8 +10,7 @@ function createSnapshotsRoute() {
         addIconArea(new RcdGoogleMaterialIconArea('add_circle', createSnapshot).init().setTooltip('Create a snapshot'), {max: 0}).
         addIconArea(new RcdGoogleMaterialIconArea('restore', restoreSnapshot).init().setTooltip('Restore selected snapshot'),
         {min: 1, max: 1}).
-        addIconArea(new RcdGoogleMaterialIconArea('delete', deleteSnapshots).init().setTooltip('Delete selected snapshots', undefined,
-            RcdMaterialTooltipAlignment.RIGHT), {min: 1});
+        addIconArea(new RcdGoogleMaterialIconArea('delete', deleteSnapshots).init().setTooltip('Delete selected snapshots', RcdMaterialTooltipAlignment.RIGHT), {min: 1});
     const layout = new RcdMaterialLayout().init().
         addChild(tableCard);
 

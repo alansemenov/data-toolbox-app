@@ -12,8 +12,7 @@ function createNodesRoute() {
         {max: 0}).
         addIconArea(new RcdGoogleMaterialIconArea('filter_list', filterNodes).init().setTooltip('Filter nodes'), {max: 0}).
         addIconArea(new RcdGoogleMaterialIconArea('sort', sortNodes).init().setTooltip('Sort nodes'), {max: 0}).
-        addIconArea(new RcdGoogleMaterialIconArea('delete', deleteNodes).init().setTooltip('Delete selected nodes', undefined,
-            RcdMaterialTooltipAlignment.RIGHT), {min: 1});
+        addIconArea(new RcdGoogleMaterialIconArea('delete', deleteNodes).init().setTooltip('Delete selected nodes', RcdMaterialTooltipAlignment.RIGHT), {min: 1});
     const layout = new RcdMaterialLayout().init().
         addChild(tableCard);
 
@@ -55,7 +54,7 @@ function createNodesRoute() {
 
                     const row = tableCard.createRow().
                         addCell(node._name, {tooltip: {text:'Display children'}}).
-                        addCell(node._id, {classes: ['non-mobile-cell'],tooltip: {text:'Display children'}}).
+                        addCell(node._id, {classes: ['non-mobile-cell']}).
                         addCell(retrieveNodeInfoIcon, {icon: true}).
                         setAttribute('id', node._id).
                         setAttribute('path', node._path).

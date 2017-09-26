@@ -6,10 +6,8 @@ function createRepositoriesRoute() {
 
     const tableCard = new RcdMaterialTableCard('Repositories').init().
         addColumn('Repository name').
-        addIconArea(new RcdGoogleMaterialIconArea('add_circle', createRepository).setTooltip('Create a repository', undefined,
-            RcdMaterialTooltipAlignment.RIGHT).init(), {max: 0}).
-        addIconArea(new RcdGoogleMaterialIconArea('delete', deleteRepositories).init().setTooltip('Delete selected repositories', undefined,
-            RcdMaterialTooltipAlignment.RIGHT),
+        addIconArea(new RcdGoogleMaterialIconArea('add_circle', createRepository).setTooltip('Create a repository', RcdMaterialTooltipAlignment.RIGHT).init(), {max: 0}).
+        addIconArea(new RcdGoogleMaterialIconArea('delete', deleteRepositories).init().setTooltip('Delete selected repositories', RcdMaterialTooltipAlignment.RIGHT),
         {min: 1});
     const layout = new RcdMaterialLayout().init().
         addChild(tableCard);
