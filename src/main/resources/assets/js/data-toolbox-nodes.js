@@ -1,22 +1,9 @@
 function createNodesRoute() {
-    const breadcrumbsLayout = new RcdMaterialBreadcrumbsLayout().init().
-        addChild(new RcdGoogleMaterialIconArea('help', displayHelp).init().setTooltip('Help'));
-
-    const tableCard = new RcdMaterialTableCard('Nodes').init().
-        addColumn('Node name').
-        addColumn('Node ID', {classes: ['non-mobile-cell']}).
-        addColumn('', {icon: true}).
-        addColumn('', {icon: true}).
-        addIconArea(new RcdImageIconArea(config.assetsUrl + '/icons/export-icon.svg', exportNode).init().setTooltip('Export selected node'),
-        {min: 1, max: 1}).
-        addIconArea(new RcdImageIconArea(config.assetsUrl + '/icons/import-icon.svg', importNode).init().setTooltip('Import node export'),
-        {max: 0}).
-        addIconArea(new RcdGoogleMaterialIconArea('filter_list', filterNodes).init().setTooltip('Filter nodes'), {max: 0}).
-        addIconArea(new RcdGoogleMaterialIconArea('sort', sortNodes).init().setTooltip('Sort nodes'), {max: 0}).
-        addIconArea(new RcdGoogleMaterialIconArea('delete', deleteNodes).init().setTooltip('Delete selected nodes', RcdMaterialTooltipAlignment.RIGHT), {min: 1});
+    const breadcrumbsLayout = createBreadcrumbsLayout();
+    const tableCard = createTableCard();
     const layout = new RcdMaterialLayout().init().
-        addChild(tableCard);
-
+        addChild(tableCard);;
+    
     return {
         state: 'nodes',
         callback: (main) => {
@@ -25,6 +12,36 @@ function createNodesRoute() {
             main.addChild(breadcrumbsLayout).addChild(layout);
         }
     };
+    
+    function createBreadcrumbsLayout() {
+        const helpIconArea = new RcdGoogleMaterialIconArea('help', displayHelp).init().
+            setTooltip('Help');
+        return new RcdMaterialBreadcrumbsLayout().init().
+            addChild(helpIconArea);
+    }
+    
+    function createTableCard() {
+        const exportIconArea = new RcdImageIconArea(config.assetsUrl + '/icons/export-icon.svg', exportNode).init().
+            setTooltip('Export selected node');
+        const importIconArea = new RcdImageIconArea(config.assetsUrl + '/icons/import-icon.svg', importNode).init().
+            setTooltip('Import node export');
+        const filterIconArea = new RcdGoogleMaterialIconArea('filter_list', filterNodes).init().
+            setTooltip('Filter nodes');
+        const sortIconArea = new RcdGoogleMaterialIconArea('sort', sortNodes).init().
+            setTooltip('Sort nodes');
+        const deleteIconArea = new RcdGoogleMaterialIconArea('delete', deleteNodes).init().
+            setTooltip('Delete selected nodes', RcdMaterialTooltipAlignment.RIGHT);
+        return new RcdMaterialTableCard('Nodes').init().
+            addColumn('Node name').
+            addColumn('Node ID', {classes: ['non-mobile-cell']}).
+            addColumn('', {icon: true}).
+            addColumn('', {icon: true}).
+            addIconArea(exportIconArea, {min: 1, max: 1}).
+            addIconArea(importIconArea, {max: 0}).
+            addIconArea(filterIconArea, {max: 0}).
+            addIconArea(sortIconArea, {max: 0}).
+            addIconArea(deleteIconArea, {min: 1});
+    }
 
     function retrieveNodes() {
         const infoDialog = showInfoDialog('Retrieving node list...');
@@ -41,10 +58,15 @@ function createNodesRoute() {
                 sort: getSortParameter()
             }),
             contentType: 'application/json; charset=utf-8'
-        }).done(function (result) {
-            tableCard.deleteRows();
+        }).done(onNodesRetrieval).fail(handleAjaxError).always(() => {
+            infoDialog.close();
+        });
+    }
 
-            const parentRow = tableCard.createRow({selectable:false}).
+    function onNodesRetrieval(result) {
+        tableCard.deleteRows();
+
+        tableCard.createRow({selectable:false}).
             addCell('..').
             addCell('', {classes: ['non-mobile-cell']}).
             addCell(null, {icon: true}).
@@ -57,60 +79,57 @@ function createNodesRoute() {
                     setState('branches', {repo:getRepoParameter()});
                 }
             });
-            
-            if (handleResultError(result)) {
-                result.success.hits.forEach((node) => {
-                    const displayFieldsIconArea = new RcdImageIconArea(config.assetsUrl + '/icons/fields.svg', (source, event) => {
-                        setState('fields',{repo: getRepoParameter(), branch: getBranchParameter(), path: node._path, field:'/'});
-                        event.stopPropagation();
-                    }).init().setTooltip('Display fields');
-                    const displayJsonIconArea = new RcdImageIconArea(config.assetsUrl + '/icons/json.svg', (source, event) => {
-                        displayNodeAsJson(node._id);
-                        event.stopPropagation();
-                    }).init().setTooltip('Display as JSON');
 
-                    const row = tableCard.createRow().
-                        addCell(node._name).
-                        addCell(node._id, {classes: ['non-mobile-cell']}).
-                        addCell(displayFieldsIconArea, {icon: true}).
-                        addCell(displayJsonIconArea, {icon: true}).
-                        setAttribute('id', node._id).
-                        setAttribute('path', node._path).
-                        setAttribute('name', node._name).
-                        addClass('rcd-clickable').
-                        addClickListener(() => setState('nodes', {repo: getRepoParameter(), branch: getBranchParameter(), path: node._path}));
-                    row.checkbox.addClickListener((event) => event.stopPropagation());
-                });
+        if (handleResultError(result)) {
+            result.success.hits.forEach((node) => {
+                const displayFieldsIconArea = new RcdImageIconArea(config.assetsUrl + '/icons/fields.svg', (source, event) => {
+                    setState('fields',{repo: getRepoParameter(), branch: getBranchParameter(), path: node._path, field:'/'});
+                    event.stopPropagation();
+                }).init().setTooltip('Display fields');
+                const displayJsonIconArea = new RcdImageIconArea(config.assetsUrl + '/icons/json.svg', (source, event) => {
+                    displayNodeAsJson(node._id);
+                    event.stopPropagation();
+                }).init().setTooltip('Display as JSON');
 
-                const startInt = parseInt(getStartParameter());
-                const countInt = parseInt(getCountParameter());
-                const previousCallback = () => setState('nodes', {
-                    repo: getRepoParameter(),
-                     branch: getBranchParameter(),
-                     path: getPathParameter(),
-                     start: Math.max(0, startInt - countInt),
-                     count: getCountParameter(),
-                     filter: getFilterParameter(),
-                     sort: getSortParameter()});
-                const nextCallback = () => setState('nodes', {
-                    repo: getRepoParameter(),
-                    branch: getBranchParameter(),
-                    path: getPathParameter(),
-                    start: startInt + countInt,
-                    count: getCountParameter(),
-                    filter: getFilterParameter(),
-                    sort: getSortParameter()});
-                tableCard.setFooter({
-                    start: parseInt(getStartParameter()),
-                    count: result.success.hits.length,
-                    total: result.success.total,
-                    previousCallback: previousCallback,
-                    nextCallback: nextCallback
-                });
-            }
-        }).fail(handleAjaxError).always(() => {
-            infoDialog.close();
-        });
+                const row = tableCard.createRow().
+                    addCell(node._name).
+                    addCell(node._id, {classes: ['non-mobile-cell']}).
+                    addCell(displayFieldsIconArea, {icon: true}).
+                    addCell(displayJsonIconArea, {icon: true}).
+                    setAttribute('id', node._id).
+                    setAttribute('path', node._path).
+                    setAttribute('name', node._name).
+                    addClass('rcd-clickable').
+                    addClickListener(() => setState('nodes', {repo: getRepoParameter(), branch: getBranchParameter(), path: node._path}));
+                row.checkbox.addClickListener((event) => event.stopPropagation());
+            });
+
+            const startInt = parseInt(getStartParameter());
+            const countInt = parseInt(getCountParameter());
+            const previousCallback = () => setState('nodes', {
+                repo: getRepoParameter(),
+                branch: getBranchParameter(),
+                path: getPathParameter(),
+                start: Math.max(0, startInt - countInt),
+                count: getCountParameter(),
+                filter: getFilterParameter(),
+                sort: getSortParameter()});
+            const nextCallback = () => setState('nodes', {
+                repo: getRepoParameter(),
+                branch: getBranchParameter(),
+                path: getPathParameter(),
+                start: startInt + countInt,
+                count: getCountParameter(),
+                filter: getFilterParameter(),
+                sort: getSortParameter()});
+            tableCard.setFooter({
+                start: parseInt(getStartParameter()),
+                count: result.success.hits.length,
+                total: result.success.total,
+                previousCallback: previousCallback,
+                nextCallback: nextCallback
+            });
+        }
     }
 
     function deleteNodes() {
@@ -327,7 +346,7 @@ function createNodesRoute() {
 
         if (path) {
             breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb('root', path !== '/'
-                ? (() => setState('nodes', {repo: repositoryName, branch: branchName}))
+                ? (() => setState('nodes', {repo: repositoryName, branch: branchName, path: '/'}))
                 : undefined).init());
 
             if (path === '/') {
