@@ -30,7 +30,7 @@ function createBranchesRoute() {
             tableCard.deleteRows();
             
             const parentRow = tableCard.createRow({selectable:false}).
-                addCell('..', {tooltip: {text:'Display repositories'}}).
+                addCell('..').
                 addClass('rcd-clickable').
                 addClickListener(() => {
                     RcdHistoryRouter.setState('repositories');
@@ -40,7 +40,7 @@ function createBranchesRoute() {
                 result.success.branches.sort((branch1, branch2) => branch1 - branch2).
                     forEach((branch) => {
                         const row = tableCard.createRow().
-                            addCell(branch, {tooltip: {text:'Display branch root node'}}).
+                            addCell(branch).
                             setAttribute('branch', branch).
                             addClass('rcd-clickable').
                             addClickListener(() => {

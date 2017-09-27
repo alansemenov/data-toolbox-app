@@ -6,6 +6,7 @@ function createNodesRoute() {
         addColumn('Node name').
         addColumn('Node ID', {classes: ['non-mobile-cell']}).
         addColumn('', {icon: true}).
+        addColumn('', {icon: true}).
         addIconArea(new RcdImageIconArea(config.assetsUrl + '/icons/export-icon.svg', exportNode).init().setTooltip('Export selected node'),
         {min: 1, max: 1}).
         addIconArea(new RcdImageIconArea(config.assetsUrl + '/icons/import-icon.svg', importNode).init().setTooltip('Import node export'),
@@ -44,8 +45,9 @@ function createNodesRoute() {
             tableCard.deleteRows();
 
             const parentRow = tableCard.createRow({selectable:false}).
-            addCell('..', {tooltip: {text:getPathParameter() ? 'Display parent' : 'Display branches' }}).
+            addCell('..').
             addCell('', {classes: ['non-mobile-cell']}).
+            addCell(null, {icon: true}).
             addCell(null, {icon: true}).
             addClass('rcd-clickable').
             addClickListener(() => {
@@ -54,18 +56,20 @@ function createNodesRoute() {
             
             if (handleResultError(result)) {
                 result.success.hits.forEach((node) => {
-
-                    const retrieveNodeInfoIcon = new RcdImageIconArea(config.assetsUrl + '/icons/json.svg', (source, event) => {
-                        retrieveNodeInfo(node._id);
+                    const displayFieldsIconArea = new RcdImageIconArea(config.assetsUrl + '/icons/fields.svg', (source, event) => {
+                        RcdHistoryRouter.setState('fields?repo=' + getRepoParameter() + '&branch=' + getBranchParameter() + '&path=' + node._path + '&field=/');
                         event.stopPropagation();
-                    }).
-                        init().
-                        setTooltip('Display as JSON');
+                    }).init().setTooltip('Display fields');
+                    const displayJsonIconArea = new RcdImageIconArea(config.assetsUrl + '/icons/json.svg', (source, event) => {
+                        displayNodeAsJson(node._id);
+                        event.stopPropagation();
+                    }).init().setTooltip('Display as JSON');
 
                     const row = tableCard.createRow().
-                        addCell(node._name, {tooltip: {text:'Display node children'}}).
+                        addCell(node._name).
                         addCell(node._id, {classes: ['non-mobile-cell']}).
-                        addCell(retrieveNodeInfoIcon, {icon: true}).
+                        addCell(displayFieldsIconArea, {icon: true}).
+                        addCell(displayJsonIconArea, {icon: true}).
                         setAttribute('id', node._id).
                         setAttribute('path', node._path).
                         setAttribute('name', node._name).
@@ -130,7 +134,7 @@ function createNodesRoute() {
         });
     }
 
-    function retrieveNodeInfo(nodeKey) {
+    function displayNodeAsJson(nodeKey) {
         if (!nodeKey) {
             nodeKey = tableCard.getSelectedRows().map((row) => row.attributes['id'])[0];
         }
