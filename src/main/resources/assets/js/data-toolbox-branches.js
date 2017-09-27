@@ -32,9 +32,7 @@ function createBranchesRoute() {
             const parentRow = tableCard.createRow({selectable:false}).
                 addCell('..').
                 addClass('rcd-clickable').
-                addClickListener(() => {
-                    RcdHistoryRouter.setState('repositories');
-                });
+                addClickListener(() => setState('repositories'));
             
             if (handleResultError(result)) {
                 result.success.branches.sort((branch1, branch2) => branch1 - branch2).
@@ -43,9 +41,7 @@ function createBranchesRoute() {
                             addCell(branch).
                             setAttribute('branch', branch).
                             addClass('rcd-clickable').
-                            addClickListener(() => {
-                                RcdHistoryRouter.setState('nodes?repo=' + RcdHistoryRouter.getParameters().repo + '&branch=' + branch);
-                            });
+                            addClickListener(() => setState('nodes',{repo: RcdHistoryRouter.getParameters().repo , branch: branch}));
                         row.checkbox.addClickListener((event) => event.stopPropagation());
                     });
             }
@@ -105,8 +101,8 @@ function createBranchesRoute() {
 
     function refreshBreadcrumbs() {
         breadcrumbsLayout.
-            setBreadcrumbs([new RcdMaterialBreadcrumb('Data Toolbox', () => RcdHistoryRouter.setState()).init(),
-                new RcdMaterialBreadcrumb('Data Tree', () => RcdHistoryRouter.setState('repositories')).init(),
+            setBreadcrumbs([new RcdMaterialBreadcrumb('Data Toolbox', () => setState()).init(),
+                new RcdMaterialBreadcrumb('Data Tree', () => setState('repositories')).init(),
                 new RcdMaterialBreadcrumb(RcdHistoryRouter.getParameters().repo).init()]);
     }
 

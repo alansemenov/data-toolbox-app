@@ -61,5 +61,22 @@ function showDetailsDialog(title, text, callback) {
         open();
 }
 
+function setState(state,params) {
+    let stateBuilder = state;
+    if (params) {
+        stateBuilder += '?';
+        let firstParameter = true;
+        for(paramName in params) {
+            if (firstParameter) {
+                firstParameter = false;
+            } else {
+                stateBuilder += '&'
+            }
+            stateBuilder += paramName + '=' + params[paramName];
+        }
+    }
+    RcdHistoryRouter.setState(stateBuilder);
+}
+
 var app = createApp();
 app.start(document.body);

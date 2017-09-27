@@ -1,6 +1,6 @@
 function createExportsRoute() {
     const breadcrumbsLayout = new RcdMaterialBreadcrumbsLayout().init().
-        addBreadcrumb(new RcdMaterialBreadcrumb('Data Toolbox', () => RcdHistoryRouter.setState()).init()).
+        addBreadcrumb(new RcdMaterialBreadcrumb('Data Toolbox', () => setState()).init()).
         addBreadcrumb(new RcdMaterialBreadcrumb('Node exports').init()).
         addChild(new RcdGoogleMaterialIconArea('help', displayHelp).init().setTooltip('Help'));
 

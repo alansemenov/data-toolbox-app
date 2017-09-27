@@ -51,13 +51,17 @@ function createNodesRoute() {
             addCell(null, {icon: true}).
             addClass('rcd-clickable').
             addClickListener(() => {
-                RcdHistoryRouter.setState(getPathParameter() ? 'nodes?repo=' + getRepoParameter() + '&branch='  + getBranchParameter() + (getPathParameter() === '/' ? '' : '&path=' + getParentPath() ) : 'branches?repo=' + getRepoParameter() );
+                if (getPathParameter()) {
+                    setState('nodes', {repo:getRepoParameter(), branch: getBranchParameter() + (getPathParameter() === '/' ? '' : '&path=' + getParentPath() ) })
+                } else {
+                    setState('branches', {repo:getRepoParameter()});
+                }
             });
             
             if (handleResultError(result)) {
                 result.success.hits.forEach((node) => {
                     const displayFieldsIconArea = new RcdImageIconArea(config.assetsUrl + '/icons/fields.svg', (source, event) => {
-                        RcdHistoryRouter.setState('fields?repo=' + getRepoParameter() + '&branch=' + getBranchParameter() + '&path=' + node._path + '&field=/');
+                        setState('fields',{repo: getRepoParameter(), branch: getBranchParameter(), path: node._path, field:'/'});
                         event.stopPropagation();
                     }).init().setTooltip('Display fields');
                     const displayJsonIconArea = new RcdImageIconArea(config.assetsUrl + '/icons/json.svg', (source, event) => {
@@ -258,7 +262,7 @@ function createNodesRoute() {
             }
         }).fail(handleAjaxError).always(() => {
             infoDialog.close();
-            RcdHistoryRouter.setState('exports');
+            setState('exports');
         });
     }
 
@@ -317,17 +321,14 @@ function createNodesRoute() {
         const path = getPathParameter();
 
         breadcrumbsLayout.
-            setBreadcrumbs([new RcdMaterialBreadcrumb('Data Toolbox', () => RcdHistoryRouter.setState()).init(),
-                new RcdMaterialBreadcrumb('Data Tree', () => RcdHistoryRouter.setState('repositories')).init(),
-                new RcdMaterialBreadcrumb(repositoryName,
-                    () => RcdHistoryRouter.setState('branches?repo=' + repositoryName)).init(),
-                new RcdMaterialBreadcrumb(branchName, path &&
-                                                      (() => RcdHistoryRouter.setState('nodes?repo=' + repositoryName +
-                                                                                       '&branch=' + branchName))).init()]);
+            setBreadcrumbs([new RcdMaterialBreadcrumb('Data Toolbox', () => setState()).init(),
+                new RcdMaterialBreadcrumb('Data Tree', () => setState('repositories')).init(),
+                new RcdMaterialBreadcrumb(repositoryName, () => setState('branches', {repo: repositoryName})).init(),
+                new RcdMaterialBreadcrumb(branchName, path && (() => setState('nodes',{repo: repositoryName, branch: branchName}))).init()]);
 
         if (path) {
             breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb('root', path !== '/'
-                ? (() => RcdHistoryRouter.setState('nodes?repo=' + repositoryName + '&branch=' + branchName))
+                ? (() => setState('nodes', {repo: repositoryName, branch: branchName}))
                 : undefined).init());
 
             if (path === '/') {
@@ -341,8 +342,7 @@ function createNodesRoute() {
                     currentPath += '/' + subPathElement;
                     const constCurrentPath = currentPath;
                     breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb(subPathElement, index < array.length - 1
-                        ? (() => RcdHistoryRouter.setState('nodes?repo=' + repositoryName + '&branch=' + branchName +
-                                                           '&path=' + constCurrentPath))
+                        ? (() => setState('nodes', {repo: repositoryName, branch: branchName, path: constCurrentPath}))
                         : undefined).init());
                 });
 

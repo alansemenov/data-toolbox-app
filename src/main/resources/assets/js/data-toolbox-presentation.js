@@ -17,7 +17,7 @@ function createPresentationRoute() {
                 addChild(this.icon).
                 addChild(this.name).
                 addChild(this.text).
-                addClickListener(() => RcdHistoryRouter.setState(this.state));
+                addClickListener(() => setState(this.state));
         }
     }
 
