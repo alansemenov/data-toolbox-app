@@ -345,9 +345,8 @@ function createNodesRoute() {
                 new RcdMaterialBreadcrumb(branchName, path && (() => setState('nodes',{repo: repositoryName, branch: branchName}))).init()]);
 
         if (path) {
-            breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb('root', path !== '/'
-                ? (() => setState('nodes', {repo: repositoryName, branch: branchName, path: '/'}))
-                : undefined).init());
+            breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb('root', path === '/' ? undefined :
+                () => setState('nodes', {repo: repositoryName, branch: branchName, path: '/'})).init());
 
             if (path === '/') {
                 app.setTitle('Root node');
@@ -363,7 +362,6 @@ function createNodesRoute() {
                         ? (() => setState('nodes', {repo: repositoryName, branch: branchName, path: constCurrentPath}))
                         : undefined).init());
                 });
-
             }
         } else {
             app.setTitle(branchName);
@@ -399,14 +397,16 @@ function createNodesRoute() {
                 definition: 'Import previously exported nodes as children under the current node (or as root node)'
             }).
             addActionDefinition({
-                iconName: 'filter_list', definition: 'Filter the nodes based on a query expression. ' +
-                                                     'Example: "_id = \'role:system.admin"\'. ' +
-                                                     'See <a class="rcd-material-link" href="http://xp.readthedocs.io/en/6.10/reference/query-language.html#compareexpr">Query language</a> for more information.'
+                iconName: 'filter_list',
+                definition: 'Filter the nodes based on a query expression. ' +
+                            'Example: "_id = \'role:system.admin"\'. ' +
+                            'See <a class="rcd-material-link" href="http://xp.readthedocs.io/en/6.10/reference/query-language.html#compareexpr">Query language</a> for more information.'
             }).
             addActionDefinition({
-                iconName: 'sort', definition: 'Sort the nodes based on an expression. ' +
-                                              'The sorting expression is composed of a node field to sort on and the direction: ascending or descending.' +
-                                              'Examples: "_timestamp DESC", "_name ASC"'
+                iconName: 'sort',
+                definition: 'Sort the nodes based on an expression. ' + 
+                            'The sorting expression is composed of a node field to sort on and the direction: ascending or descending.' + 
+                            'Examples: "_timestamp DESC", "_name ASC"'
             }).
             addActionDefinition({iconName: 'delete', definition: 'Delete the selected nodes.'}).
             addActionDefinition({iconName: 'info', definition: 'Display the node content.'}).
