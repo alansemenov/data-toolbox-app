@@ -13,7 +13,7 @@ function createBranchesRoute() {
         state: 'branches',
         callback: (main) => {
             main.addChild(breadcrumbsLayout).addChild(layout);
-            app.setTitle(RcdHistoryRouter.getParameters().repo);
+            app.setTitle(getRepoParameter());
             refreshBreadcrumbs();
             retrieveBranches();
         }
@@ -24,7 +24,7 @@ function createBranchesRoute() {
         return $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/repository-get',
-            data: JSON.stringify({repositoryName: RcdHistoryRouter.getParameters().repo}),
+            data: JSON.stringify({repositoryName: getRepoParameter()}),
             contentType: 'application/json; charset=utf-8'
         }).done(function (result) {
             tableCard.deleteRows();
@@ -41,7 +41,7 @@ function createBranchesRoute() {
                             addCell(branch).
                             setAttribute('branch', branch).
                             addClass('rcd-clickable').
-                            addClickListener(() => setState('nodes',{repo: RcdHistoryRouter.getParameters().repo , branch: branch}));
+                            addClickListener(() => setState('nodes',{repo: getRepoParameter() , branch: branch}));
                         row.checkbox.addClickListener((event) => event.stopPropagation());
                     });
             }
@@ -68,7 +68,7 @@ function createBranchesRoute() {
             method: 'POST',
             url: config.servicesUrl + '/branch-create',
             data: JSON.stringify({
-                repositoryName: RcdHistoryRouter.getParameters().repo,
+                repositoryName: getRepoParameter(),
                 branchName: branchName || ('branch-' + toLocalDateTimeFormat(new Date(), '-', '-')).toLowerCase()
             }),
             contentType: 'application/json; charset=utf-8'
@@ -89,7 +89,7 @@ function createBranchesRoute() {
             method: 'POST',
             url: config.servicesUrl + '/branch-delete',
             data: JSON.stringify({
-                repositoryName: RcdHistoryRouter.getParameters().repo,
+                repositoryName: getRepoParameter(),
                 branchNames: branchNames
             }),
             contentType: 'application/json; charset=utf-8'
@@ -103,7 +103,7 @@ function createBranchesRoute() {
         breadcrumbsLayout.
             setBreadcrumbs([new RcdMaterialBreadcrumb('Data Toolbox', () => setState()).init(),
                 new RcdMaterialBreadcrumb('Data Tree', () => setState('repositories')).init(),
-                new RcdMaterialBreadcrumb(RcdHistoryRouter.getParameters().repo).init()]);
+                new RcdMaterialBreadcrumb(getRepoParameter()).init()]);
     }
 
     function displayHelp() {

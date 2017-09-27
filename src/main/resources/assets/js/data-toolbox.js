@@ -78,5 +78,33 @@ function setState(state,params) {
     RcdHistoryRouter.setState(stateBuilder);
 }
 
+function getRepoParameter() {
+    return RcdHistoryRouter.getParameters().repo;
+}
+
+function getBranchParameter() {
+    return RcdHistoryRouter.getParameters().branch;
+}
+
+function getPathParameter() {
+    return RcdHistoryRouter.getParameters().path;
+}
+
+function getStartParameter() {
+    return RcdHistoryRouter.getParameters().start || '0';
+}
+
+function getCountParameter() {
+    return RcdHistoryRouter.getParameters().count || '50';
+}
+
+function getFilterParameter() {
+    return RcdHistoryRouter.getParameters().filter || '';
+}
+
+function getSortParameter() {
+    return RcdHistoryRouter.getParameters().sort || '';
+}
+
 var app = createApp();
 app.start(document.body);
