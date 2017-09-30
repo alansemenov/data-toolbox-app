@@ -2,7 +2,7 @@ function createApp() {
     return new RcdMaterialSinglePageApplication('Data toolbox').
         init().
         setDefaultRoute(createPresentationRoute()).
-        addRoute(createRepositoriesRoute()).
+        addRoute(new RepositoriesRoute().init()).
         addRoute(createSnapshotsRoute()).
         addRoute(createExportsRoute()).
         addRoute(createDumpsRoute()).

@@ -295,3 +295,32 @@ function nodePathToContentPath(nodePath) {
     const contentPath = nodePath.substr('/content'.length);
     return contentPath === '' ? '/' : contentPath;
 }
+
+class DtbRoute extends RcdMaterialRoute {
+    constructor(params) {
+        super({
+            state: params.state,
+            name: params.name,
+            iconArea: params.iconArea
+        });
+    }
+
+    init() {
+        const breadcrumbsLayout = this.createBreadcrumbsLayout();
+        const layout = this.createLayout();
+        this.callback = (main) => {
+            main.addChild(breadcrumbsLayout).addChild(layout);
+            this.onDisplay();
+        }
+        return this;
+    }
+
+    createBreadcrumbsLayout() {
+    }
+
+    createLayout() {
+    }
+
+    onDisplay() {
+    }
+}

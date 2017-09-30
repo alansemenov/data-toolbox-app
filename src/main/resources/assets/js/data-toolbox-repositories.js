@@ -1,50 +1,56 @@
-function createRepositoriesRoute() {
-    const breadcrumbsLayout = new RcdMaterialBreadcrumbsLayout().init().
-        addBreadcrumb(new RcdMaterialBreadcrumb('Data Toolbox', () => setState()).init()).
-        addBreadcrumb(new RcdMaterialBreadcrumb('Data Tree').init()).
-        addChild(new RcdGoogleMaterialIconArea('help', displayHelp).init().setTooltip('Help'));
+class RepositoriesRoute extends DtbRoute {
+    constructor() {
+        super({
+            state: 'repositories',
+            name: 'Data Tree ',
+            iconArea: new RcdImageIconArea(config.assetsUrl + '/icons/datatree.svg').init()
+        });
+    }
+    
+    onDisplay() {
+        this.retrieveRepositories();
+    }
+    
+    createBreadcrumbsLayout() {
+        return new RcdMaterialBreadcrumbsLayout().init().
+            addBreadcrumb(new RcdMaterialBreadcrumb('Data Toolbox', () => setState()).init()).
+            addBreadcrumb(new RcdMaterialBreadcrumb('Data Tree').init()).
+            addChild(new RcdGoogleMaterialIconArea('help', () => this.displayHelp()).init().setTooltip('Help'));
+    }
+    
+    createLayout() {
+        this.tableCard = new RcdMaterialTableCard('Repositories').init().addColumn('Repository name').addIconArea(
+            new RcdGoogleMaterialIconArea('add_circle', () => this.createRepository()).setTooltip('Create a repository',
+                RcdMaterialTooltipAlignment.RIGHT).init(), {max: 0}).addIconArea(
+            new RcdGoogleMaterialIconArea('delete', () => this.deleteRepositories()).init().setTooltip('Delete selected repositories',
+                RcdMaterialTooltipAlignment.RIGHT),
+            {min: 1});
+        return new RcdMaterialLayout().init().
+            addChild(this.tableCard);
+    }
 
-    const tableCard = new RcdMaterialTableCard('Repositories').init().
-        addColumn('Repository name').
-        addIconArea(new RcdGoogleMaterialIconArea('add_circle', createRepository).setTooltip('Create a repository', RcdMaterialTooltipAlignment.RIGHT).init(), {max: 0}).
-        addIconArea(new RcdGoogleMaterialIconArea('delete', deleteRepositories).init().setTooltip('Delete selected repositories', RcdMaterialTooltipAlignment.RIGHT),
-        {min: 1});
-    const layout = new RcdMaterialLayout().init().
-        addChild(tableCard);
-
-    return {
-        state: 'repositories',
-        name: 'Data Tree ',
-        iconArea: new RcdImageIconArea(config.assetsUrl + '/icons/datatree.svg').init(),
-        callback: (main) => {
-            main.addChild(breadcrumbsLayout).addChild(layout);
-            retrieveRepositories();
-        }
-    };
-
-    function retrieveRepositories() {
+    retrieveRepositories() {
         const infoDialog = showInfoDialog('Retrieving repository list...');
         return $.ajax({
             url: config.servicesUrl + '/repository-list'
-        }).done(function (result) {
-            tableCard.deleteRows();
+        }).done((result) => {
+            this.tableCard.deleteRows();
             if (handleResultError(result)) {
-                result.success.sort((repository1, repository2) => repository1.name - repository2.name).
-                    forEach((repository) => {
-                        const row = tableCard.createRow().
-                            addCell(repository.name).
-                            setAttribute('repository', repository.name).
-                            addClass('rcd-clickable').
-                            addClickListener(() => setState('branches', {repo: repository.name}));
-                        row.checkbox.addClickListener((event) => event.stopPropagation());
-                    });
+                result.success.sort((repository1, repository2) => repository1.name - repository2.name).forEach((repository) => {
+                    const row = this.tableCard.createRow().
+                        addCell(repository.name).
+                        setAttribute('repository', repository.name).
+                        addClass('rcd-clickable').
+                        addClickListener(() => setState('branches', {repo: repository.name}));
+                    row.checkbox.addClickListener((event) => event.stopPropagation());
+                });
             }
         }).fail(handleAjaxError).always(() => {
             infoDialog.close();
         });
     }
 
-    function createRepository() {
+    createRepository() {
         const defaultRepositoryName = 'repository-' + toLocalDateTimeFormat(new Date(), '-', '-').toLowerCase();
         showInputDialog({
             title: 'Create repository',
@@ -52,11 +58,11 @@ function createRepositoriesRoute() {
             placeholder: defaultRepositoryName,
             value: defaultRepositoryName,
             confirmationLabel: 'CREATE',
-            callback: (value) => doCreateRepository(value || defaultRepositoryName)
+            callback: (value) => this.doCreateRepository(value || defaultRepositoryName)
         });
     }
 
-    function doCreateRepository(repositoryName) {
+    doCreateRepository(repositoryName) {
         const infoDialog = showInfoDialog('Creating repository...');
         $.ajax({
             method: 'POST',
@@ -67,17 +73,17 @@ function createRepositoriesRoute() {
             contentType: 'application/json; charset=utf-8'
         }).done(handleResultError).fail(handleAjaxError).always(() => {
             infoDialog.close();
-            retrieveRepositories();
+            this.retrieveRepositories();
         });
     }
 
-    function deleteRepositories() {
-        showConfirmationDialog("Delete selected repositories?", 'DELETE', doDeleteRepositories);
+    deleteRepositories() {
+        showConfirmationDialog("Delete selected repositories?", 'DELETE', () => this.doDeleteRepositories());
     }
 
-    function doDeleteRepositories() {
+    doDeleteRepositories() {
         const infoDialog = showInfoDialog("Deleting selected repositories...");
-        const repositoryNames = tableCard.getSelectedRows().map((row) => row.attributes['repository']);
+        const repositoryNames = this.tableCard.getSelectedRows().map((row) => row.attributes['repository']);
         $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/repository-delete',
@@ -85,11 +91,11 @@ function createRepositoriesRoute() {
             contentType: 'application/json; charset=utf-8'
         }).done(handleResultError).fail(handleAjaxError).always(() => {
             infoDialog.close();
-            retrieveRepositories();
+            this.retrieveRepositories();
         });
     }
 
-    function displayHelp() {
+    displayHelp() {
         const definition = 'Enonic XP data is split in repositories. Enonic XP uses by default 2 repositories:<br/>' +
                            '"system-repo", the core repository, contains the users, groups, roles, installed application, settings of repositories, ...<br/>' +
                            '"cms-repo", the content domain repository, contains the data managed by Content Studio.<br/>' +
@@ -97,10 +103,8 @@ function createRepositoriesRoute() {
 
         const viewDefinition = 'The view lists in a table all the repositories. Click on a row to display its branches.';
 
-        new HelpDialog('Repositories', [definition, viewDefinition]).
-            init().
-            addActionDefinition({iconName: 'add_circle', definition: 'Create a repository with default settings'}).
-            addActionDefinition({iconName: 'delete', definition: 'Delete the selected repositories.'}).
-            open();
+        new HelpDialog('Repositories', [definition, viewDefinition]).init().addActionDefinition(
+            {iconName: 'add_circle', definition: 'Create a repository with default settings'}).addActionDefinition(
+            {iconName: 'delete', definition: 'Delete the selected repositories.'}).open();
     }
 }
