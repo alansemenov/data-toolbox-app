@@ -1,14 +1,14 @@
 function createApp() {
     return new RcdMaterialSinglePageApplication('Data toolbox').
-        init().
-        setDefaultRoute(createPresentationRoute()).
-        addRoute(new RepositoriesRoute().init()).
-        addRoute(createSnapshotsRoute()).
-        addRoute(createExportsRoute()).
-        addRoute(createDumpsRoute()).
-        addRoute(createBranchesRoute()).
-        addRoute(createFieldsRoute()).
-        addRoute(createNodesRoute());
+    init().
+    setDefaultRoute(createPresentationRoute()).
+    addRoute(new RepositoriesRoute().init()).
+    addRoute(new BranchesRoute().init()).
+    addRoute(createSnapshotsRoute()).
+    addRoute(createExportsRoute()).
+    addRoute(createDumpsRoute()).
+    addRoute(createFieldsRoute()).
+    addRoute(createNodesRoute());
 }
 
 function handleResultError(result) {
