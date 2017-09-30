@@ -10,14 +10,6 @@ class NodesRoute extends DtbRoute {
         this.retrieveNodes();
     }
     
-    createBreadcrumbsLayout() {
-        const helpIconArea = new RcdGoogleMaterialIconArea('help', () => this.displayHelp()).init().
-            setTooltip('Help');
-        this.breadcrumbsLayout = new RcdMaterialBreadcrumbsLayout().init().
-            addChild(helpIconArea);
-        return this.breadcrumbsLayout;
-    }
-    
     createLayout() {
         const exportIconArea = new RcdImageIconArea(config.assetsUrl + '/icons/export-icon.svg', () => this.exportNode()).init().
             setTooltip('Export selected node');

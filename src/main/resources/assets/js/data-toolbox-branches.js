@@ -10,12 +10,6 @@ class BranchesRoute extends DtbRoute {
         this.refreshBreadcrumbs();
         this.retrieveBranches();
     }
-
-    createBreadcrumbsLayout() {
-        this.breadcrumbsLayout = new RcdMaterialBreadcrumbsLayout().init().
-            addChild(new RcdGoogleMaterialIconArea('help', () => this.displayHelp()).init().setTooltip('Help'));
-        return this.breadcrumbsLayout;
-    }
     
     createLayout() {
         this.tableCard = new RcdMaterialTableCard('Branches').init().
