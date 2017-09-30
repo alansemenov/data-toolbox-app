@@ -109,16 +109,32 @@ function createFieldsRoute() {
             setBreadcrumbs([new RcdMaterialBreadcrumb('Data Toolbox', () => setState()).init(),
                 new RcdMaterialBreadcrumb('Data Tree', () => setState('repositories')).init(),
                 new RcdMaterialBreadcrumb(repositoryName, () => setState('branches', {repo: repositoryName})).init(),
-                new RcdMaterialBreadcrumb(branchName, () => setState('nodes',{repo: repositoryName, branch: branchName})).init()],
-                new RcdMaterialBreadcrumb('root', () => setState('nodes', {repo: repositoryName, branch: branchName, path: '/'})).init());
+                new RcdMaterialBreadcrumb(branchName, () => setState('nodes',{repo: repositoryName, branch: branchName})).init(),
+                new RcdMaterialBreadcrumb('root', () => setState('nodes', {repo: repositoryName, branch: branchName, path: '/'})).init()]);
 
+        if (path !== '/') {
+            const pathElements = path.substring(1).split('/')
+            let currentPath = '';
+            pathElements.forEach((subPathElement, index, array) => {
+                currentPath += '/' + subPathElement;
+                const constCurrentPath = currentPath;
+
+                if (index < array.length - 1) {
+
+                    breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb(subPathElement, () => setState('nodes', {repo: repositoryName, branch: branchName, path: constCurrentPath})).init());
+                } else {
+                    breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb(subPathElement + '/fields', field ? (() => setState('fields', {repo: repositoryName, branch: branchName, path: constCurrentPath})) : undefined).init());
+                }
+            });
+        }
+        
         if (field) {
             const fields = field.split('.')
             app.setTitle(fields[fields.length - 1]);
 
             let currentField = '';
             fields.forEach((subField, index, array) => {
-                currentField += '.' + subField;
+                currentField += (index ? '.' : '') + subField;
                 const constCurrentField = currentField;
                 breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb(subField, index < array.length - 1
                     ? (() => setState('fields', {repo: repositoryName, branch: branchName, path: path, field: constCurrentField}))
