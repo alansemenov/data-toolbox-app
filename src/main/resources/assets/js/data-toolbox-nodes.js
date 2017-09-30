@@ -6,7 +6,6 @@ class NodesRoute extends DtbRoute {
     }
 
     onDisplay() {
-        app.setTitle(getRepoParameter());
         this.refreshBreadcrumbs();
         this.retrieveNodes();
     }
@@ -33,6 +32,7 @@ class NodesRoute extends DtbRoute {
         this.tableCard = new RcdMaterialTableCard('Nodes').init().
             addColumn('Node name').
             addColumn('Node ID', {classes: ['non-mobile-cell']}).
+            addColumn('', {icon: true}).
             addColumn('', {icon: true}).
             addColumn('', {icon: true}).
             addIconArea(exportIconArea, {min: 1, max: 1}).
@@ -73,6 +73,7 @@ class NodesRoute extends DtbRoute {
             addCell('', {classes: ['non-mobile-cell']}).
             addCell(null, {icon: true}).
             addCell(null, {icon: true}).
+            addCell(null, {icon: true}).
             addClass('rcd-clickable').
             addClickListener(() => {
                 if (getPathParameter()) {
@@ -88,6 +89,10 @@ class NodesRoute extends DtbRoute {
                     setState('fields',{repo: getRepoParameter(), branch: getBranchParameter(), path: node._path});
                     event.stopPropagation();
                 }).init().setTooltip('Display fields');
+                const displayPermissionsIconArea = new RcdGoogleMaterialIconArea('lock', (source, event) => {
+                    setState('permissions',{repo: getRepoParameter(), branch: getBranchParameter(), path: node._path});
+                    event.stopPropagation();
+                }).init().setTooltip('Display permissions');
                 const displayJsonIconArea = new RcdImageIconArea(config.assetsUrl + '/icons/json.svg', (source, event) => {
                     this.displayNodeAsJson(node._id);
                     event.stopPropagation();
@@ -97,6 +102,7 @@ class NodesRoute extends DtbRoute {
                     addCell(node._name).
                     addCell(node._id, {classes: ['non-mobile-cell']}).
                     addCell(displayFieldsIconArea, {icon: true}).
+                    addCell(displayPermissionsIconArea, {icon: true}).
                     addCell(displayJsonIconArea, {icon: true}).
                     setAttribute('id', node._id).
                     setAttribute('path', node._path).
