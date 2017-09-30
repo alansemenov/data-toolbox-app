@@ -6,9 +6,8 @@ function createApp() {
     addRoute(new BranchesRoute().init()).
     addRoute(new NodesRoute().init()).
     addRoute(createSnapshotsRoute()).
-    addRoute(createExportsRoute()).
-    addRoute(createDumpsRoute()).
-    addRoute(createFieldsRoute());
+    addRoute(new ExportsRoute().init()).
+    addRoute(createDumpsRoute());
 }
 
 function handleResultError(result) {
