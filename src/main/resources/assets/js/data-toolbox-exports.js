@@ -3,7 +3,7 @@ class ExportsRoute extends DtbRoute {
         super({
             state: 'exports',
             name: 'Node Exports',
-            iconArea: new RcdGoogleMaterialIconArea('import_export').init(),
+            iconArea: new RcdGoogleMaterialIconArea('import_export').init()
         });
     }
 

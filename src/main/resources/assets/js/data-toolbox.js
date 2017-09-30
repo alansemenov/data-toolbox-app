@@ -5,7 +5,7 @@ function createApp() {
     addRoute(new RepositoriesRoute().init()).
     addRoute(new BranchesRoute().init()).
     addRoute(new NodesRoute().init()).
-    addRoute(createSnapshotsRoute()).
+    addRoute(new SnapshotsRoute().init()).
     addRoute(new ExportsRoute().init()).
     addRoute(createDumpsRoute());
 }
