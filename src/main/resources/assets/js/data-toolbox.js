@@ -107,8 +107,8 @@ function getSortParameter() {
     return RcdHistoryRouter.getParameters().sort || '';
 }
 
-function getNodeParameter() {
-    return RcdHistoryRouter.getParameters().node;
+function getFieldParameter() {
+    return RcdHistoryRouter.getParameters().field;
 }
 
 var app = createApp();

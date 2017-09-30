@@ -83,7 +83,7 @@ function createNodesRoute() {
         if (handleResultError(result)) {
             result.success.hits.forEach((node) => {
                 const displayFieldsIconArea = new RcdImageIconArea(config.assetsUrl + '/icons/fields.svg', (source, event) => {
-                    setState('fields',{repo: getRepoParameter(), branch: getBranchParameter(), node: node._id});
+                    setState('fields',{repo: getRepoParameter(), branch: getBranchParameter(), path: node._path});
                     event.stopPropagation();
                 }).init().setTooltip('Display fields');
                 const displayJsonIconArea = new RcdImageIconArea(config.assetsUrl + '/icons/json.svg', (source, event) => {

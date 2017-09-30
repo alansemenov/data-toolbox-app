@@ -35,7 +35,7 @@ function createFieldsRoute() {
             data: JSON.stringify({
                 repositoryName: getRepoParameter(),
                 branchName: getBranchParameter(),
-                key: getNodeParameter()
+                key: getPathParameter()
             }),
             contentType: 'application/json; charset=utf-8'
         }).done(onNodeRetrieval).fail(handleAjaxError).always(() => {
@@ -71,7 +71,7 @@ function createFieldsRoute() {
                     setAttribute('name', fieldName).
                     addClass('rcd-clickable').
                     //TODO
-                    addClickListener(() => setState('fields', {repo: getRepoParameter(), branch: getBranchParameter(), node: getNodeParameter()}));
+                    addClickListener(() => setState('fields', {repo: getRepoParameter(), branch: getBranchParameter(), path: getPathParameter(), field:fieldName}));
                 row.checkbox.addClickListener((event) => event.stopPropagation());
             }
         }
@@ -103,35 +103,31 @@ function createFieldsRoute() {
         const repositoryName = getRepoParameter();
         const branchName = getBranchParameter();
         const path = getPathParameter();
+        const field = getFieldParameter();
 
         breadcrumbsLayout.
             setBreadcrumbs([new RcdMaterialBreadcrumb('Data Toolbox', () => setState()).init(),
                 new RcdMaterialBreadcrumb('Data Tree', () => setState('repositories')).init(),
                 new RcdMaterialBreadcrumb(repositoryName, () => setState('branches', {repo: repositoryName})).init(),
-                new RcdMaterialBreadcrumb(branchName, path && (() => setState('nodes',{repo: repositoryName, branch: branchName}))).init()]);
+                new RcdMaterialBreadcrumb(branchName, () => setState('nodes',{repo: repositoryName, branch: branchName})).init()],
+                new RcdMaterialBreadcrumb('root', () => setState('nodes', {repo: repositoryName, branch: branchName, path: '/'})).init());
 
-        if (path) {
-            breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb('root', path === '/' ? undefined :
-                () => setState('nodes', {repo: repositoryName, branch: branchName, path: '/'})).init());
+        if (field) {
+            const fields = field.split('.')
+            app.setTitle(fields[fields.length - 1]);
 
-            if (path === '/') {
-                app.setTitle('Root node');
-            } else {
-                const pathElements = path.substring(1).split('/')
-                app.setTitle(pathElements[pathElements.length - 1]);
-
-                let currentPath = '';
-                pathElements.forEach((subPathElement, index, array) => {
-                    currentPath += '/' + subPathElement;
-                    const constCurrentPath = currentPath;
-                    breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb(subPathElement, index < array.length - 1
-                        ? (() => setState('nodes', {repo: repositoryName, branch: branchName, path: constCurrentPath}))
-                        : undefined).init());
-                });
-            }
+            let currentField = '';
+            fields.forEach((subField, index, array) => {
+                currentField += '.' + subField;
+                const constCurrentField = currentField;
+                breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb(subField, index < array.length - 1
+                    ? (() => setState('fields', {repo: repositoryName, branch: branchName, path: path, field: constCurrentField}))
+                    : undefined).init());
+            });
         } else {
-            app.setTitle(branchName);
+            app.setTitle('Root fields');
         }
+        
     }
 
     function displayHelp() {
