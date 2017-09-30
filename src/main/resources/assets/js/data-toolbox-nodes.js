@@ -1,37 +1,36 @@
-function createNodesRoute() {
-    const breadcrumbsLayout = createBreadcrumbsLayout();
-    const tableCard = createTableCard();
-    const layout = new RcdMaterialLayout().init().
-        addChild(tableCard);;
-    
-    return {
-        state: 'nodes',
-        callback: (main) => {
-            refreshBreadcrumbs();
-            retrieveNodes();
-            main.addChild(breadcrumbsLayout).addChild(layout);
-        }
-    };
-    
-    function createBreadcrumbsLayout() {
-        const helpIconArea = new RcdGoogleMaterialIconArea('help', displayHelp).init().
-            setTooltip('Help');
-        return new RcdMaterialBreadcrumbsLayout().init().
-            addChild(helpIconArea);
+class NodesRoute extends DtbRoute {
+    constructor() {
+        super({
+            state: 'nodes'
+        });
+    }
+
+    onDisplay() {
+        app.setTitle(getRepoParameter());
+        this.refreshBreadcrumbs();
+        this.retrieveNodes();
     }
     
-    function createTableCard() {
-        const exportIconArea = new RcdImageIconArea(config.assetsUrl + '/icons/export-icon.svg', exportNode).init().
+    createBreadcrumbsLayout() {
+        const helpIconArea = new RcdGoogleMaterialIconArea('help', () => this.displayHelp()).init().
+            setTooltip('Help');
+        this.breadcrumbsLayout = new RcdMaterialBreadcrumbsLayout().init().
+            addChild(helpIconArea);
+        return this.breadcrumbsLayout;
+    }
+    
+    createLayout() {
+        const exportIconArea = new RcdImageIconArea(config.assetsUrl + '/icons/export-icon.svg', () => this.exportNode()).init().
             setTooltip('Export selected node');
-        const importIconArea = new RcdImageIconArea(config.assetsUrl + '/icons/import-icon.svg', importNode).init().
+        const importIconArea = new RcdImageIconArea(config.assetsUrl + '/icons/import-icon.svg', () => this.importNode()).init().
             setTooltip('Import node export');
-        const filterIconArea = new RcdGoogleMaterialIconArea('filter_list', filterNodes).init().
+        const filterIconArea = new RcdGoogleMaterialIconArea('filter_list', () => this.filterNodes()).init().
             setTooltip('Filter nodes');
-        const sortIconArea = new RcdGoogleMaterialIconArea('sort', sortNodes).init().
+        const sortIconArea = new RcdGoogleMaterialIconArea('sort', () => this.sortNodes()).init().
             setTooltip('Sort nodes');
-        const deleteIconArea = new RcdGoogleMaterialIconArea('delete', deleteNodes).init().
+        const deleteIconArea = new RcdGoogleMaterialIconArea('delete', () => this.deleteNodes()).init().
             setTooltip('Delete selected nodes', RcdMaterialTooltipAlignment.RIGHT);
-        return new RcdMaterialTableCard('Nodes').init().
+        this.tableCard = new RcdMaterialTableCard('Nodes').init().
             addColumn('Node name').
             addColumn('Node ID', {classes: ['non-mobile-cell']}).
             addColumn('', {icon: true}).
@@ -41,9 +40,12 @@ function createNodesRoute() {
             addIconArea(filterIconArea, {max: 0}).
             addIconArea(sortIconArea, {max: 0}).
             addIconArea(deleteIconArea, {min: 1});
+
+        return new RcdMaterialLayout().init().
+            addChild(this.tableCard);
     }
 
-    function retrieveNodes() {
+    retrieveNodes() {
         const infoDialog = showInfoDialog('Retrieving node list...');
         return $.ajax({
             method: 'POST',
@@ -58,15 +60,15 @@ function createNodesRoute() {
                 sort: getSortParameter()
             }),
             contentType: 'application/json; charset=utf-8'
-        }).done(onNodesRetrieval).fail(handleAjaxError).always(() => {
+        }).done((result) => this.onNodesRetrieval(result)).fail(handleAjaxError).always(() => {
             infoDialog.close();
         });
     }
 
-    function onNodesRetrieval(result) {
-        tableCard.deleteRows();
+    onNodesRetrieval(result) {
+        this.tableCard.deleteRows();
 
-        tableCard.createRow({selectable:false}).
+        this.tableCard.createRow({selectable:false}).
             addCell('..').
             addCell('', {classes: ['non-mobile-cell']}).
             addCell(null, {icon: true}).
@@ -74,7 +76,7 @@ function createNodesRoute() {
             addClass('rcd-clickable').
             addClickListener(() => {
                 if (getPathParameter()) {
-                    setState('nodes', {repo:getRepoParameter(), branch: getBranchParameter() + (getPathParameter() === '/' ? '' : '&path=' + getParentPath() ) })
+                    setState('nodes', {repo:getRepoParameter(), branch: getBranchParameter() + (getPathParameter() === '/' ? '' : '&path=' + this.getParentPath() ) })
                 } else {
                     setState('branches', {repo:getRepoParameter()});
                 }
@@ -87,11 +89,11 @@ function createNodesRoute() {
                     event.stopPropagation();
                 }).init().setTooltip('Display fields');
                 const displayJsonIconArea = new RcdImageIconArea(config.assetsUrl + '/icons/json.svg', (source, event) => {
-                    displayNodeAsJson(node._id);
+                    this.displayNodeAsJson(node._id);
                     event.stopPropagation();
                 }).init().setTooltip('Display as JSON');
 
-                const row = tableCard.createRow().
+                const row = this.tableCard.createRow().
                     addCell(node._name).
                     addCell(node._id, {classes: ['non-mobile-cell']}).
                     addCell(displayFieldsIconArea, {icon: true}).
@@ -122,7 +124,7 @@ function createNodesRoute() {
                 count: getCountParameter(),
                 filter: getFilterParameter(),
                 sort: getSortParameter()});
-            tableCard.setFooter({
+            this.tableCard.setFooter({
                 start: parseInt(getStartParameter()),
                 count: result.success.hits.length,
                 total: result.success.total,
@@ -131,14 +133,14 @@ function createNodesRoute() {
             });
         }
     }
-
-    function deleteNodes() {
-        showConfirmationDialog("Delete selected nodes?", 'DELETE', doDeleteNodes);
+    
+    deleteNodes() {
+        showConfirmationDialog("Delete selected nodes?", 'DELETE', () => this.doDeleteNodes());
     }
 
-    function doDeleteNodes() {
+    doDeleteNodes() {
         const infoDialog = showInfoDialog("Deleting selected nodes...");
-        const nodeKeys = tableCard.getSelectedRows().map((row) => row.attributes['id']);
+        const nodeKeys = this.tableCard.getSelectedRows().map((row) => row.attributes['id']);
         $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/node-delete',
@@ -150,13 +152,13 @@ function createNodesRoute() {
             contentType: 'application/json; charset=utf-8'
         }).done(handleResultError).fail(handleAjaxError).always(() => {
             infoDialog.close();
-            retrieveNodes();
+            this.retrieveNodes();
         });
     }
 
-    function displayNodeAsJson(nodeKey) {
+    displayNodeAsJson(nodeKey) {
         if (!nodeKey) {
-            nodeKey = tableCard.getSelectedRows().map((row) => row.attributes['id'])[0];
+            nodeKey = this.tableCard.getSelectedRows().map((row) => row.attributes['id'])[0];
         }
 
         const infoDialog = showInfoDialog("Retrieving node info...");
@@ -169,9 +171,9 @@ function createNodesRoute() {
                 key: nodeKey
             }),
             contentType: 'application/json; charset=utf-8'
-        }).done(function (result) {
+        }).done((result) => {
             if (handleResultError(result)) {
-                const formattedJson = formatJson(result.success, '');
+                const formattedJson = this.formatJson(result.success, '');
                 showDetailsDialog('Node [' + nodeKey + ']', formattedJson).
                     addClass('node-details-dialog');
             }
@@ -180,7 +182,7 @@ function createNodesRoute() {
         });
     }
 
-    function formatJson(value, tab) {
+    formatJson(value, tab) {
         if (typeof value === 'string') {
             return '<a class=json-string>"' + value + '"</a>';
         } else if (typeof value === "number") {
@@ -191,7 +193,7 @@ function createNodesRoute() {
             let formattedArray = '[\n';
             for (let i = 0; i < value.length; i++) {
                 const arrayElement = value[i];
-                formattedArray += tab + '  ' + formatJson(arrayElement, tab + '  ') + (i < (value.length - 1) ? ',' : '') + '\n';
+                formattedArray += tab + '  ' + this.formatJson(arrayElement, tab + '  ') + (i < (value.length - 1) ? ',' : '') + '\n';
             }
             formattedArray += tab + ']';
             return formattedArray;
@@ -200,7 +202,7 @@ function createNodesRoute() {
             const attributeNames = Object.keys(value);
             for (let i = 0; i < attributeNames.length; i++) {
                 const attributeName = attributeNames[i];
-                formattedObject += tab + '  "' + attributeName + '": ' + formatJson(value[attributeName], tab + '  ') +
+                formattedObject += tab + '  "' + attributeName + '": ' + this.formatJson(value[attributeName], tab + '  ') +
                                    (i < (attributeNames.length - 1) ? ',' : '') + '\n';
             }
             formattedObject += tab + '}';
@@ -210,7 +212,7 @@ function createNodesRoute() {
         }
     }
 
-    function filterNodes() {
+    filterNodes() {
         showInputDialog({
             title: "Filter nodes",
             confirmationLabel: "FILTER",
@@ -228,7 +230,7 @@ function createNodesRoute() {
         });
     }
 
-    function sortNodes() {
+    sortNodes() {
         showInputDialog({
             title: "Sort nodes",
             confirmationLabel: "SORT",
@@ -246,9 +248,9 @@ function createNodesRoute() {
         });
     }
 
-    function exportNode() {
+    exportNode() {
         const nodeName = getPathParameter()
-            ? (tableCard.getSelectedRows().map((row) => row.attributes['name'])[0] || 'export')
+            ? (this.tableCard.getSelectedRows().map((row) => row.attributes['name'])[0] || 'export')
             : getRepoParameter() + '-' + getBranchParameter();
         const defaultExportName = nodeName + '-' + toLocalDateTimeFormat(new Date(), '-', '-');
         showInputDialog({
@@ -257,11 +259,11 @@ function createNodesRoute() {
             label: "Export name",
             placeholder: defaultExportName,
             value: defaultExportName,
-            callback: (value) => doExportNode(value || defaultExportName)
+            callback: (value) => this.doExportNode(value || defaultExportName)
         });
     }
 
-    function doExportNode(exportName) {
+    doExportNode(exportName) {
         const infoDialog = showInfoDialog("Exporting selected node...");
         return $.ajax({
             method: 'POST',
@@ -269,11 +271,11 @@ function createNodesRoute() {
             data: JSON.stringify({
                 repositoryName: getRepoParameter(),
                 branchName: getBranchParameter(),
-                nodePath: tableCard.getSelectedRows().map((row) => row.attributes['path'])[0],
+                nodePath: this.tableCard.getSelectedRows().map((row) => row.attributes['path'])[0],
                 exportName: exportName
             }),
             contentType: 'application/json; charset=utf-8'
-        }).done(function(result) {
+        }).done((result) => {
             if (handleResultError(result)) {
                 new ExportResultDialog(result.success).init().
                     open();
@@ -284,33 +286,33 @@ function createNodesRoute() {
         });
     }
 
-    function importNode() {
+    importNode() {
         const infoDialog = showInfoDialog("Retrieving node export list...");
         return $.ajax({
             url: config.servicesUrl + '/export-list'
-        }).done(function (result) {
+        }).done((result) => {
             if (handleResultError(result)) {
                 const exportNames = result.success.
                     sort((export1, export2) => export2.timestamp - export1.timestamp).
                     map((anExport) =>anExport.name);
-                selectNodeExport(exportNames);
+                this.selectNodeExport(exportNames);
             }
         }).fail(handleAjaxError).always(() => {
             infoDialog.close();
         });
     }
 
-    function selectNodeExport(exportNames) {
+    selectNodeExport(exportNames) {
         showSelectionDialog({
             title: "Select node export",
             confirmationLabel: "IMPORT",
             label: "Export name",
             options: exportNames,
-            callback: (value) => doImportNode(value)
+            callback: (exportName) => this.doImportNode(exportName)
         });
     }
 
-    function doImportNode(exportName) {
+    doImportNode(exportName) {
         const infoDialog = showInfoDialog("Importing node...");
         return $.ajax({
             method: 'POST',
@@ -322,7 +324,7 @@ function createNodesRoute() {
                 exportName: exportName
             }),
             contentType: 'application/json; charset=utf-8'
-        }).done(function (result) {
+        }).done((result) => {
             if (handleResultError(result)) {
                 new ImportResultDialog([exportName], result.success).init().
                     open();
@@ -333,20 +335,20 @@ function createNodesRoute() {
         });
     }
 
-    function refreshBreadcrumbs() {
+    refreshBreadcrumbs() {
         const repositoryName = getRepoParameter();
         const branchName = getBranchParameter();
         const path = getPathParameter();
 
-        breadcrumbsLayout.
+        this.breadcrumbsLayout.
             setBreadcrumbs([new RcdMaterialBreadcrumb('Data Toolbox', () => setState()).init(),
                 new RcdMaterialBreadcrumb('Data Tree', () => setState('repositories')).init(),
                 new RcdMaterialBreadcrumb(repositoryName, () => setState('branches', {repo: repositoryName})).init(),
                 new RcdMaterialBreadcrumb(branchName, path && (() => setState('nodes',{repo: repositoryName, branch: branchName}))).init()]);
 
         if (path) {
-            breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb('root', path === '/' ? undefined :
-                () => setState('nodes', {repo: repositoryName, branch: branchName, path: '/'})).init());
+            this.breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb('root', path === '/' ? undefined :
+                                                                              () => setState('nodes', {repo: repositoryName, branch: branchName, path: '/'})).init());
 
             if (path === '/') {
                 app.setTitle('Root node');
@@ -358,7 +360,7 @@ function createNodesRoute() {
                 pathElements.forEach((subPathElement, index, array) => {
                     currentPath += '/' + subPathElement;
                     const constCurrentPath = currentPath;
-                    breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb(subPathElement, index < array.length - 1
+                    this.breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb(subPathElement, index < array.length - 1
                         ? (() => setState('nodes', {repo: repositoryName, branch: branchName, path: constCurrentPath}))
                         : undefined).init());
                 });
@@ -367,14 +369,14 @@ function createNodesRoute() {
             app.setTitle(branchName);
         }
     }
-    
-    function getParentPath() {
+
+    getParentPath() {
         const path = getPathParameter();
         const parentPath = path && path.substring(0, path.lastIndexOf('/'));
         return parentPath ? parentPath : '/';
     }
 
-    function displayHelp() {
+    displayHelp() {
         const definition = 'A Node represents a single storable entity of data. ' +
                            'It can be compared to a row in sql or a document in document oriented storage models.<br/>' +
                            'See <a class="rcd-material-link" href="http://xp.readthedocs.io/en/6.10/developer/node-domain/nodes.html">Nodes</a> for more information. ';
@@ -387,29 +389,29 @@ function createNodesRoute() {
 
         const viewDefinition = 'The view lists in a table all the direct children nodes of the current node (or the root node for a branch). Click on a row to display its direct children.';
         new HelpDialog('Nodes', [definition, structureDefinition, viewDefinition]).
-            init().
-            addActionDefinition({
-                iconSrc: config.assetsUrl + '/icons/export-icon.svg',
-                definition: 'Export the selected node into $XP_HOME/data/export/[export-name]. The display will switch to the Exports view.'
-            }).
-            addActionDefinition({
-                iconSrc: config.assetsUrl + '/icons/import-icon.svg',
-                definition: 'Import previously exported nodes as children under the current node (or as root node)'
-            }).
-            addActionDefinition({
-                iconName: 'filter_list',
-                definition: 'Filter the nodes based on a query expression. ' +
-                            'Example: "_id = \'role:system.admin"\'. ' +
-                            'See <a class="rcd-material-link" href="http://xp.readthedocs.io/en/6.10/reference/query-language.html#compareexpr">Query language</a> for more information.'
-            }).
-            addActionDefinition({
-                iconName: 'sort',
-                definition: 'Sort the nodes based on an expression. ' + 
-                            'The sorting expression is composed of a node field to sort on and the direction: ascending or descending.' + 
-                            'Examples: "_timestamp DESC", "_name ASC"'
-            }).
-            addActionDefinition({iconName: 'delete', definition: 'Delete the selected nodes.'}).
-            addActionDefinition({iconName: 'info', definition: 'Display the node content.'}).
-            open();
+        init().
+        addActionDefinition({
+            iconSrc: config.assetsUrl + '/icons/export-icon.svg',
+            definition: 'Export the selected node into $XP_HOME/data/export/[export-name]. The display will switch to the Exports view.'
+        }).
+        addActionDefinition({
+            iconSrc: config.assetsUrl + '/icons/import-icon.svg',
+            definition: 'Import previously exported nodes as children under the current node (or as root node)'
+        }).
+        addActionDefinition({
+            iconName: 'filter_list',
+            definition: 'Filter the nodes based on a query expression. ' +
+                        'Example: "_id = \'role:system.admin"\'. ' +
+                        'See <a class="rcd-material-link" href="http://xp.readthedocs.io/en/6.10/reference/query-language.html#compareexpr">Query language</a> for more information.'
+        }).
+        addActionDefinition({
+            iconName: 'sort',
+            definition: 'Sort the nodes based on an expression. ' +
+                        'The sorting expression is composed of a node field to sort on and the direction: ascending or descending.' +
+                        'Examples: "_timestamp DESC", "_name ASC"'
+        }).
+        addActionDefinition({iconName: 'delete', definition: 'Delete the selected nodes.'}).
+        addActionDefinition({iconName: 'info', definition: 'Display the node content.'}).
+        open();
     }
 }

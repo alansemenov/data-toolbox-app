@@ -4,11 +4,11 @@ function createApp() {
     setDefaultRoute(createPresentationRoute()).
     addRoute(new RepositoriesRoute().init()).
     addRoute(new BranchesRoute().init()).
+    addRoute(new NodesRoute().init()).
     addRoute(createSnapshotsRoute()).
     addRoute(createExportsRoute()).
     addRoute(createDumpsRoute()).
-    addRoute(createFieldsRoute()).
-    addRoute(createNodesRoute());
+    addRoute(createFieldsRoute());
 }
 
 function handleResultError(result) {
