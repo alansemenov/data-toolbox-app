@@ -18,15 +18,15 @@ class PermissionsRoute extends DtbRoute {
         const deleteIconArea = new RcdGoogleMaterialIconArea('delete', () => this.deletePermissions()).init().
             setTooltip('Delete selected permissions', RcdMaterialTooltipAlignment.RIGHT);
         this.tableCard = new RcdMaterialTableCard('Permissions').init().
-            addClass('permissions-table-card').
-            addColumn('Principal').
+            addClass('dtb-table-card-permissions').
+            addColumn('Principal', {classes: ['principal']}).
             addColumn('Read').
             addColumn('Create').
             addColumn('Modify').
             addColumn('Delete').
             addColumn('Publish').
-            addColumn('Read Permissions').
-            addColumn('Write Permissions').
+            addColumn('Read<br/>Perm.').
+            addColumn('Write<br/>Perm.').
             addIconArea(inheritanceIconArea).
             addIconArea(createIconArea, {max: 0}).
             addIconArea(deleteIconArea, {min: 1});
@@ -70,7 +70,7 @@ class PermissionsRoute extends DtbRoute {
             this.setInheritPermission(result.success._inheritsPermissions);
             result.success._permissions.forEach((accessControlEntry) => {
                 this.tableCard.createRow().
-                    addCell(accessControlEntry.principal).
+                    addCell(accessControlEntry.principal, {classes: ['principal']}).
                     addCell(this.createPermissionIcon(accessControlEntry, 'READ'), {icon: true}).
                     addCell(this.createPermissionIcon(accessControlEntry, 'CREATE'), {icon: true}).
                     addCell(this.createPermissionIcon(accessControlEntry, 'MODIFY'), {icon: true}).
@@ -133,30 +133,28 @@ class PermissionsRoute extends DtbRoute {
             setBreadcrumbs([new RcdMaterialBreadcrumb('Data Toolbox', () => setState()).init(),
                 new RcdMaterialBreadcrumb('Data Tree', () => setState('repositories')).init(),
                 new RcdMaterialBreadcrumb(repositoryName, () => setState('branches', {repo: repositoryName})).init(),
-                new RcdMaterialBreadcrumb(branchName, path && (() => setState('nodes',{repo: repositoryName, branch: branchName}))).init()]);
+                new RcdMaterialBreadcrumb(branchName, () => setState('nodes',{repo: repositoryName, branch: branchName})).init()]);
 
-        if (path) {
-            this.breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb('root', path === '/' ? undefined :
-                                                                              () => setState('nodes', {repo: repositoryName, branch: branchName, path: '/'})).init());
+        
+        this.breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb(path === '/' ? 'root/permissions' : 'root', path === '/' ? undefined :
+                                                                          () => setState('nodes', {repo: repositoryName, branch: branchName, path: '/'})).init());
 
-            if (path === '/') {
-                app.setTitle('Root node');
-            } else {
-                const pathElements = path.substring(1).split('/')
-                app.setTitle(pathElements[pathElements.length - 1]);
-
-                let currentPath = '';
-                pathElements.forEach((subPathElement, index, array) => {
-                    currentPath += '/' + subPathElement;
-                    const constCurrentPath = currentPath;
-                    this.breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb(subPathElement, index < array.length - 1
-                        ? (() => setState('nodes', {repo: repositoryName, branch: branchName, path: constCurrentPath}))
-                        : undefined).init());
-                });
-            }
+        if (path === '/') {
+            app.setTitle('Root node permissions');
         } else {
-            app.setTitle(branchName);
+            const pathElements = path.substring(1).split('/')
+            app.setTitle(pathElements[pathElements.length - 1] + ' permissions');
+
+            let currentPath = '';
+            pathElements.forEach((subPathElement, index, array) => {
+                currentPath += '/' + subPathElement;
+                const constCurrentPath = currentPath;
+                this.breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb(index < array.length - 1 ?  subPathElement : subPathElement + '/permissions', index < array.length - 1
+                    ? (() => setState('nodes', {repo: repositoryName, branch: branchName, path: constCurrentPath}))
+                    : undefined).init());
+            });
         }
+        
     }
 
     displayHelp() {
@@ -171,7 +169,7 @@ class PermissionsRoute extends DtbRoute {
                                     '<a class="rcd-material-link" href="https://market.enonic.com/vendors/runar-myklebust/repoxplorer">repoXPlorer</a>.';
 
         const viewDefinition = 'The view lists in a table all the direct children nodes of the current node (or the root node for a branch). Click on a row to display its direct children.';
-        new HelpDialog('Nodes', [definition, structureDefinition, viewDefinition]).
+        new HelpDialog('Permissions', [definition, structureDefinition, viewDefinition]).
         init().
         addActionDefinition({
             iconSrc: config.assetsUrl + '/icons/export-icon.svg',
