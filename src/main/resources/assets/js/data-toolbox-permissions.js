@@ -18,6 +18,7 @@ class PermissionsRoute extends DtbRoute {
         const deleteIconArea = new RcdGoogleMaterialIconArea('delete', () => this.deletePermissions()).init().
             setTooltip('Delete selected permissions', RcdMaterialTooltipAlignment.RIGHT);
         this.tableCard = new RcdMaterialTableCard('Permissions').init().
+            addClass('permissions-table-card').
             addColumn('Principal').
             addColumn('Read').
             addColumn('Create').
@@ -66,6 +67,7 @@ class PermissionsRoute extends DtbRoute {
             addClickListener(() => setState('nodes', {repo:getRepoParameter(), branch: getBranchParameter(), path: this.getParentPath()})); //TODO
         
         if (handleResultError(result)) {
+            this.setInheritPermission(result.success._inheritsPermissions);
             result.success._permissions.forEach((accessControlEntry) => {
                 this.tableCard.createRow().
                     addCell(accessControlEntry.principal).
@@ -79,6 +81,10 @@ class PermissionsRoute extends DtbRoute {
                     setAttribute('principal', accessControlEntry.principal);
             });
         }
+    }
+
+    setInheritPermission(inheritsPermissions) { 
+        this.tableCard.setTitle('Permissions' + (inheritsPermissions ? ' (inherited)' : ''));
     }
     
     createPermissionIcon(accessControlEntry, permission ) {
