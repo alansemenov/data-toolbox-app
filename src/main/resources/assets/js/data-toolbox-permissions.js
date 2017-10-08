@@ -96,38 +96,14 @@ class PermissionsRoute extends DtbRoute {
     }
     
     createPermissionResume(accessControlEntry) {
-        if (accessControlEntry.deny.length === 0) {
-            if (this.hasOnlyPermissions(accessControlEntry, ['READ'])) {
-                return 'Can read';
+        let permissions = [];
+        PermissionsRoute.getPermissions().forEach(permission => {
+            if (this.hasPermission(accessControlEntry, permission)) {
+                permissions.push(permission);
             }
-            if (this.hasOnlyPermissions(accessControlEntry, ['READ', 'CREATE', 'MODIFY', 'DELETE'])) {
-                return 'Can write';
-            }
-            if (this.hasOnlyPermissions(accessControlEntry, ['READ', 'CREATE', 'MODIFY', 'DELETE', 'PUBLISH'])) {
-                return 'Can publish';
-            }
-            if (this.hasOnlyPermissions(accessControlEntry, ['READ', 'CREATE', 'MODIFY', 'DELETE', 'PUBLISH', 'READ_PERMISSIONS', 'WRITE_PERMISSIONS'])) {
-                return 'Full access';
-            }
-        }
+        });
         
-        return 'Custom...';
-    }
-
-    hasOnlyPermissions(accessControlEntry, permissions) {
-        let otherPermissions = PermissionsRoute.getPermissions();
-        for (let permission of permissions) {
-            if (!this.hasPermission(accessControlEntry, permission)) {
-                return false;
-            }
-            otherPermissions.splice(otherPermissions.indexOf(permission), 1);
-        }
-        for (let otherPermission of otherPermissions) {
-            if (this.hasPermission(accessControlEntry, otherPermission)) {
-                return false;
-            }
-        }
-        return true;
+        return permissions.join(', ');
     }
     
     hasPermission(accessControlEntry, permission) {
