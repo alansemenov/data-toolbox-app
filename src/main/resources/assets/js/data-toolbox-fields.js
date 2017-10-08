@@ -41,13 +41,18 @@ class FieldsRoute extends DtbRoute {
     onFieldsRetrieval(result) {
         this.tableCard.deleteRows();
 
-        this.tableCard.createRow({selectable:false}).
+        const headerRow = this.tableCard.createRow({selectable:false}).
             addCell('..').
             addCell('').
             addCell('').
             addCell('').
-            addClass('rcd-clickable').
-            addClickListener(() => setState('nodes', {repo:getRepoParameter(), branch: getBranchParameter(), path: this.getParentPath()}));
+            addClass('rcd-clickable');
+        
+        if(getFieldParameter()) {
+            headerRow.addClickListener(() => setState('fields', {repo:getRepoParameter(), branch: getBranchParameter(), path: getPathParameter(), field: this.getParentField()}));
+        } else {
+            headerRow.addClickListener(() => setState('nodes', {repo:getRepoParameter(), branch: getBranchParameter(), path: this.getParentPath()}));
+        }
         
         if (handleResultError(result)) {
             const fields = result.success;
@@ -61,7 +66,7 @@ class FieldsRoute extends DtbRoute {
                 
                 if(field.type === 'PropertySet') {
                     row.addClass('rcd-clickable').
-                        addClickListener(() => setState('fields', {repo:getRepoParameter(), branch: getBranchParameter(), path: this.getParentPath(), field: getFieldParameter() ? getFieldParameter() + '.' + field.name : field.name}))
+                        addClickListener(() => setState('fields', {repo:getRepoParameter(), branch: getBranchParameter(), path: getPathParameter(), field: getFieldParameter() ? getFieldParameter() + '.' + field.name : field.name}))
                 }
             });
 

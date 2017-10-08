@@ -375,12 +375,6 @@ class NodesRoute extends DtbRoute {
         }
     }
 
-    getParentPath() {
-        const path = getPathParameter();
-        const parentPath = path && path.substring(0, path.lastIndexOf('/'));
-        return parentPath ? parentPath : '/';
-    }
-
     displayHelp() {
         const definition = 'A Node represents a single storable entity of data. ' +
                            'It can be compared to a row in sql or a document in document oriented storage models.<br/>' +
