@@ -47,7 +47,7 @@
     }
 
     function createExport() {
-        const defaultExportName = config.contentName + '-' + toLocalDateTimeFormat(new Date(), '-', '-');
+        const defaultExportName = config.contentName + '-draft-' + toLocalDateTimeFormat(new Date(), '-', '-');
         showInputDialog({
             title: "Export content",
             confirmationLabel: "CREATE",
