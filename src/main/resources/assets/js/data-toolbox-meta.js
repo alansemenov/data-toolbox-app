@@ -107,11 +107,8 @@ class MetaRoute extends DtbRoute {
     }
 
     displayHelp() {
-        const definition = 'Permissions are granted to principals (users, groups and roles) on a per-node basis. This means that changing a principal’s permissions for one node does not affect that principal’s permissions for other node.' +
-                           'See <a class="rcd-material-link" href="http://xp.readthedocs.io/en/6.10/admin/contentstudio/content-security.html">Content Security</a> for more information. ';
-
-        const viewDefinition = 'The view lists in a table all the permissions of the current node. Creation, modification and deletion of permissions will be provided in an ulterior version.';
-        new HelpDialog('Permissions', [definition, viewDefinition]).
+        const viewDefinition = 'The view lists in a table all the metadata of the current node. Modification of metadata will be provided in an ulterior version.';
+        new HelpDialog('Metadata', [viewDefinition]).
         init().
         open();
     }
