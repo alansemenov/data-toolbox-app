@@ -130,8 +130,8 @@ class FieldsRoute extends DtbRoute {
     }
 
     displayHelp() {
-        const viewDefinition = 'The view lists in a table all the metadata of the current node. Modification of metadata will be provided in an ulterior version.';
-        new HelpDialog('Metadata', [viewDefinition]).
+        const viewDefinition = 'The view represents node data fields in a tree structure. Modification of fields will be provided in an ulterior version.';
+        new HelpDialog('Data', [viewDefinition]).
         init().
         open();
     }
