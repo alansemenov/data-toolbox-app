@@ -61,7 +61,7 @@ class PermissionsRoute extends DtbRoute {
             addCell('', {classes: ['non-mobile-cell']}).
             addCell('', {classes: ['non-mobile-cell']}).
             addClass('rcd-clickable').
-            addClickListener(() => setState('nodes', {repo:getRepoParameter(), branch: getBranchParameter(), path: this.getParentPath()})); //TODO
+            addClickListener(() => setState('nodes', {repo:getRepoParameter(), branch: getBranchParameter(), path: this.getParentPath()}));
         
         if (handleResultError(result)) {
             this.setInheritPermission(result.success._inheritsPermissions);
@@ -109,33 +109,6 @@ class PermissionsRoute extends DtbRoute {
     hasPermission(accessControlEntry, permission) {
         return accessControlEntry.deny.indexOf(permission) === -1 && 
                accessControlEntry.allow.indexOf(permission) !== -1;
-    }
-    
-    createPermission() {
-        //TODO
-    }
-    
-    deletePermissions() {
-        showConfirmationDialog("Delete selected permissions?", 'DELETE', () => this.doDeletePermissions());
-    }
-
-    doDeletePermissions() {
-        const infoDialog = showInfoDialog("Deleting selected permissions...");
-        const principals = this.tableCard.getSelectedRows().map((row) => row.attributes['principal']);
-        $.ajax({
-            method: 'POST',
-            url: config.servicesUrl + '/permission-delete',
-            data: JSON.stringify({
-                repositoryName: getRepoParameter(),
-                branchName: getBranchParameter(),
-                keys: getPathParameter(),
-                principals: principals,
-            }),
-            contentType: 'application/json; charset=utf-8'
-        }).done(handleResultError).fail(handleAjaxError).always(() => {
-            infoDialog.close();
-            this.retrievePermissions();
-        });
     }
 
     refreshBreadcrumbs() {

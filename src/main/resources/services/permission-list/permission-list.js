@@ -1,5 +1,4 @@
 var nodeLib = require('/lib/xp/node');
-var escapeLib = require('/lib/escape');
 var exceptionLib = require('/lib/exception');
 
 exports.post = function (req) {
