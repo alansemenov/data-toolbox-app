@@ -66,7 +66,7 @@ class FieldsRoute extends DtbRoute {
                 
                 if(field.type === 'PropertySet') {
                     row.addClass('rcd-clickable').
-                        addClickListener(() => setState('fields', {repo:getRepoParameter(), branch: getBranchParameter(), path: getPathParameter(), field: getFieldParameter() ? getFieldParameter() + '.' + field.name : field.name}))
+                        addClickListener(() => setState('fields', {repo:getRepoParameter(), branch: getBranchParameter(), path: getPathParameter(), field: (getFieldParameter() ? getFieldParameter() + '.' + field.name : field.name) + '[' + field.index + ']'}))
                 }
             });
 
@@ -117,11 +117,12 @@ class FieldsRoute extends DtbRoute {
             fieldElements.forEach((subFieldElement, index, array) => {
                 currentField += currentField ? '.' + subFieldElement : subFieldElement;
                 const constCurrentField = currentField;
+                const simplifiedSubFieldElement = subFieldElement.endsWith('[0]') ? subFieldElement.substring(0, subFieldElement.length - 3) : subFieldElement;
 
                 if (index < array.length - 1) {
-                    this.breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb(subFieldElement, () => setState('fields', {repo: repositoryName, branch: branchName, path: path, field: constCurrentField})).init(), ' . ');
+                    this.breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb(simplifiedSubFieldElement, () => setState('fields', {repo: repositoryName, branch: branchName, path: path, field: constCurrentField})).init(), ' . ');
                 } else {
-                    this.breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb(subFieldElement, undefined).init(), ' . ');
+                    this.breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb(simplifiedSubFieldElement, undefined).init(), ' . ');
                 }
             });
         }
