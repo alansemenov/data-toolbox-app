@@ -27,6 +27,7 @@ class NodesRoute extends DtbRoute {
             addColumn('', {icon: true}).
             addColumn('', {icon: true}).
             addColumn('', {icon: true}).
+            addColumn('', {icon: true}).
             addIconArea(exportIconArea, {min: 1, max: 1}).
             addIconArea(importIconArea, {max: 0}).
             addIconArea(filterIconArea, {max: 0}).
@@ -66,6 +67,7 @@ class NodesRoute extends DtbRoute {
             addCell(null, {icon: true}).
             addCell(null, {icon: true}).
             addCell(null, {icon: true}).
+            addCell(null, {icon: true}).
             addClass('rcd-clickable').
             addClickListener(() => {
                 if (getPathParameter()) {
@@ -77,10 +79,14 @@ class NodesRoute extends DtbRoute {
 
         if (handleResultError(result)) {
             result.success.hits.forEach((node) => {
+                const displayMetaDataIconArea = new RcdImageIconArea(config.assetsUrl + '/icons/meta.svg', (source, event) => {
+                    setState('meta',{repo: getRepoParameter(), branch: getBranchParameter(), path: node._path});
+                    event.stopPropagation();
+                }).init().setTooltip('Display metadata');
                 const displayFieldsIconArea = new RcdImageIconArea(config.assetsUrl + '/icons/fields.svg', (source, event) => {
                     setState('fields',{repo: getRepoParameter(), branch: getBranchParameter(), path: node._path});
                     event.stopPropagation();
-                }).init().setTooltip('Display fields');
+                }).init().setTooltip('Display data');
                 const displayPermissionsIconArea = new RcdGoogleMaterialIconArea('lock', (source, event) => {
                     setState('permissions',{repo: getRepoParameter(), branch: getBranchParameter(), path: node._path});
                     event.stopPropagation();
@@ -93,6 +99,7 @@ class NodesRoute extends DtbRoute {
                 const row = this.tableCard.createRow().
                     addCell(node._name).
                     addCell(node._id, {classes: ['non-mobile-cell']}).
+                    addCell(displayMetaDataIconArea, {icon: true}).
                     addCell(displayFieldsIconArea, {icon: true}).
                     addCell(displayPermissionsIconArea, {icon: true}).
                     addCell(displayJsonIconArea, {icon: true}).
