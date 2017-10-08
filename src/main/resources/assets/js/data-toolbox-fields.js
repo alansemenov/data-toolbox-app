@@ -53,11 +53,16 @@ class FieldsRoute extends DtbRoute {
             const fields = result.success;
 
             fields.forEach(field => {
-                this.tableCard.createRow({selectable:false}).
+                const row = this.tableCard.createRow({selectable:false}).
                     addCell(field.name).
                     addCell(field.index).
                     addCell(field.value).
                     addCell(field.type);
+                
+                if(field.type === 'PropertySet') {
+                    row.addClass('rcd-clickable').
+                        addClickListener(() => setState('fields', {repo:getRepoParameter(), branch: getBranchParameter(), path: this.getParentPath(), field: getFieldParameter() ? getFieldParameter() + '.' + field.name : field.name}))
+                }
             });
 
             

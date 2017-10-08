@@ -44,13 +44,12 @@ public class RcdFieldsScriptBean
                 if ( propertySet != null )
                 {
                     propertySet.getProperties().forEach( property -> {
-                        String value = property.getValue().toString();
+                        String value = "PropertySet".equals( property.getType().getName() ) ? "" : property.getValue().toString();
                         value = StringEscapeUtils.escapeHtml( value );
-                        value = StringEscapeUtils.escapeJavaScript( value );
                         fieldJsonArray.createObject().
                             put( "name", property.getName() ).
                             put( "index", property.getIndex() ).
-                            put( "value", value).
+                            put( "value", value ).
                             put( "type", property.getType().toString() );
                     } );
                 }
