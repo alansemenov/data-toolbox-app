@@ -96,18 +96,21 @@ class PermissionsRoute extends DtbRoute {
     }
     
     createPermissionResume(accessControlEntry) {
-        if (this.hasOnlyPermissions(accessControlEntry, ['READ'])) {
-            return 'Can read';
+        if (accessControlEntry.deny.length === 0) {
+            if (this.hasOnlyPermissions(accessControlEntry, ['READ'])) {
+                return 'Can read';
+            }
+            if (this.hasOnlyPermissions(accessControlEntry, ['READ', 'CREATE', 'MODIFY', 'DELETE'])) {
+                return 'Can write';
+            }
+            if (this.hasOnlyPermissions(accessControlEntry, ['READ', 'CREATE', 'MODIFY', 'DELETE', 'PUBLISH'])) {
+                return 'Can publish';
+            }
+            if (this.hasOnlyPermissions(accessControlEntry, ['READ', 'CREATE', 'MODIFY', 'DELETE', 'PUBLISH', 'READ_PERMISSIONS', 'WRITE_PERMISSIONS'])) {
+                return 'Full access';
+            }
         }
-        if (this.hasOnlyPermissions(accessControlEntry, ['READ', 'CREATE', 'MODIFY', 'DELETE'])) {
-            return 'Can write';
-        }
-        if (this.hasOnlyPermissions(accessControlEntry, ['READ', 'CREATE', 'MODIFY', 'DELETE', 'PUBLISH'])) {
-            return 'Can publish';
-        }
-        if (this.hasOnlyPermissions(accessControlEntry, ['READ', 'CREATE', 'MODIFY', 'DELETE', 'PUBLISH', 'READ_PERMISSIONS', 'WRITE_PERMISSIONS'])) {
-            return 'Full access';
-        }
+        
         return 'Custom...';
     }
 

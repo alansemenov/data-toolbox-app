@@ -147,7 +147,13 @@
     padding-right: 12px;
   }
   .principal {
-    width: 120px;
+    @media (max-width: @rcd-material-max-mobile-width) {
+      width: 120px;
+    }
+    @media (min-width: @rcd-material-min-tablet-width) {
+      width: 140px;
+    }
+    
   }
 }
 
