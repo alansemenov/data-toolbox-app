@@ -254,10 +254,10 @@ class NodesRoute extends DtbRoute {
     }
 
     exportNode() {
-        const nodeName = getPathParameter()
-            ? (this.tableCard.getSelectedRows().map((row) => row.attributes['name'])[0] || 'export')
+        const baseExportName = getPathParameter()
+            ? (this.tableCard.getSelectedRows().map((row) => row.attributes['name'])[0] || 'export') + '-' + getBranchParameter()
             : getRepoParameter() + '-' + getBranchParameter();
-        const defaultExportName = nodeName + '-' + toLocalDateTimeFormat(new Date(), '-', '-');
+        const defaultExportName = baseExportName + '-' + toLocalDateTimeFormat(new Date(), '-', '-');
         showInputDialog({
             title: "Export node",
             confirmationLabel: "EXPORT",
