@@ -70,12 +70,14 @@ function setState(state,params) {
         stateBuilder += '?';
         let firstParameter = true;
         for(paramName in params) {
-            if (firstParameter) {
-                firstParameter = false;
-            } else {
-                stateBuilder += '&'
+            if (params[paramName]) {
+                if (firstParameter) {
+                    firstParameter = false;
+                } else {
+                    stateBuilder += '&'
+                }
+                stateBuilder += paramName + '=' + params[paramName];   
             }
-            stateBuilder += paramName + '=' + params[paramName];
         }
     }
     RcdHistoryRouter.setState(stateBuilder);

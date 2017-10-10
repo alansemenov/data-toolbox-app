@@ -1,16 +1,19 @@
 package systems.rcd.enonic.datatoolbox;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 import org.apache.commons.lang.StringEscapeUtils;
 
 import systems.rcd.fwk.core.format.json.RcdJsonService;
 import systems.rcd.fwk.core.format.json.data.RcdJsonArray;
+import systems.rcd.fwk.core.format.json.data.RcdJsonObject;
 
 import com.enonic.xp.branch.Branch;
 import com.enonic.xp.context.Context;
 import com.enonic.xp.context.ContextAccessor;
 import com.enonic.xp.context.ContextBuilder;
+import com.enonic.xp.data.Property;
 import com.enonic.xp.data.PropertySet;
 import com.enonic.xp.node.Node;
 import com.enonic.xp.node.NodePath;
@@ -29,21 +32,25 @@ public class RcdFieldsScriptBean
         nodeServiceSupplier = context.getService( NodeService.class );
     }
 
-    public String list( final String repositoryName, final String branchName, final String path, final String field )
+    public String list( final String repositoryName, final String branchName, final String path, final String field, final int start, final int count )
     {
         return runSafely( () -> {
-            final RcdJsonArray fieldJsonArray = RcdJsonService.createJsonArray();
+            final RcdJsonObject result = RcdJsonService.createJsonObject();
+            final RcdJsonArray fieldJsonArray = result.createArray( "hits" );
 
             final Node node = createContext( RepositoryId.from( repositoryName ), Branch.from( branchName ) ).
                 callWith( () -> this.nodeServiceSupplier.get().getByPath( NodePath.create( path ).build() ) );
-
+            
+            result.put( "total", 0 );
             if ( node != null )
             {
 
                 final PropertySet propertySet = field == null ? node.data().getRoot() : node.data().getSet( field );
                 if ( propertySet != null )
                 {
-                    propertySet.getProperties().forEach( property -> {
+                    final List<Property> propertyList = (List<Property>) propertySet.getProperties();
+                    result.put( "total", propertyList.size() );
+                    propertyList.stream().skip( start ).limit( count ).forEach( property -> {
                         String value = "PropertySet".equals( property.getType().getName() ) ? "" : property.getValue().toString();
                         value = StringEscapeUtils.escapeHtml( value );
                         fieldJsonArray.createObject().
@@ -54,8 +61,7 @@ public class RcdFieldsScriptBean
                     } );
                 }
             }
-
-            return createSuccessResult( fieldJsonArray );
+            return createSuccessResult( result );
         }, "Error while listing fields" );
     }
 

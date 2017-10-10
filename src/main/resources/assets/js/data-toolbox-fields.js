@@ -31,7 +31,9 @@ class FieldsRoute extends DtbRoute {
                 repositoryName: getRepoParameter(),
                 branchName: getBranchParameter(),
                 path: getPathParameter(),
-                field: getFieldParameter()
+                field: getFieldParameter(),
+                start: getStartParameter(),
+                count: getCountParameter()
             }),
             contentType: 'application/json; charset=utf-8'
         }).done((result) => this.onFieldsRetrieval(result)).fail(handleAjaxError).always(() => {
@@ -57,7 +59,7 @@ class FieldsRoute extends DtbRoute {
         }
         
         if (handleResultError(result)) {
-            const fields = result.success;
+            const fields = result.success.hits;
 
             fields.forEach(field => {
                 const row = this.tableCard.createRow({selectable:false}).
@@ -73,7 +75,29 @@ class FieldsRoute extends DtbRoute {
                 }
             });
 
-            
+            const startInt = parseInt(getStartParameter());
+            const countInt = parseInt(getCountParameter());
+            const previousCallback = () => setState('fields', {
+                repo: getRepoParameter(),
+                branch: getBranchParameter(),
+                path: getPathParameter(),
+                field: getFieldParameter(),
+                start: Math.max(0, startInt - countInt),
+                count: getCountParameter()});
+            const nextCallback = () => setState('fields', {
+                repo: getRepoParameter(),
+                branch: getBranchParameter(),
+                path: getPathParameter(),
+                field: getFieldParameter(),
+                start: startInt + countInt,
+                count: getCountParameter()});
+            this.tableCard.setFooter({
+                start: parseInt(getStartParameter()),
+                count: fields.length,
+                total: result.success.total,
+                previousCallback: previousCallback,
+                nextCallback: nextCallback
+            });
         }
     }
     
