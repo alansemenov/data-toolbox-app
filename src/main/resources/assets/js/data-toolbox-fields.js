@@ -15,8 +15,9 @@ class FieldsRoute extends DtbRoute {
             addColumn('Name', {classes:['non-mobile-cell']}).
             addColumn('Index', {classes:['non-mobile-cell']}).
             addColumn('Name[Idx]', {classes:['mobile-cell']}).
-            addColumn('Value').
-            addColumn('Type');
+            addColumn('Value', {classes:['non-mobile-cell']}).
+            addColumn('Type', {classes:['non-mobile-cell']}).
+            addColumn('Type: Value', {classes:['mobile-cell']});
 
         return new RcdMaterialLayout().init().
             addChild(this.tableCard);
@@ -48,8 +49,9 @@ class FieldsRoute extends DtbRoute {
             addCell('..', {classes:['non-mobile-cell']}).
             addCell('', {classes:['non-mobile-cell']}).
             addCell('..', {classes:['mobile-cell']}).
-            addCell('').
-            addCell('').
+            addCell('', {classes:['non-mobile-cell']}).
+            addCell('', {classes:['non-mobile-cell']}).
+            addCell('', {classes:['mobile-cell']}).
             addClass('rcd-clickable');
         
         if(getFieldParameter()) {
@@ -66,8 +68,9 @@ class FieldsRoute extends DtbRoute {
                     addCell(field.name, {classes:['non-mobile-cell']}).
                     addCell(field.index, {classes:['non-mobile-cell']}).
                     addCell(field.name + '[' + field.index + ']', {classes:['mobile-cell']}).
-                    addCell(field.value).
-                    addCell(field.type);
+                    addCell(field.value, {classes:['non-mobile-cell']}).
+                    addCell(field.type, {classes:['non-mobile-cell']}).
+                    addCell(field.type + ': ' + field.value, {classes:['mobile-cell']});
                 
                 if(field.type === 'PropertySet') {
                     row.addClass('rcd-clickable').
