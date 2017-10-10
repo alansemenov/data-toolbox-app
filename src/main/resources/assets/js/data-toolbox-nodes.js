@@ -24,10 +24,11 @@ class NodesRoute extends DtbRoute {
         this.tableCard = new RcdMaterialTableCard('Nodes').init().
             addColumn('Node name').
             addColumn('Node ID', {classes: ['non-mobile-cell']}).
-            addColumn('', {icon: true}).
-            addColumn('', {icon: true}).
-            addColumn('', {icon: true}).
-            addColumn('', {icon: true}).
+            addColumn('', {icon: true, classes: ['non-mobile-cell']}).
+            addColumn('', {icon: true, classes: ['non-mobile-cell']}).
+            addColumn('', {icon: true, classes: ['non-mobile-cell']}).
+            addColumn('', {icon: true, classes: ['non-mobile-cell']}).
+            addColumn('', {icon: true, classes: ['mobile-cell']}).
             addIconArea(exportIconArea, {min: 1, max: 1}).
             addIconArea(importIconArea, {max: 0}).
             addIconArea(filterIconArea, {max: 0}).
@@ -64,10 +65,11 @@ class NodesRoute extends DtbRoute {
         this.tableCard.createRow({selectable:false}).
             addCell('..').
             addCell('', {classes: ['non-mobile-cell']}).
-            addCell(null, {icon: true}).
-            addCell(null, {icon: true}).
-            addCell(null, {icon: true}).
-            addCell(null, {icon: true}).
+            addCell(null, {icon: true, classes: ['non-mobile-cell']}).
+            addCell(null, {icon: true, classes: ['non-mobile-cell']}).
+            addCell(null, {icon: true, classes: ['non-mobile-cell']}).
+            addCell(null, {icon: true, classes: ['non-mobile-cell']}).
+            addCell(null, {icon: true, classes: ['mobile-cell']}).
             addClass('rcd-clickable').
             addClickListener(() => {
                 if (getPathParameter()) {
@@ -79,30 +81,34 @@ class NodesRoute extends DtbRoute {
 
         if (handleResultError(result)) {
             result.success.hits.forEach((node) => {
-                const displayMetaDataIconArea = new RcdImageIconArea(config.assetsUrl + '/icons/meta.svg', (source, event) => {
-                    setState('meta',{repo: getRepoParameter(), branch: getBranchParameter(), path: node._path});
+                
+                const displayMetaDataCallback = () => setState('meta',{repo: getRepoParameter(), branch: getBranchParameter(), path: node._path});
+                const displayFieldsCallback = () => setState('fields',{repo: getRepoParameter(), branch: getBranchParameter(), path: node._path});
+                const displayPermissionsCallback = () => setState('permissions',{repo: getRepoParameter(), branch: getBranchParameter(), path: node._path});
+                const displayJsonCallback = () => this.displayNodeAsJson(node._id);
+                
+                const displayMetaDataIconArea = new RcdImageIconArea(config.assetsUrl + '/icons/meta.svg', (source, event) => {displayMetaDataCallback();event.stopPropagation();}).init().setTooltip('Display metadata');
+                const displayFieldsIconArea = new RcdImageIconArea(config.assetsUrl + '/icons/fields.svg', (source, event) => {displayFieldsCallback();event.stopPropagation();}).init().setTooltip('Display data');
+                const displayPermissionsIconArea = new RcdGoogleMaterialIconArea('lock', (source, event) => {displayPermissionsCallback();event.stopPropagation();}).init().setTooltip('Display permissions');
+                const displayJsonIconArea = new RcdImageIconArea(config.assetsUrl + '/icons/json.svg', (source, event) => {displayJsonCallback();event.stopPropagation();}).init().setTooltip('Display as JSON');
+                
+                const moreIconAreaItems =  [{text:'Display metadata', callback: displayMetaDataCallback}, 
+                    {text:'Display data', callback: displayFieldsCallback}, 
+                    {text:'Display permissions', callback: displayPermissionsCallback}, 
+                    {text:'Display as JSON', callback: displayJsonCallback}];
+                const moreIconArea = new RcdGoogleMaterialIconArea('more_vert', (source, event) => {
+                    RcdMaterialMenuHelper.displayMenu(source, moreIconAreaItems, 200)
                     event.stopPropagation();
-                }).init().setTooltip('Display metadata');
-                const displayFieldsIconArea = new RcdImageIconArea(config.assetsUrl + '/icons/fields.svg', (source, event) => {
-                    setState('fields',{repo: getRepoParameter(), branch: getBranchParameter(), path: node._path});
-                    event.stopPropagation();
-                }).init().setTooltip('Display data');
-                const displayPermissionsIconArea = new RcdGoogleMaterialIconArea('lock', (source, event) => {
-                    setState('permissions',{repo: getRepoParameter(), branch: getBranchParameter(), path: node._path});
-                    event.stopPropagation();
-                }).init().setTooltip('Display permissions');
-                const displayJsonIconArea = new RcdImageIconArea(config.assetsUrl + '/icons/json.svg', (source, event) => {
-                    this.displayNodeAsJson(node._id);
-                    event.stopPropagation();
-                }).init().setTooltip('Display as JSON');
+                }).init().setTooltip('Display...');
 
                 const row = this.tableCard.createRow().
                     addCell(node._name).
                     addCell(node._id, {classes: ['non-mobile-cell']}).
-                    addCell(displayMetaDataIconArea, {icon: true}).
-                    addCell(displayFieldsIconArea, {icon: true}).
-                    addCell(displayPermissionsIconArea, {icon: true}).
-                    addCell(displayJsonIconArea, {icon: true}).
+                    addCell(displayMetaDataIconArea, {icon: true, classes: ['non-mobile-cell']}).
+                    addCell(displayFieldsIconArea, {icon: true, classes: ['non-mobile-cell']}).
+                    addCell(displayPermissionsIconArea, {icon: true, classes: ['non-mobile-cell']}).
+                    addCell(displayJsonIconArea, {icon: true, classes: ['non-mobile-cell']}).
+                    addCell(moreIconArea, {icon: true, classes: ['mobile-cell']}).
                     setAttribute('id', node._id).
                     setAttribute('path', node._path).
                     setAttribute('name', node._name).
