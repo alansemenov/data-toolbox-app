@@ -416,7 +416,10 @@ class NodesRoute extends DtbRoute {
                         'Examples: "_timestamp DESC", "_name ASC"'
         }).
         addActionDefinition({iconName: 'delete', definition: 'Delete the selected nodes.'}).
-        addActionDefinition({iconName: 'info', definition: 'Display the node content.'}).
+        addActionDefinition({iconSrc: config.assetsUrl + '/icons/meta.svg',definition: 'Display the node metadata.'}).
+        addActionDefinition({iconSrc: config.assetsUrl + '/icons/fields.svg',definition: 'Display the node fields.'}).
+        addActionDefinition({iconName: 'lock',definition: 'Display the node permissions.'}).
+        addActionDefinition({iconSrc: config.assetsUrl + '/icons/json.svg',definition: 'Display the node as JSON.'}).
         open();
     }
 }
