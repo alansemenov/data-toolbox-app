@@ -12,8 +12,9 @@ class FieldsRoute extends DtbRoute {
     
     createLayout() {
         this.tableCard = new RcdMaterialTableCard('Fields').init().
-            addColumn('Name').
-            addColumn('Index').
+            addColumn('Name', {classes:['non-mobile-cell']}).
+            addColumn('Index', {classes:['non-mobile-cell']}).
+            addColumn('Name[Idx]', {classes:['mobile-cell']}).
             addColumn('Value').
             addColumn('Type');
 
@@ -42,8 +43,9 @@ class FieldsRoute extends DtbRoute {
         this.tableCard.deleteRows();
 
         const headerRow = this.tableCard.createRow({selectable:false}).
-            addCell('..').
-            addCell('').
+            addCell('..', {classes:['non-mobile-cell']}).
+            addCell('', {classes:['non-mobile-cell']}).
+            addCell('..', {classes:['mobile-cell']}).
             addCell('').
             addCell('').
             addClass('rcd-clickable');
@@ -59,8 +61,9 @@ class FieldsRoute extends DtbRoute {
 
             fields.forEach(field => {
                 const row = this.tableCard.createRow({selectable:false}).
-                    addCell(field.name).
-                    addCell(field.index).
+                    addCell(field.name, {classes:['non-mobile-cell']}).
+                    addCell(field.index, {classes:['non-mobile-cell']}).
+                    addCell(field.name + '[' + field.index + ']', {classes:['mobile-cell']}).
                     addCell(field.value).
                     addCell(field.type);
                 
