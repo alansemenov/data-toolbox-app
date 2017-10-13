@@ -12,11 +12,12 @@ class FieldsRoute extends DtbRoute {
     
     createLayout() {
         this.tableCard = new RcdMaterialTableCard('Fields').init().
+            addClass('dtb-table-card-fields').
             addColumn('Name', {classes:['non-mobile-cell']}).
-            addColumn('Index', {classes:['non-mobile-cell']}).
+            addColumn('Index', {classes:['non-mobile-cell', 'index']}).
             addColumn('Name[Idx]', {classes:['mobile-cell']}).
             addColumn('Value', {classes:['non-mobile-cell']}).
-            addColumn('Type', {classes:['non-mobile-cell']}).
+            addColumn('Type', {classes:['non-mobile-cell', 'type']}).
             addColumn('Type: Value', {classes:['mobile-cell']});
 
         return new RcdMaterialLayout().init().
