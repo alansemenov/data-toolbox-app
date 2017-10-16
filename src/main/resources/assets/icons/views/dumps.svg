@@ -32,7 +32,7 @@
        id="g4210"
        style="fill:#000000">
       <path
-         style="fill:#ffffff;fill-opacity:1"
+         style="fill:#2a5c88;fill-opacity:1"
          d="m 23.643102,17.9021 20,0 0,-8.0000002 -20,0 z m 4,-6 4,0 0,4 -4,0 z m -4,-26 0,7.9999996 40,0 0,-7.9999996 z m 8,5.9999996 -4,0 0,-3.9999996 4,0 z m -8,14 40,0 0,-8 -40,0 z m 4,-5.99999995 4,0 0,3.99999995 -4,0 z"
          id="path4202" />
       <rect
@@ -41,12 +41,12 @@
          height="12"
          width="10"
          id="rect4233"
-         style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+         style="opacity:1;fill:#2a5c88;fill-opacity:1;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
       <path
          transform="matrix(1.2071515,0,0,1.7423731,10.919578,-18.25269)"
          d="m 35.392015,26.489614 0,-11.478598 9.940757,5.739299 z"
          id="path4235"
-         style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+         style="opacity:1;fill:#2a5c88;fill-opacity:1;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
     </g>
   </g>
 </svg>

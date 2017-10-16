@@ -1,51 +1,56 @@
-function createSnapshotsRoute() {
-    const breadcrumbsLayout = new RcdMaterialBreadcrumbsLayout().init().
-        addBreadcrumb(new RcdMaterialBreadcrumb('Data Toolbox', () => RcdHistoryRouter.setState()).init()).
-        addBreadcrumb(new RcdMaterialBreadcrumb('Snapshots').init()).
-        addChild(new RcdGoogleMaterialIconArea('help', displayHelp).init().setTooltip('Help'));
+class SnapshotsRoute extends DtbRoute {
+    constructor() {
+        super({
+            state: 'snapshots',
+            name: 'Snapshots',
+            iconArea: new RcdGoogleMaterialIconArea('photo_camera').init()
+        });
+    }
 
-    const tableCard = new RcdMaterialTableCard('Snapshots').init().
-        addColumn('Snapshot name').
-        addColumn('Timestamp', {classes: ['non-mobile-cell']}).
-        addIconArea(new RcdGoogleMaterialIconArea('add_circle', createSnapshot).init().setTooltip('Create a snapshot'), {max: 0}).
-        addIconArea(new RcdGoogleMaterialIconArea('restore', restoreSnapshot).init().setTooltip('Restore selected snapshot'),
-        {min: 1, max: 1}).
-        addIconArea(new RcdGoogleMaterialIconArea('delete', deleteSnapshots).init().setTooltip('Delete selected snapshots', undefined,
-            RcdMaterialTooltipAlignment.RIGHT), {min: 1});
-    const layout = new RcdMaterialLayout().init().
-        addChild(tableCard);
+    onDisplay() {
+        this.retrieveSnapshots();
+    }
+    
+    createBreadcrumbsLayout() {
+        return new RcdMaterialBreadcrumbsLayout().init().
+            addBreadcrumb(new RcdMaterialBreadcrumb('Data Toolbox', () => setState()).init()).
+            addBreadcrumb(new RcdMaterialBreadcrumb('Snapshots').init()).
+            addChild(new RcdGoogleMaterialIconArea('help', () => this.displayHelp()).init().setTooltip('Help'));
+    }
+    
+    createLayout() {
+        this.tableCard = new RcdMaterialTableCard('Snapshots').init().
+            addColumn('Snapshot name').
+            addColumn('Timestamp', {classes: ['non-mobile-cell']}).
+            addIconArea(new RcdGoogleMaterialIconArea('add_circle', () => this.createSnapshot()).init().setTooltip('Create a snapshot'), {max: 0}).
+            addIconArea(new RcdGoogleMaterialIconArea('restore', () => this.restoreSnapshot()).init().setTooltip('Restore selected snapshot'),
+                {min: 1, max: 1}).
+            addIconArea(new RcdGoogleMaterialIconArea('delete', () => this.deleteSnapshots()).init().setTooltip('Delete selected snapshots', RcdMaterialTooltipAlignment.RIGHT), {min: 1});
+        return new RcdMaterialLayout().init().
+            addChild(this.tableCard);
+    }
 
-    return {
-        state: 'snapshots',
-        name: 'Snapshots',
-        iconArea: new RcdGoogleMaterialIconArea('photo_camera').init(),
-        callback: (main) => {
-            main.addChild(breadcrumbsLayout).addChild(layout);
-            retrieveSnapshots();
-        }
-    };
-
-    function retrieveSnapshots() {
+    retrieveSnapshots() {
         const infoDialog = showInfoDialog('Retrieving snapshot list...');
         return $.ajax({
             url: config.servicesUrl + '/snapshot-list'
-        }).done(function (result) {
-            tableCard.deleteRows();
+        }).done((result) => {
+            this.tableCard.deleteRows();
             if (handleResultError(result)) {
                 result.success.sort((snapshot1, snapshot2) => snapshot2.timestamp - snapshot1.timestamp).
-                    forEach((snapshot) => {
-                        tableCard.createRow().
-                            addCell(snapshot.name).
-                            addCell(toLocalDateTimeFormat(new Date(snapshot.timestamp)), {classes: ['non-mobile-cell']}).
-                            setAttribute('snapshot', snapshot.name);
-                    });
+                forEach((snapshot) => {
+                    this.tableCard.createRow().
+                        addCell(snapshot.name).
+                        addCell(toLocalDateTimeFormat(new Date(snapshot.timestamp)), {classes: ['non-mobile-cell']}).
+                        setAttribute('snapshot', snapshot.name);
+                });
             }
         }).fail(handleAjaxError).always(() => {
             infoDialog.close();
         });
     }
 
-    function createSnapshot() {
+    createSnapshot() {
         const defaultSnapshotName = 'snapshot-' + toLocalDateTimeFormat(new Date(), '-', '-');
         showInputDialog({
             title: 'Create snapshot',
@@ -53,11 +58,11 @@ function createSnapshotsRoute() {
             placeholder: defaultSnapshotName,
             value: defaultSnapshotName,
             confirmationLabel: 'CREATE',
-            callback: (value) => doCreateSnapshot(value || defaultSnapshotName)
+            callback: (value) => this.doCreateSnapshot(value || defaultSnapshotName)
         });
     }
 
-    function doCreateSnapshot(snapshotName) {
+    doCreateSnapshot(snapshotName) {
         const infoDialog = showInfoDialog('Creating snapshot...');
         $.ajax({
             method: 'POST',
@@ -68,17 +73,17 @@ function createSnapshotsRoute() {
             contentType: 'application/json; charset=utf-8'
         }).done(handleResultError).fail(handleAjaxError).always(() => {
             infoDialog.close();
-            retrieveSnapshots();
+            this.retrieveSnapshots();
         });
     }
 
-    function deleteSnapshots() {
-        showConfirmationDialog("Delete selected snapshots?", 'DELETE', doDeleteSnapshots);
+    deleteSnapshots() {
+        showConfirmationDialog("Delete selected snapshots?", 'DELETE', () => this.doDeleteSnapshots());
     }
 
-    function doDeleteSnapshots() {
+    doDeleteSnapshots() {
         const infoDialog = showInfoDialog("Deleting selected snapshots...");
-        const snapshotNames = tableCard.getSelectedRows().map((row) => row.attributes['snapshot']);
+        const snapshotNames = this.tableCard.getSelectedRows().map((row) => row.attributes['snapshot']);
         $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/snapshot-delete',
@@ -86,13 +91,13 @@ function createSnapshotsRoute() {
             contentType: 'application/json; charset=utf-8'
         }).done(handleResultError).fail(handleAjaxError).always(() => {
             infoDialog.close();
-            retrieveSnapshots();
+            this.retrieveSnapshots();
         });
     }
 
-    function restoreSnapshot() {
+    restoreSnapshot() {
         const infoDialog = showInfoDialog("Restoring snapshot...");
-        const snapshotName = tableCard.getSelectedRows().map((row) => row.attributes['snapshot'])[0];
+        const snapshotName = this.tableCard.getSelectedRows().map((row) => row.attributes['snapshot'])[0];
         $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/snapshot-restore',
@@ -103,7 +108,7 @@ function createSnapshotsRoute() {
         });
     }
 
-    function displayHelp() {
+    displayHelp() {
         const definition = 'A snapshot is a record of your Enonic XP indexes at a particular point in time. ' +
                            'Your first snapshot will be a complete copy of your indexes, but all subsequent snapshots will save the delta between the existing snapshots and the current state.' +
                            'This makes snapshots optimized for repetitive saves and allow to quickly rollback to a previous state in one click. It is also used, in addition to blobs backup (not covered by this tool), for backing up your data. ' +
@@ -119,4 +124,5 @@ function createSnapshotsRoute() {
             addActionDefinition({iconName: 'delete', definition: 'Delete the selected snapshots.'}).
             open();
     }
+
 }

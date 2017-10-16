@@ -1,13 +1,16 @@
 function createApp() {
     return new RcdMaterialSinglePageApplication('Data toolbox').
-        init().
-        setDefaultRoute(createPresentationRoute()).
-        addRoute(createRepositoriesRoute()).
-        addRoute(createSnapshotsRoute()).
-        addRoute(createExportsRoute()).
-        addRoute(createDumpsRoute()).
-        addRoute(createBranchesRoute()).
-        addRoute(createNodesRoute());
+    init().
+    setDefaultRoute(createPresentationRoute()).
+    addRoute(new RepositoriesRoute().init()).
+    addRoute(new BranchesRoute().init()).
+    addRoute(new NodesRoute().init()).
+    addRoute(new MetaRoute().init()).
+    addRoute(new FieldsRoute().init()).
+    addRoute(new PermissionsRoute().init()).
+    addRoute(new SnapshotsRoute().init()).
+    addRoute(new ExportsRoute().init()).
+    addRoute(new DumpsRoute().init());
 }
 
 function handleResultError(result) {
@@ -59,6 +62,57 @@ function showDetailsDialog(title, text, callback) {
     return new RcdMaterialDetailsDialog({title: title, text: text, callback: callback}).
         init().
         open();
+}
+
+function setState(state,params) {
+    let stateBuilder = state;
+    if (params) {
+        stateBuilder += '?';
+        let firstParameter = true;
+        for(paramName in params) {
+            if (params[paramName]) {
+                if (firstParameter) {
+                    firstParameter = false;
+                } else {
+                    stateBuilder += '&'
+                }
+                stateBuilder += paramName + '=' + params[paramName];   
+            }
+        }
+    }
+    RcdHistoryRouter.setState(stateBuilder);
+}
+
+function getRepoParameter() {
+    return RcdHistoryRouter.getParameters().repo;
+}
+
+function getBranchParameter() {
+    return RcdHistoryRouter.getParameters().branch;
+}
+
+function getPathParameter() {
+    return RcdHistoryRouter.getParameters().path;
+}
+
+function getStartParameter() {
+    return RcdHistoryRouter.getParameters().start || '0';
+}
+
+function getCountParameter() {
+    return RcdHistoryRouter.getParameters().count || '50';
+}
+
+function getFilterParameter() {
+    return RcdHistoryRouter.getParameters().filter || '';
+}
+
+function getSortParameter() {
+    return RcdHistoryRouter.getParameters().sort || '';
+}
+
+function getFieldParameter() {
+    return RcdHistoryRouter.getParameters().field;
 }
 
 var app = createApp();

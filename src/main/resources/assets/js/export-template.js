@@ -9,19 +9,16 @@
             tableCard = new RcdMaterialTableCard('Exports').init().
                 addColumn('Export name').
                 addIconArea(new RcdImageIconArea(config.assetsUrl + '/icons/export-icon.svg',
-                    createExport).init().setTooltip('Export current content', exportWidgetContainer), {max: 0}).
+                    createExport).init().setTooltip('Export current content'), {max: 0}).
                 addIconArea(new RcdImageIconArea(config.assetsUrl + '/icons/import-icon.svg',
-                    loadExports).init().setTooltip('Import selected exports',
-                    exportWidgetContainer), {min: 1}).
+                    loadExports).init().setTooltip('Import selected exports'), {min: 1}).
                 addIconArea(new RcdGoogleMaterialIconArea('file_download',
-                    dowloadExports).init().setTooltip('Archive and download selected exports', exportWidgetContainer,
-                    RcdMaterialTooltipAlignment.RIGHT), {min: 1}).
+                    dowloadExports).init().setTooltip('Archive and download selected exports', RcdMaterialTooltipAlignment.RIGHT), {min: 1}).
                 addIconArea(new RcdGoogleMaterialIconArea('file_upload', uploadExports).init().setTooltip('Upload and unarchive exports',
-                    exportWidgetContainer, RcdMaterialTooltipAlignment.RIGHT),
+                    RcdMaterialTooltipAlignment.RIGHT),
                 {max: 0}).
-                addIconArea(new RcdGoogleMaterialIconArea('delete', deleteExports).init().setTooltip('Delete selected exports',
-                    exportWidgetContainer), {min: 1}).
-                addIconArea(new RcdGoogleMaterialIconArea('help', displayHelp).init().setTooltip('Help', exportWidgetContainer),
+                addIconArea(new RcdGoogleMaterialIconArea('delete', deleteExports).init().setTooltip('Delete selected exports'), {min: 1}).
+                addIconArea(new RcdGoogleMaterialIconArea('help', displayHelp).init().setTooltip('Help'),
                 {max: 0});
 
             retrieveExports();
@@ -50,7 +47,7 @@
     }
 
     function createExport() {
-        const defaultExportName = config.contentName + '-' + toLocalDateTimeFormat(new Date(), '-', '-');
+        const defaultExportName = config.contentName + '-draft-' + toLocalDateTimeFormat(new Date(), '-', '-');
         showInputDialog({
             title: "Export content",
             confirmationLabel: "CREATE",

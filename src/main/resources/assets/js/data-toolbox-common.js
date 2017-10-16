@@ -295,3 +295,52 @@ function nodePathToContentPath(nodePath) {
     const contentPath = nodePath.substr('/content'.length);
     return contentPath === '' ? '/' : contentPath;
 }
+
+class DtbRoute extends RcdMaterialRoute {
+    constructor(params) {
+        super({
+            state: params.state,
+            name: params.name,
+            iconArea: params.iconArea
+        });
+    }
+
+    init() {
+        const breadcrumbsLayout = this.createBreadcrumbsLayout();
+        const layout = this.createLayout();
+        this.callback = (main) => {
+            main.addChild(breadcrumbsLayout).addChild(layout);
+            this.onDisplay();
+        }
+        return this;
+    }
+
+    createBreadcrumbsLayout() {
+        const helpIconArea = new RcdGoogleMaterialIconArea('help', () => this.displayHelp()).init().
+            setTooltip('Help');
+        this.breadcrumbsLayout = new RcdMaterialBreadcrumbsLayout().init().
+            addChild(helpIconArea);
+        return this.breadcrumbsLayout;
+    }
+
+    createLayout() {
+    }
+
+    onDisplay() {
+    }
+    
+    displayHelp() {
+        
+    }
+
+    getParentPath() {
+        const path = getPathParameter();
+        const parentPath = path && path.substring(0, path.lastIndexOf('/'));
+        return parentPath ? parentPath : '/';
+    }
+    
+    getParentField() {
+        const field = getFieldParameter();
+        return field && field.substring(0, field.lastIndexOf('.'));
+    }
+}

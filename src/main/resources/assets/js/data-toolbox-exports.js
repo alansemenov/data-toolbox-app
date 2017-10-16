@@ -1,60 +1,63 @@
-function createExportsRoute() {
-    const breadcrumbsLayout = new RcdMaterialBreadcrumbsLayout().init().
-        addBreadcrumb(new RcdMaterialBreadcrumb('Data Toolbox', () => RcdHistoryRouter.setState()).init()).
-        addBreadcrumb(new RcdMaterialBreadcrumb('Node exports').init()).
-        addChild(new RcdGoogleMaterialIconArea('help', displayHelp).init().setTooltip('Help'));
+class ExportsRoute extends DtbRoute {
+    constructor() {
+        super({
+            state: 'exports',
+            name: 'Node Exports',
+            iconArea: new RcdGoogleMaterialIconArea('import_export').init()
+        });
+    }
 
+    onDisplay() {
+        this.retrieveExports();
+    }
+    
+    createBreadcrumbsLayout() {
+        return new RcdMaterialBreadcrumbsLayout().init().
+            addBreadcrumb(new RcdMaterialBreadcrumb('Data Toolbox', () => setState()).init()).
+            addBreadcrumb(new RcdMaterialBreadcrumb('Node exports').init()).
+            addChild(new RcdGoogleMaterialIconArea('help', () => this.displayHelp()).init().setTooltip('Help'));
+    }
+    
+    createLayout() {
+        this.tableCard = new RcdMaterialTableCard('Node exports').init().
+            addColumn('Export name').
+            addColumn('Timestamp', {classes: ['non-mobile-cell']}).
+            addIconArea(new RcdGoogleMaterialIconArea('file_download',
+                () => this.dowloadExports()).init().setTooltip('Archive and download selected node exports'),
+                {min: 1}).
+            addIconArea(new RcdGoogleMaterialIconArea('file_upload', () => this.uploadExports()).init().setTooltip('Upload and unarchive node exports', RcdMaterialTooltipAlignment.RIGHT), {max: 0}).
+            addIconArea(new RcdGoogleMaterialIconArea('delete', () => this.deleteExports()).init().setTooltip('Delete selected node exports', RcdMaterialTooltipAlignment.RIGHT), {min: 1});
+        return new RcdMaterialLayout().init().
+            addChild(this.tableCard);
+    }
 
-    const tableCard = new RcdMaterialTableCard('Node exports').init().
-        addColumn('Export name').
-        addColumn('Timestamp', {classes: ['non-mobile-cell']}).
-        addIconArea(new RcdGoogleMaterialIconArea('file_download',
-            dowloadExports).init().setTooltip('Archive and download selected node exports'),
-        {min: 1}).
-        addIconArea(new RcdGoogleMaterialIconArea('file_upload', uploadExports).init().setTooltip('Upload and unarchive node exports',
-            undefined, RcdMaterialTooltipAlignment.RIGHT), {max: 0}).
-        addIconArea(new RcdGoogleMaterialIconArea('delete', deleteExports).init().setTooltip('Delete selected node exports', undefined,
-            RcdMaterialTooltipAlignment.RIGHT), {min: 1});
-    const layout = new RcdMaterialLayout().init().
-        addChild(tableCard);
-
-    return {
-        state: 'exports',
-        name: 'Node Exports',
-        iconArea: new RcdGoogleMaterialIconArea('import_export').init(),
-        callback: (main) => {
-            main.addChild(breadcrumbsLayout).addChild(layout);
-            retrieveExports();
-        }
-    };
-
-    function retrieveExports() {
+    retrieveExports() {
         const infoDialog = showInfoDialog('Retrieving export list...');
         return $.ajax({
             url: config.servicesUrl + '/export-list'
-        }).done(function (result) {
-            tableCard.deleteRows();
+        }).done((result) => {
+            this.tableCard.deleteRows();
             if (handleResultError(result)) {
                 result.success.sort((export1, export2) => export2.timestamp - export1.timestamp).
-                    forEach((anExport) => {
-                        tableCard.createRow().
-                            addCell(anExport.name).
-                            addCell(toLocalDateTimeFormat(new Date(anExport.timestamp)), {classes: ['non-mobile-cell']}).
-                            setAttribute('export', anExport.name);
-                    });
+                forEach((anExport) => {
+                    this.tableCard.createRow().
+                        addCell(anExport.name).
+                        addCell(toLocalDateTimeFormat(new Date(anExport.timestamp)), {classes: ['non-mobile-cell']}).
+                        setAttribute('export', anExport.name);
+                });
             }
         }).fail(handleAjaxError).always(() => {
             infoDialog.close();
         });
     }
 
-    function deleteExports() {
-        showConfirmationDialog('Delete selected exports?', 'DELETE', doDeleteExports);
+    deleteExports() {
+        showConfirmationDialog('Delete selected exports?', 'DELETE', () => this.doDeleteExports());
     }
 
-    function doDeleteExports() {
+    doDeleteExports() {
         const infoDialog = showInfoDialog("Deleting selected exports...");
-        const exportNames = tableCard.getSelectedRows().map((row) => row.attributes['export']);
+        const exportNames = this.tableCard.getSelectedRows().map((row) => row.attributes['export']);
         $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/export-delete',
@@ -62,12 +65,12 @@ function createExportsRoute() {
             contentType: 'application/json; charset=utf-8'
         }).done(handleResultError).fail(handleAjaxError).always(() => {
             infoDialog.close();
-            retrieveExports();
+            this.retrieveExports();
         });
     }
 
-    function dowloadExports() {
-        const exportNames = tableCard.getSelectedRows().map((row) => row.attributes['export']);
+    dowloadExports() {
+        const exportNames = this.tableCard.getSelectedRows().map((row) => row.attributes['export']);
         const exportNamesInput = new RcdInputElement().init().
             setAttribute('type', 'hidden').
             setAttribute('name', 'exportNames').
@@ -81,21 +84,19 @@ function createExportsRoute() {
         document.body.removeChild(downloadForm.getDomElement());
     }
 
-    var uploadForm;
-
-    function uploadExports() {
+    uploadExports() {
         const uploadFileInput = new RcdInputElement().init().
             setAttribute('type', 'file').
             setAttribute('name', 'uploadFile').
-            addChangeListener(doUploadExports);
-        uploadForm = new RcdFormElement().init().
+            addChangeListener(() => this.doUploadExports());
+        this.uploadForm = new RcdFormElement().init().
             addChild(uploadFileInput);
         uploadFileInput.click();
     }
 
-    function doUploadExports() {
+    doUploadExports() {
         const infoDialog = showInfoDialog("Uploading export archive...");
-        const formData = new FormData(uploadForm.getDomElement());
+        const formData = new FormData(this.uploadForm.getDomElement());
         $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/export-upload',
@@ -104,11 +105,11 @@ function createExportsRoute() {
             processData: false
         }).done(handleResultError).fail(handleAjaxError).always(() => {
             infoDialog.close();
-            retrieveExports();
+            this.retrieveExports();
         });
     }
 
-    function displayHelp() {
+    displayHelp() {
         const definition = 'A node export is a serialization of a given content/node and its children. ' +
                            'This makes node exports well suited for transferring a specific content to another installation. ' +
                            'Warning: The export mechanism does not export old versions of your data. You will loose the version history of your contents. ' +

@@ -1,5 +1,4 @@
 var nodeLib = require('/lib/xp/node');
-var escapeLib = require('/lib/escape');
 var exceptionLib = require('/lib/exception');
 
 exports.post = function (req) {
@@ -8,23 +7,25 @@ exports.post = function (req) {
     var branchName = body.branchName;
     var key = body.key;
 
-    var result = exceptionLib.runSafely(getNode, [repositoryName, branchName, key], 'Error while retrieving node');
+    var result = exceptionLib.runSafely(getPermissions, [repositoryName, branchName, key], 'Error while retrieving permissions');
     return {
         contentType: 'application/json',
         body: result
     };
 };
 
-function getNode(repositoryName, branchName, key) {
+function getPermissions(repositoryName, branchName, key) {
     var repoConnection = nodeLib.connect({
         repoId: repositoryName,
         branch: branchName
     });
 
     var result = repoConnection.get(key);
-    var escapedResult = escapeLib.escapeHtml(result);
 
     return {
-        success: escapedResult
+        success: {
+            _inheritsPermissions: result._inheritsPermissions,
+            _permissions: result._permissions
+        }
     };
 }
