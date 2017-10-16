@@ -66,7 +66,7 @@ class PermissionsRoute extends DtbRoute {
         if (handleResultError(result)) {
             this.setInheritPermission(result.success._inheritsPermissions);
             result.success._permissions.forEach((accessControlEntry) => {
-                this.tableCard.createRow().
+                this.tableCard.createRow({selectable:false}).
                     addCell(accessControlEntry.principal, {classes: ['principal']}).
                     addCell(this.createPermissionResume(accessControlEntry), {classes: ['mobile-cell']}).
                     addCell(this.createPermissionIcon(accessControlEntry, 'READ'), {icon: true, classes: ['non-mobile-cell', 'permission']}).
