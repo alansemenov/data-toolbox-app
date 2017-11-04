@@ -41,13 +41,13 @@ function handleAjaxError(jqXHR, textStatus, errorThrown) {
         init().open();
 }
 
-function retrieveTask(taskId, progressCallback, doneCallback, alwaysCallback) {
+function retrieveTask(params) {
     const intervalId = setInterval(() => {
         $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/task-get',
             data: JSON.stringify({
-                taskId: taskId
+                taskId: params.taskId
             }),
             contentType: 'application/json; charset=utf-8'
         }).done((result) => {
@@ -55,21 +55,21 @@ function retrieveTask(taskId, progressCallback, doneCallback, alwaysCallback) {
                 const task = result.success;
                 if (!task || task.state === 'FINISHED') {
                     clearInterval(intervalId);
-                    doneCallback(task);
-                    alwaysCallback();
+                    params.doneCallback(task);
+                    params.alwaysCallback();
                 } else {
-                    if (progressCallback) {
-                        progressCallback(task);
+                    if (params.progressCallback) {
+                        params.progressCallback(task);
                     }
                 }
             } else {
                 clearInterval(intervalId);
-                alwaysCallback();
+                params.alwaysCallback();
             }
         }).fail((jqXHR, textStatus, errorThrown) => {
             clearInterval(intervalId);
             handleAjaxError(jqXHR, textStatus, errorThrown);
-            alwaysCallback();
+            params.alwaysCallback();
         });
     }, 1000);
 }

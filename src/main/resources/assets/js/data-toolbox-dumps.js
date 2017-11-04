@@ -90,18 +90,22 @@ class DumpsRoute extends DtbRoute {
 
     handleCreateDumpTask(taskId) {
         const infoDialog = showInfoDialog('Creating dump...');
-        retrieveTask(taskId, null, (task) => {
-            if (task) {
-                const creationResult = JSON.parse(task.progress.info);
-                if (handleResultError(creationResult)) {
-                    new DumpResultDialog(creationResult.success)
-                        .init()
-                        .open();   
+        retrieveTask({
+            taskId: taskId, 
+            doneCallback: (task) => {
+                if (task) {
+                    const creationResult = JSON.parse(task.progress.info);
+                    if (handleResultError(creationResult)) {
+                        new DumpResultDialog(creationResult.success)
+                            .init()
+                            .open();   
+                    }
                 }
+            }, 
+            alwaysCallback: () => {
+                infoDialog.close();
+                this.retrieveDumps();
             }
-        }, () => {
-            infoDialog.close();
-            this.retrieveDumps();
         });
     }
 
