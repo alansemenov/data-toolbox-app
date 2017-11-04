@@ -22,14 +22,21 @@ function handleResultError(result) {
     return true;
 }
 
-function handleAjaxError(jqXHR) {
+function handleAjaxError(jqXHR, textStatus, errorThrown) {
     let errorMessage;
     if (jqXHR.status) {
-        errorMessage = 'Error ' + jqXHR.status + ': ' + jqXHR.statusText;
+        if (jqXHR.status === 200) {
+            errorMessage = 'Error: ' + textStatus;
+        } else {
+            errorMessage = 'Error ' + jqXHR.status + ': ' + jqXHR.statusText;
+        }
     } else {
         errorMessage = 'Connection refused';
     }
     console.log(errorMessage);
+    if (errorThrown) {
+        console.log(errorThrown);
+    }
     new RcdMaterialSnackbar(errorMessage).
         init().open();
 }
