@@ -1,5 +1,5 @@
 function createApp() {
-    return new RcdMaterialSinglePageApplication('Data toolbox').
+    return new RcdMaterialSinglePageApplication({title:'Data toolbox'}).
     init().
     setDefaultRoute(createPresentationRoute()).
     addRoute(new RepositoriesRoute().init()).
@@ -65,22 +65,7 @@ function showDetailsDialog(title, text, callback) {
 }
 
 function setState(state,params) {
-    let stateBuilder = state;
-    if (params) {
-        stateBuilder += '?';
-        let firstParameter = true;
-        for(paramName in params) {
-            if (params[paramName]) {
-                if (firstParameter) {
-                    firstParameter = false;
-                } else {
-                    stateBuilder += '&'
-                }
-                stateBuilder += paramName + '=' + params[paramName];   
-            }
-        }
-    }
-    RcdHistoryRouter.setState(stateBuilder);
+    RcdHistoryRouter.setState(state, params);
 }
 
 function getRepoParameter() {
