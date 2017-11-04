@@ -41,6 +41,39 @@ function handleAjaxError(jqXHR, textStatus, errorThrown) {
         init().open();
 }
 
+function retrieveTask(taskId, progressCallback, doneCallback, alwaysCallback) {
+    const intervalId = setInterval(() => {
+        $.ajax({
+            method: 'POST',
+            url: config.servicesUrl + '/task-get',
+            data: JSON.stringify({
+                taskId: taskId
+            }),
+            contentType: 'application/json; charset=utf-8'
+        }).done((result) => {
+            if (handleResultError(result)) {
+                const task = result.success;
+                if (!task || task.state === 'FINISHED') {
+                    clearInterval(intervalId);
+                    doneCallback(task);
+                    alwaysCallback();
+                } else {
+                    if (progressCallback) {
+                        progressCallback(task);
+                    }
+                }
+            } else {
+                clearInterval(intervalId);
+                alwaysCallback();
+            }
+        }).fail((jqXHR, textStatus, errorThrown) => {
+            clearInterval(intervalId);
+            handleAjaxError(jqXHR, textStatus, errorThrown);
+            alwaysCallback();
+        });
+    }, 1000);
+}
+
 function showInfoDialog(text) {
     return new RcdMaterialInfoDialog({text: text}).
         init().
