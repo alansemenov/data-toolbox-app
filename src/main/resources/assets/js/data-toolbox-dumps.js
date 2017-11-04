@@ -100,9 +100,12 @@ class DumpsRoute extends DtbRoute {
             url: config.servicesUrl + '/dump-delete',
             data: JSON.stringify({dumpNames: dumpNames}),
             contentType: 'application/json; charset=utf-8'
-        }).done(handleResultError).fail(handleAjaxError).always(() => {
+        }).done((result) => handleTaskCreation(result, {
+            taskId: result.taskId,
+            message: 'Deleting selected dumps',
+            alwaysCallback: () => this.retrieveDumps()
+        })).fail(handleAjaxError).always(() => {
             infoDialog.close();
-            this.retrieveDumps();
         });
     }
 

@@ -50,7 +50,9 @@ function handleTaskCreation(result, params) {
                 if (task) {
                     const result = JSON.parse(task.progress.info);
                     if (handleResultError(result)) {
-                        params.doneCallback(result.success);
+                        if(params.doneCallback) {
+                            params.doneCallback(result.success);
+                        }
                     }
                 }
             },
