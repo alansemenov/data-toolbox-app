@@ -41,6 +41,27 @@ function handleAjaxError(jqXHR, textStatus, errorThrown) {
         init().open();
 }
 
+function handleTaskCreation(result, params) {
+    if (handleResultError(result)) {
+        const infoDialog = showInfoDialog(params.message + '...');
+        retrieveTask({
+            taskId: params.taskId,
+            doneCallback: (task) => {
+                if (task) {
+                    const result = JSON.parse(task.progress.info);
+                    if (handleResultError(result)) {
+                        params.doneCallback(result.success);
+                    }
+                }
+            },
+            alwaysCallback: () => {
+                infoDialog.close();
+                params.alwaysCallback();
+            }
+        });
+    }
+}
+
 function retrieveTask(params) {
     const intervalId = setInterval(() => {
         $.ajax({

@@ -78,34 +78,13 @@ class DumpsRoute extends DtbRoute {
                 dumpName: dumpName || ('dump-' + toLocalDateTimeFormat(new Date(), '-', '-'))
             }),
             contentType: 'application/json; charset=utf-8'
-        }).done((result) => {
-            if (handleResultError(result)) {
-                this.handleCreateDumpTask(result.taskId);
-            }
-        }).fail(handleAjaxError).always(() => {
+        }).done((result) => handleTaskCreation(result, {
+            taskId: result.taskId,
+            message: 'Creating dump',
+            doneCallback: (result) => new DumpResultDialog(result).init().open(),
+            alwaysCallback: () => this.retrieveDumps()
+        })).fail(handleAjaxError).always(() => {
             infoDialog.close();
-            this.retrieveDumps();
-        });
-    }
-
-    handleCreateDumpTask(taskId) {
-        const infoDialog = showInfoDialog('Creating dump...');
-        retrieveTask({
-            taskId: taskId, 
-            doneCallback: (task) => {
-                if (task) {
-                    const creationResult = JSON.parse(task.progress.info);
-                    if (handleResultError(creationResult)) {
-                        new DumpResultDialog(creationResult.success)
-                            .init()
-                            .open();   
-                    }
-                }
-            }, 
-            alwaysCallback: () => {
-                infoDialog.close();
-                this.retrieveDumps();
-            }
         });
     }
 
