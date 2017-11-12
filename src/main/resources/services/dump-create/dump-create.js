@@ -8,7 +8,7 @@ exports.post = function (req) {
     var taskId = taskLib.submit({
         description: 'Dump creation',
         task: function () {
-            taskLib.progress({info: 'Creating dump'});
+            taskLib.progress({info: 'Creating dump (0/1)...'});
             taskLib.progress({info: bean.create(dumpName)});
         }
     });

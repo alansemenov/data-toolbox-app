@@ -43,7 +43,7 @@ function handleAjaxError(jqXHR, textStatus, errorThrown) {
 
 function handleTaskCreation(result, params) {
     if (handleResultError(result)) {
-        const infoDialog = showInfoDialog(params.message + '...');
+        const infoDialog = showInfoDialog(params.message);
         retrieveTask({
             taskId: params.taskId,
             doneCallback: (task) => {
@@ -56,6 +56,7 @@ function handleTaskCreation(result, params) {
                     }
                 }
             },
+            progressCallback: (task) => infoDialog.setInfoText(task.progress.info),
             alwaysCallback: () => {
                 infoDialog.close();
                 if (params.alwaysCallback) {

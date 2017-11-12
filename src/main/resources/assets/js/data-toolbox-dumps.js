@@ -80,7 +80,7 @@ class DumpsRoute extends DtbRoute {
             contentType: 'application/json; charset=utf-8'
         }).done((result) => handleTaskCreation(result, {
             taskId: result.taskId,
-            message: 'Creating dump',
+            message: 'Creating dump...',
             doneCallback: (success) => new DumpResultDialog(success).init().open(),
             alwaysCallback: () => this.retrieveDumps()
         })).fail(handleAjaxError).always(() => {
