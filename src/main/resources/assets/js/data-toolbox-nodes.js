@@ -275,7 +275,7 @@ class NodesRoute extends DtbRoute {
     }
 
     doExportNode(exportName) {
-        const infoDialog = showInfoDialog("Exporting selected node...");
+        const infoDialog = showInfoDialog("Exporting node...");
         return $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/node-export',
@@ -286,14 +286,13 @@ class NodesRoute extends DtbRoute {
                 exportName: exportName
             }),
             contentType: 'application/json; charset=utf-8'
-        }).done((result) => {
-            if (handleResultError(result)) {
-                new ExportResultDialog(result.success).init().
-                    open();
-            }
-        }).fail(handleAjaxError).always(() => {
+        }).done((result) => handleTaskCreation(result, {
+            taskId: result.taskId,
+            message: 'Exporting node...',
+            doneCallback: (success) =>  new ExportResultDialog(success).init().open(),
+            alwaysCallback: () => setState('exports')
+        })).fail(handleAjaxError).always(() => {
             infoDialog.close();
-            setState('exports');
         });
     }
 
