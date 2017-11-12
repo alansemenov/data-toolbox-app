@@ -154,9 +154,9 @@ class DumpsRoute extends DtbRoute {
             setAttribute('action', config.servicesUrl + '/dump-download').
             setAttribute('method', 'post').
             addChild(dumpNamesInput);
-        document.body.appendChild(downloadForm.getDomElement());
+        document.body.appendChild(downloadForm.domElement);
         downloadForm.submit();
-        document.body.removeChild(downloadForm.getDomElement());
+        document.body.removeChild(downloadForm.domElement);
     }
 
     uploadDumps() {
@@ -171,7 +171,7 @@ class DumpsRoute extends DtbRoute {
 
     doUploadDumps() {
         const infoDialog = showInfoDialog("Uploading dump archive...");
-        const formData = new FormData(this.uploadForm.getDomElement());
+        const formData = new FormData(this.uploadForm.domElement);
         $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/dump-upload',

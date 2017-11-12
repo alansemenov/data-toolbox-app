@@ -12,6 +12,7 @@ import java.util.zip.ZipEntry;
 
 import com.google.common.io.ByteSource;
 
+import systems.rcd.fwk.core.exc.RcdException;
 import systems.rcd.fwk.core.format.json.RcdJsonService;
 import systems.rcd.fwk.core.format.json.data.RcdJsonArray;
 import systems.rcd.fwk.core.format.json.data.RcdJsonObject;
@@ -62,6 +63,8 @@ public class RcdDumpScriptBean
 
     private Supplier<NodeRepositoryService> nodeRepositoryServiceSupplier;
 
+    private Path dumpArchiveDirectory;
+
     @Override
     public void initialize( final BeanContext context )
     {
@@ -69,6 +72,15 @@ public class RcdDumpScriptBean
         dumpServiceSupplier = context.getService( DumpService.class );
         repositoryServiceSupplier = context.getService( RepositoryService.class );
         nodeRepositoryServiceSupplier = context.getService( NodeRepositoryService.class );
+        try
+        {
+            dumpArchiveDirectory = Files.createTempDirectory( "dump-archives-" );
+            LOGGER.debug( "Created dump archive directory: " + dumpArchiveDirectory.toAbsolutePath() );
+        }
+        catch ( IOException e )
+        {
+            throw new RcdException( "Error while creating dump archives directory", e );
+        }
     }
 
     public String list()
@@ -396,9 +408,10 @@ public class RcdDumpScriptBean
         final java.nio.file.Path[] dumpPaths = Arrays.stream( dumpNames ).
             map( dumpName -> getDumpDirectoryPath().resolve( dumpName ) ).
             toArray( size -> new java.nio.file.Path[size] );
-
         final String dumpArchiveName = ( dumpNames.length == 1 ? dumpNames[0] : "dump-archive" ) + "-";
-        final java.nio.file.Path dumpArchivePath = Files.createTempFile( dumpArchiveName, ".zip" );
+        final java.nio.file.Path dumpArchivePath = Files.createTempFile( dumpArchiveDirectory, dumpArchiveName, ".zip" );
+
+        LOGGER.debug( "Archiving folders " + Arrays.toString( dumpNames ) + " into [" + dumpArchivePath.toAbsolutePath() + "]" );
         RcdZipService.zip( dumpArchivePath, dumpPaths );
 
         return new TemporaryFileByteSource( dumpArchivePath.toFile() );

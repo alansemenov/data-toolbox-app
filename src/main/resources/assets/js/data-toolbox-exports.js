@@ -79,9 +79,9 @@ class ExportsRoute extends DtbRoute {
             setAttribute('action', config.servicesUrl + '/export-download').
             setAttribute('method', 'post').
             addChild(exportNamesInput);
-        document.body.appendChild(downloadForm.getDomElement());
+        document.body.appendChild(downloadForm.domElement);
         downloadForm.submit();
-        document.body.removeChild(downloadForm.getDomElement());
+        document.body.removeChild(downloadForm.domElement);
     }
 
     uploadExports() {
@@ -96,7 +96,7 @@ class ExportsRoute extends DtbRoute {
 
     doUploadExports() {
         const infoDialog = showInfoDialog("Uploading export archive...");
-        const formData = new FormData(this.uploadForm.getDomElement());
+        const formData = new FormData(this.uploadForm.domElement);
         $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/export-upload',

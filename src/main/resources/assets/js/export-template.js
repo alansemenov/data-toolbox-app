@@ -130,9 +130,9 @@
             setAttribute('action', config.servicesUrl + '/export-download').
             setAttribute('method', 'post').
             addChild(exportNamesInput);
-        document.body.appendChild(downloadForm.getDomElement());
+        document.body.appendChild(downloadForm.domElement);
         downloadForm.submit();
-        document.body.removeChild(downloadForm.getDomElement());
+        document.body.removeChild(downloadForm.domElement);
     }
 
     var uploadForm;
@@ -149,7 +149,7 @@
 
     function doUploadExports() {
         const infoDialog = showInfoDialog("Uploading export archive...");
-        const formData = new FormData(uploadForm.getDomElement());
+        const formData = new FormData(uploadForm.domElement);
         $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/export-upload',
