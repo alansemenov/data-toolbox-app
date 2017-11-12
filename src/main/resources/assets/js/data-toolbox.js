@@ -41,69 +41,6 @@ function handleAjaxError(jqXHR, textStatus, errorThrown) {
         init().open();
 }
 
-function handleTaskCreation(result, params) {
-    if (handleResultError(result)) {
-        const infoDialog = showInfoDialog(params.message);
-        retrieveTask({
-            taskId: params.taskId,
-            doneCallback: (task) => {
-                if (task) {
-                    const result = JSON.parse(task.progress.info);
-                    if (handleResultError(result)) {
-                        if(params.doneCallback) {
-                            params.doneCallback(result.success);
-                        }
-                    }
-                }
-            },
-            progressCallback: (task) => infoDialog.setInfoText(task.progress.info),
-            alwaysCallback: () => {
-                infoDialog.close();
-                if (params.alwaysCallback) {
-                    params.alwaysCallback();
-                }
-            }
-        });
-    }
-}
-
-function retrieveTask(params) {
-    const intervalId = setInterval(() => {
-        $.ajax({
-            method: 'POST',
-            url: config.servicesUrl + '/task-get',
-            data: JSON.stringify({
-                taskId: params.taskId
-            }),
-            contentType: 'application/json; charset=utf-8'
-        }).done((result) => {
-            if (handleResultError(result)) {
-                const task = result.success;
-                if (!task || task.state === 'FINISHED') {
-                    clearInterval(intervalId);
-                    params.doneCallback(task);
-                    params.alwaysCallback();
-                } else if (!task || task.state === 'RUNNING'){
-                    
-                    if (params.progressCallback) {
-                        params.progressCallback(task);
-                    }
-                } else {
-                    clearInterval(intervalId);
-                    params.alwaysCallback();
-                }
-            } else {
-                clearInterval(intervalId);
-                params.alwaysCallback();
-            }
-        }).fail((jqXHR, textStatus, errorThrown) => {
-            clearInterval(intervalId);
-            handleAjaxError(jqXHR, textStatus, errorThrown);
-            params.alwaysCallback();
-        });
-    }, 1000);
-}
-
 function showInfoDialog(text) {
     return new RcdMaterialInfoDialog({text: text}).
         init().

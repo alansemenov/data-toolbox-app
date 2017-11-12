@@ -68,14 +68,13 @@
                 exportName: exportName
             }),
             contentType: 'application/json; charset=utf-8'
-        }).done(function (result) {
-            if (handleResultError(result)) {
-                new ExportResultDialog(result.success, 'content').init().
-                    open();
-            }
-        }).fail(handleAjaxError).always(() => {
+        }).done((result) => handleTaskCreation(result, {
+            taskId: result.taskId,
+            message: 'Exporting content...',
+            doneCallback: (success) =>  new ExportResultDialog(success, 'content').init().open(),
+            alwaysCallback: () => retrieveExports()
+        })).fail(handleAjaxError).always(() => {
             infoDialog.close();
-            retrieveExports();
         });
     }
 
