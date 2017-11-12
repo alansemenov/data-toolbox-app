@@ -1,5 +1,6 @@
 package systems.rcd.enonic.datatoolbox;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -406,19 +407,37 @@ public class RcdDumpScriptBean
         }, "Error while deleting dumps" );
     }
 
-    public TemporaryFileByteSource download( final String... dumpNames )
+    public String archive( final String... dumpNames )
+    {
+        return runSafely( () -> {
+            final java.nio.file.Path[] dumpPaths = Arrays.stream( dumpNames ).
+                map( dumpName -> getDumpDirectoryPath().resolve( dumpName ) ).
+                toArray( size -> new java.nio.file.Path[size] );
+            final String dumpArchiveName = ( dumpNames.length == 1 ? dumpNames[0] : "dump-archive" ) + "-";
+            final Path dumpArchivePath;
+            try
+            {
+                dumpArchivePath = Files.createTempFile( DUMP_ARCHIVE_DIRECTORY_PATH, dumpArchiveName, ".zip" );
+            }
+            catch ( IOException e )
+            {
+                throw new RcdException( "Error while creating archive file", e );
+            }
+
+            LOGGER.debug( "Archiving folders " + Arrays.toString( dumpNames ) + " into [" + dumpArchivePath.toAbsolutePath() + "] ..." );
+            RcdZipService.zip( dumpArchivePath, dumpPaths );
+            LOGGER.debug( "Folders " + Arrays.toString( dumpNames ) + " archived" );
+
+            final RcdJsonObject result = RcdJsonService.createJsonObject().put( "archiveName", dumpArchivePath.getFileName().toString() );
+            return createSuccessResult(result);
+        }, "Error while archiving dumps" );
+    }
+
+    public TemporaryFileByteSource download( final String archiveName )
         throws IOException
     {
-        final java.nio.file.Path[] dumpPaths = Arrays.stream( dumpNames ).
-            map( dumpName -> getDumpDirectoryPath().resolve( dumpName ) ).
-            toArray( size -> new java.nio.file.Path[size] );
-        final String dumpArchiveName = ( dumpNames.length == 1 ? dumpNames[0] : "dump-archive" ) + "-";
-        final java.nio.file.Path dumpArchivePath = Files.createTempFile( DUMP_ARCHIVE_DIRECTORY_PATH, dumpArchiveName, ".zip" );
-
-        LOGGER.debug( "Archiving folders " + Arrays.toString( dumpNames ) + " into [" + dumpArchivePath.toAbsolutePath() + "]" );
-        RcdZipService.zip( dumpArchivePath, dumpPaths );
-
-        return new TemporaryFileByteSource( dumpArchivePath.toFile() );
+        final File archiveFile = new File( DUMP_ARCHIVE_DIRECTORY_PATH.toFile(), archiveName );
+        return new TemporaryFileByteSource( archiveFile );
     }
 
     public void upload( String filename, ByteSource dumpArchiveByteSource )

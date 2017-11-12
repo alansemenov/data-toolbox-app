@@ -28,7 +28,7 @@ class DumpsRoute extends DtbRoute {
             addIconArea(new RcdImageIconArea(config.assetsUrl + '/icons/load.svg', () => this.loadDump()).init().setTooltip('Load selected system dump'),
                 {min: 1, max: 1}).
             addIconArea(new RcdGoogleMaterialIconArea('file_download',
-                () => this.dowloadDumps()).init().setTooltip('Archive and download selected system dumps'), {min: 1}).
+                () => this.downloadDumps()).init().setTooltip('Archive and download selected system dumps'), {min: 1}).
             addIconArea(new RcdGoogleMaterialIconArea('file_upload', () => this.uploadDumps()).init().setTooltip('Upload and unarchive system dumps', RcdMaterialTooltipAlignment.RIGHT), {max: 0}).
             addIconArea(new RcdGoogleMaterialIconArea('delete', () => this.deleteDumps()).init().setTooltip('Delete selected system dumps', RcdMaterialTooltipAlignment.RIGHT), {min: 1});
         return new RcdMaterialLayout().init().
@@ -144,19 +144,38 @@ class DumpsRoute extends DtbRoute {
         });
     }
 
-    dowloadDumps() {
+    downloadDumps() {
         const dumpNames = this.tableCard.getSelectedRows().map((row) => row.attributes['dump']);
-        const dumpNamesInput = new RcdInputElement().init().
-            setAttribute('type', 'hidden').
-            setAttribute('name', 'dumpNames').
-            setAttribute('value', dumpNames);
-        const downloadForm = new RcdFormElement().init().
-            setAttribute('action', config.servicesUrl + '/dump-download').
-            setAttribute('method', 'post').
-            addChild(dumpNamesInput);
-        document.body.appendChild(downloadForm.domElement);
-        downloadForm.submit();
-        document.body.removeChild(downloadForm.domElement);
+        const infoDialog = showInfoDialog("Archiving dumps...");
+        $.ajax({
+            method: 'POST',
+            url: config.servicesUrl + '/dump-archive',
+            data: JSON.stringify({dumpNames: dumpNames}),
+            contentType: 'application/json; charset=utf-8'
+        }).done((result) => handleTaskCreation(result, {
+            taskId: result.taskId,
+            message: 'Archiving dumps',
+            doneCallback: (result) => {
+                const archiveNameInput = new RcdInputElement().init().
+                setAttribute('type', 'hidden').
+                setAttribute('name', 'archiveName').
+                setAttribute('value', result.archiveName);
+                const fileNameInput = new RcdInputElement().init().
+                setAttribute('type', 'hidden').
+                setAttribute('name', 'fileName').
+                setAttribute('value', (dumpNames.length == 1 ? dumpNames[0] : "dump-download") + '.zip');
+                const downloadForm = new RcdFormElement().init().
+                setAttribute('action', config.servicesUrl + '/dump-download').
+                setAttribute('method', 'post').
+                addChild(archiveNameInput).
+                addChild(fileNameInput);
+                document.body.appendChild(downloadForm.domElement);
+                downloadForm.submit();
+                document.body.removeChild(downloadForm.domElement);
+            }
+        })).fail(handleAjaxError).always(() => {
+            infoDialog.close();
+        });
     }
 
     uploadDumps() {

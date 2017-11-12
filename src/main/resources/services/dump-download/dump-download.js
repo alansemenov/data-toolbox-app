@@ -2,13 +2,14 @@ var portalLib = require('/lib/xp/portal');
 
 exports.post = function (req) {
     var bean = __.newBean('systems.rcd.enonic.datatoolbox.RcdDumpScriptBean');
-    var dumpNames = req.params.dumpNames.split(",");
+    var archiveName = req.params.archiveName;
+    var fileName = req.params.fileName;
 
     return {
         contentType: 'application/octet-stream',
-        body: bean.download(dumpNames),
+        body: bean.download(archiveName),
         headers: {
-            "Content-Disposition": "attachment; filename=" + (dumpNames.length == 1 ? dumpNames[0] : "dump-archive") + ".zip"
+            "Content-Disposition": "attachment; filename=" + fileName
         }
     }
 };
