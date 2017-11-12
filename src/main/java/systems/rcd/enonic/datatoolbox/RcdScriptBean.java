@@ -19,7 +19,7 @@ import com.enonic.xp.script.bean.ScriptBean;
 public class RcdScriptBean
     implements ScriptBean
 {
-    protected final Logger LOGGER = LoggerFactory.getLogger( RcdScriptBean.class );
+    protected static final Logger LOGGER = LoggerFactory.getLogger( RcdScriptBean.class );
 
     protected static final long RESULT_DETAILS_COUNT = 100;
 
@@ -82,7 +82,7 @@ public class RcdScriptBean
             to.add( "..." );
         }
     }
-    
+
     protected RcdJsonValue convertNodeImportResultToJson( final NodeImportResult nodeImportResult )
     {
         final RcdJsonObject result = RcdJsonService.createJsonObject();
