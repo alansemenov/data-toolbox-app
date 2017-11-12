@@ -189,7 +189,7 @@ class DumpsRoute extends DtbRoute {
     }
 
     doUploadDumps() {
-        const infoDialog = showInfoDialog("Uploading dump archive...");
+        const infoDialog = showInfoDialog("Uploading dumps...");
         const formData = new FormData(this.uploadForm.domElement);
         $.ajax({
             method: 'POST',
@@ -199,7 +199,7 @@ class DumpsRoute extends DtbRoute {
             processData: false
         }).done((result) => handleTaskCreation(result, {
             taskId: result.taskId,
-            message: 'Uploading dump...',
+            message: 'Uploading dumps...',
             alwaysCallback: () => this.retrieveDumps()
         })).fail(handleAjaxError).always(() => {
             infoDialog.close();
