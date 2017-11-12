@@ -58,7 +58,9 @@ function handleTaskCreation(result, params) {
             },
             alwaysCallback: () => {
                 infoDialog.close();
-                params.alwaysCallback();
+                if (params.alwaysCallback) {
+                    params.alwaysCallback();
+                }
             }
         });
     }

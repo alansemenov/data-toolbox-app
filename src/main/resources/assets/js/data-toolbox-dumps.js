@@ -127,17 +127,19 @@ class DumpsRoute extends DtbRoute {
             url: config.servicesUrl + '/dump-load',
             data: JSON.stringify({dumpName: dumpName}),
             contentType: 'application/json; charset=utf-8'
-        }).done((result) => {
-            if (handleResultError(result)) {
+        }).done((result) => handleTaskCreation(result, {
+            taskId: result.taskId,
+            message: 'Loading dump',
+            doneCallback: (result) => {
                 if (dumpType === 'export') {
-                    new LoadExportDumpDialog(result.success).init().
-                        open();
+                    new LoadExportDumpDialog(result).init().
+                    open();
                 } else {
-                    new DumpResultDialog(result.success, true).init().
-                        open();
+                    new DumpResultDialog(result, true).init().
+                    open();
                 }
             }
-        }).fail(handleAjaxError).always(() => {
+        })).fail(handleAjaxError).always(() => {
             infoDialog.close();
         });
     }
