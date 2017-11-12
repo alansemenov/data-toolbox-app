@@ -93,7 +93,7 @@ class DumpsRoute extends DtbRoute {
     }
 
     doDeleteDumps() {
-        const infoDialog = showInfoDialog("Deleting selected dumps...");
+        const infoDialog = showInfoDialog("Deleting dumps...");
         const dumpNames = this.tableCard.getSelectedRows().map((row) => row.attributes['dump']);
         $.ajax({
             method: 'POST',
@@ -102,7 +102,7 @@ class DumpsRoute extends DtbRoute {
             contentType: 'application/json; charset=utf-8'
         }).done((result) => handleTaskCreation(result, {
             taskId: result.taskId,
-            message: 'Deleting selected dumps',
+            message: 'Deleting dumps...',
             alwaysCallback: () => this.retrieveDumps()
         })).fail(handleAjaxError).always(() => {
             infoDialog.close();
@@ -129,7 +129,7 @@ class DumpsRoute extends DtbRoute {
             contentType: 'application/json; charset=utf-8'
         }).done((result) => handleTaskCreation(result, {
             taskId: result.taskId,
-            message: 'Loading dump',
+            message: 'Loading dump...',
             doneCallback: (success) => {
                 if (dumpType === 'export') {
                     new LoadExportDumpDialog(success).init().
@@ -154,7 +154,7 @@ class DumpsRoute extends DtbRoute {
             contentType: 'application/json; charset=utf-8'
         }).done((result) => handleTaskCreation(result, {
             taskId: result.taskId,
-            message: 'Archiving dumps',
+            message: 'Archiving dumps...',
             doneCallback: (success) => {
                 const archiveNameInput = new RcdInputElement().init().
                 setAttribute('type', 'hidden').
@@ -199,7 +199,7 @@ class DumpsRoute extends DtbRoute {
             processData: false
         }).done((result) => handleTaskCreation(result, {
             taskId: result.taskId,
-            message: 'Uploading dump',
+            message: 'Uploading dump...',
             alwaysCallback: () => this.retrieveDumps()
         })).fail(handleAjaxError).always(() => {
             infoDialog.close();

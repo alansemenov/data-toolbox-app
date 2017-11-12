@@ -45,6 +45,7 @@ import com.enonic.xp.export.ExportService;
 import com.enonic.xp.export.ImportNodesParams;
 import com.enonic.xp.export.NodeImportResult;
 import com.enonic.xp.home.HomeDir;
+import com.enonic.xp.lib.task.TaskProgressHandler;
 import com.enonic.xp.node.NodePath;
 import com.enonic.xp.repository.CreateRepositoryParams;
 import com.enonic.xp.repository.NodeRepositoryService;
@@ -400,8 +401,10 @@ public class RcdDumpScriptBean
     public String delete( final String... dumpNames )
     {
         return runSafely( () -> {
-            for ( String dumpName : dumpNames )
+            for ( int i = 0; i < dumpNames.length; i++ )
             {
+                final String dumpName = dumpNames[i];
+                reportProgress( "Deleting dumps", i, dumpNames.length );
                 final Path dumpPath = getDumpDirectoryPath().resolve( dumpName );
                 RcdFileService.delete( dumpPath );
             }

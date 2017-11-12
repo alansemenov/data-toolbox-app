@@ -13,6 +13,7 @@ import systems.rcd.fwk.core.format.json.data.RcdJsonObject;
 import systems.rcd.fwk.core.format.json.data.RcdJsonValue;
 
 import com.enonic.xp.export.NodeImportResult;
+import com.enonic.xp.lib.task.TaskProgressHandler;
 import com.enonic.xp.script.bean.BeanContext;
 import com.enonic.xp.script.bean.ScriptBean;
 
@@ -105,5 +106,13 @@ public class RcdScriptBean
                            ( (NodeImportResult.ImportError) error ).getException().toString() );
 
         return result;
+    }
+    
+    protected void reportProgress(final String action, final int current, final int total) {
+        final TaskProgressHandler taskProgressHandler = new TaskProgressHandler();
+        taskProgressHandler.setInfo( action + " (" + current + "/" + total + ")..." );
+        taskProgressHandler.setCurrent( (double) current );
+        taskProgressHandler.setTotal( (double) total );
+        taskProgressHandler.reportProgress();
     }
 }

@@ -11,7 +11,7 @@ exports.post = function (req) {
     var taskId = taskLib.submit({
         description: 'Dumps unarchiving',
         task: function () {
-            taskLib.progress({info: 'Unarchiving dump'});
+            taskLib.progress({info: 'Unarchiving dumps...'});
             taskLib.progress({info: bean.unarchive(archivePath)});
         }
     });
