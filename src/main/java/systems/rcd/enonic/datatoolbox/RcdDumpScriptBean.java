@@ -18,6 +18,7 @@ import systems.rcd.fwk.core.exc.RcdException;
 import systems.rcd.fwk.core.format.json.RcdJsonService;
 import systems.rcd.fwk.core.format.json.data.RcdJsonArray;
 import systems.rcd.fwk.core.format.json.data.RcdJsonObject;
+import systems.rcd.fwk.core.format.json.data.RcdJsonString;
 import systems.rcd.fwk.core.format.json.data.RcdJsonValue;
 import systems.rcd.fwk.core.format.properties.RcdPropertiesService;
 import systems.rcd.fwk.core.io.file.RcdFileService;
@@ -429,7 +430,7 @@ public class RcdDumpScriptBean
             RcdZipService.zip( dumpArchivePath, dumpPaths );
             LOGGER.debug( "Folders " + Arrays.toString( dumpNames ) + " archived" );
 
-            final RcdJsonObject result = RcdJsonService.createJsonObject().put( "archiveName", dumpArchivePath.getFileName().toString() );
+            final RcdJsonString result = RcdJsonService.createJsonValue( dumpArchivePath.getFileName().toString() );
             return createSuccessResult( result );
         }, "Error while archiving dumps" );
     }

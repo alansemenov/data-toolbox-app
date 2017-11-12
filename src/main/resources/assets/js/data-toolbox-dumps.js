@@ -81,7 +81,7 @@ class DumpsRoute extends DtbRoute {
         }).done((result) => handleTaskCreation(result, {
             taskId: result.taskId,
             message: 'Creating dump',
-            doneCallback: (result) => new DumpResultDialog(result).init().open(),
+            doneCallback: (success) => new DumpResultDialog(success).init().open(),
             alwaysCallback: () => this.retrieveDumps()
         })).fail(handleAjaxError).always(() => {
             infoDialog.close();
@@ -130,12 +130,12 @@ class DumpsRoute extends DtbRoute {
         }).done((result) => handleTaskCreation(result, {
             taskId: result.taskId,
             message: 'Loading dump',
-            doneCallback: (result) => {
+            doneCallback: (success) => {
                 if (dumpType === 'export') {
-                    new LoadExportDumpDialog(result).init().
+                    new LoadExportDumpDialog(success).init().
                     open();
                 } else {
-                    new DumpResultDialog(result, true).init().
+                    new DumpResultDialog(success, true).init().
                     open();
                 }
             }
@@ -155,11 +155,11 @@ class DumpsRoute extends DtbRoute {
         }).done((result) => handleTaskCreation(result, {
             taskId: result.taskId,
             message: 'Archiving dumps',
-            doneCallback: (result) => {
+            doneCallback: (success) => {
                 const archiveNameInput = new RcdInputElement().init().
                 setAttribute('type', 'hidden').
                 setAttribute('name', 'archiveName').
-                setAttribute('value', result.archiveName);
+                setAttribute('value', success);
                 const fileNameInput = new RcdInputElement().init().
                 setAttribute('type', 'hidden').
                 setAttribute('name', 'fileName').
