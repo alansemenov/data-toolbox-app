@@ -1,9 +1,11 @@
 package systems.rcd.enonic.datatoolbox;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -424,12 +426,12 @@ public class RcdDumpScriptBean
                 throw new RcdException( "Error while creating archive file", e );
             }
 
-            LOGGER.debug( "Archiving folders " + Arrays.toString( dumpNames ) + " into [" + dumpArchivePath.toAbsolutePath() + "] ..." );
+            LOGGER.debug( "Archiving folders " + Arrays.toString( dumpNames ) + " into [" + dumpArchivePath.toAbsolutePath() + "]..." );
             RcdZipService.zip( dumpArchivePath, dumpPaths );
             LOGGER.debug( "Folders " + Arrays.toString( dumpNames ) + " archived" );
 
             final RcdJsonObject result = RcdJsonService.createJsonObject().put( "archiveName", dumpArchivePath.getFileName().toString() );
-            return createSuccessResult(result);
+            return createSuccessResult( result );
         }, "Error while archiving dumps" );
     }
 
@@ -440,17 +442,28 @@ public class RcdDumpScriptBean
         return new TemporaryFileByteSource( archiveFile );
     }
 
-    public void upload( String filename, ByteSource dumpArchiveByteSource )
+    public String upload( String filename, ByteSource dumpArchiveByteSource )
         throws IOException
     {
-        final java.nio.file.Path exportArchivePath = Files.createTempFile( filename, ".tmp" );
-        try (TemporaryFileOutputStream tmp = new TemporaryFileOutputStream( exportArchivePath.toFile() ))
+        final java.nio.file.Path exportArchivePath = Files.createTempFile(DUMP_ARCHIVE_DIRECTORY_PATH, filename, ".tmp" );
+        try (FileOutputStream tmp = new FileOutputStream( exportArchivePath.toFile() ))
         {
             dumpArchiveByteSource.copyTo( tmp );
-
-            Predicate<ZipEntry> filter = zipEntry -> !zipEntry.getName().startsWith( "__MACOSX/" );
-            RcdZipService.unzip( exportArchivePath, getDumpDirectoryPath(), filter );
         }
+        return exportArchivePath.getFileName().toString();
+    }
+
+    public String unarchive( final String archiveName)
+        throws IOException
+    {
+        return runSafely( () -> {
+            final File archiveFile = new File( DUMP_ARCHIVE_DIRECTORY_PATH.toFile(), archiveName );
+            LOGGER.debug( "Unarchiving [" + archiveFile.getAbsolutePath() + "] into [" + getDumpDirectoryPath() + "]..." );
+            Predicate<ZipEntry> filter = zipEntry -> !zipEntry.getName().startsWith( "__MACOSX/" );
+            RcdZipService.unzip( archiveFile.toPath(), getDumpDirectoryPath(), filter );
+            LOGGER.debug( "Dumps unarchived!" );
+            return createSuccessResult();
+        }, "Error while unarchiving dumps" );
     }
 
     private Path getDumpDirectoryPath()

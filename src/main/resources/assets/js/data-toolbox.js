@@ -82,10 +82,14 @@ function retrieveTask(params) {
                     clearInterval(intervalId);
                     params.doneCallback(task);
                     params.alwaysCallback();
-                } else {
+                } else if (!task || task.state === 'RUNNING'){
+                    
                     if (params.progressCallback) {
                         params.progressCallback(task);
                     }
+                } else {
+                    clearInterval(intervalId);
+                    params.alwaysCallback();
                 }
             } else {
                 clearInterval(intervalId);

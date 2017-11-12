@@ -197,9 +197,12 @@ class DumpsRoute extends DtbRoute {
             data: formData,
             contentType: false,
             processData: false
-        }).done(handleResultError).fail(handleAjaxError).always(() => {
+        }).done((result) => handleTaskCreation(result, {
+            taskId: result.taskId,
+            message: 'Uploading dump',
+            alwaysCallback: () => this.retrieveDumps()
+        })).fail(handleAjaxError).always(() => {
             infoDialog.close();
-            this.retrieveDumps();
         });
     }
 

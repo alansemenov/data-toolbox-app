@@ -5,7 +5,7 @@ exports.post = function (req) {
     var dumpNames = JSON.parse(req.body).dumpNames;
 
     var taskId = taskLib.submit({
-        description: 'Dump creation',
+        description: 'Dump archiving',
         task: function () {
             taskLib.progress({info: 'Archiving dumps'});
             taskLib.progress({info: bean.archive(dumpNames)});
