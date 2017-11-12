@@ -5,7 +5,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -445,7 +444,7 @@ public class RcdDumpScriptBean
     public String upload( String filename, ByteSource dumpArchiveByteSource )
         throws IOException
     {
-        final java.nio.file.Path exportArchivePath = Files.createTempFile(DUMP_ARCHIVE_DIRECTORY_PATH, filename, ".tmp" );
+        final java.nio.file.Path exportArchivePath = Files.createTempFile( DUMP_ARCHIVE_DIRECTORY_PATH, filename, ".tmp" );
         try (FileOutputStream tmp = new FileOutputStream( exportArchivePath.toFile() ))
         {
             dumpArchiveByteSource.copyTo( tmp );
@@ -453,7 +452,7 @@ public class RcdDumpScriptBean
         return exportArchivePath.getFileName().toString();
     }
 
-    public String unarchive( final String archiveName)
+    public String unarchive( final String archiveName )
         throws IOException
     {
         return runSafely( () -> {
