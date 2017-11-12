@@ -140,8 +140,10 @@ public class RcdExportScriptBean
     public String delete( final String... exportNames )
     {
         return runSafely( () -> {
-            for ( String exportName : exportNames )
+            for ( int i = 0; i < exportNames.length; i++ )
             {
+                final String exportName = exportNames[i];
+                reportProgress( "Deleting exports", i, exportNames.length );
                 final Path exportPath = getExportDirectoryPath().resolve( exportName );
                 RcdFileService.delete( exportPath );
             }

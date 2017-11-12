@@ -113,9 +113,12 @@
             url: config.servicesUrl + '/export-delete',
             data: JSON.stringify({exportNames: exportNames}),
             contentType: 'application/json; charset=utf-8'
-        }).done(handleResultError).fail(handleAjaxError).always(() => {
+        }).done((result) => handleTaskCreation(result, {
+            taskId: result.taskId,
+            message: 'Deleting exports...',
+            alwaysCallback: () => retrieveExports()
+        })).fail(handleAjaxError).always(() => {
             infoDialog.close();
-            retrieveExports();
         });
     }
 

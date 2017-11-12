@@ -56,16 +56,19 @@ class ExportsRoute extends DtbRoute {
     }
 
     doDeleteExports() {
-        const infoDialog = showInfoDialog("Deleting selected exports...");
+        const infoDialog = showInfoDialog("Deleting exports...");
         const exportNames = this.tableCard.getSelectedRows().map((row) => row.attributes['export']);
         $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/export-delete',
             data: JSON.stringify({exportNames: exportNames}),
             contentType: 'application/json; charset=utf-8'
-        }).done(handleResultError).fail(handleAjaxError).always(() => {
+        }).done((result) => handleTaskCreation(result, {
+            taskId: result.taskId,
+            message: 'Deleting exports...',
+            alwaysCallback: () => this.retrieveExports()
+        })).fail(handleAjaxError).always(() => {
             infoDialog.close();
-            this.retrieveExports();
         });
     }
 
