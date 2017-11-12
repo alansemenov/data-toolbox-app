@@ -31,6 +31,11 @@ public class RcdScriptBean
 
     protected String runSafely( final Supplier<RcdJsonValue> supplier, final String errorMessage )
     {
+        return runSafely( supplier, errorMessage, null );
+    }
+
+    protected String runSafely( final Supplier<RcdJsonValue> supplier, final String errorMessage, final Runnable finallyCallback )
+    {
         try
         {
             return RcdJsonService.toString( supplier.get() );
@@ -39,6 +44,12 @@ public class RcdScriptBean
         {
             LOGGER.error( errorMessage, e );
             return RcdJsonService.toString( createErrorResult( errorMessage ) );
+        }
+        finally
+        {
+            if (finallyCallback != null) {
+                finallyCallback.run();
+            }
         }
     }
 
@@ -107,8 +118,9 @@ public class RcdScriptBean
 
         return result;
     }
-    
-    protected void reportProgress(final String action, final int current, final int total) {
+
+    protected void reportProgress( final String action, final int current, final int total )
+    {
         final TaskProgressHandler taskProgressHandler = new TaskProgressHandler();
         taskProgressHandler.setInfo( action + " (" + current + "/" + total + ")..." );
         taskProgressHandler.setCurrent( (double) current );
