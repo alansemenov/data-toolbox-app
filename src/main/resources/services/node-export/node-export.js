@@ -11,7 +11,7 @@ exports.post = function (req) {
     var taskId = taskLib.submit({
         description: 'Node export',
         task: function () {
-            taskLib.progress({info: 'Exporting node...'});
+            taskLib.progress({info: 'Exporting nodes...'});
             taskLib.progress({info: bean.create(repositoryName, branchName, nodePath, exportName)});
         }
     });

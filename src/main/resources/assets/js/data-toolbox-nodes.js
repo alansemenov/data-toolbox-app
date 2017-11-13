@@ -275,7 +275,7 @@ class NodesRoute extends DtbRoute {
     }
 
     doExportNode(exportName) {
-        const infoDialog = showInfoDialog("Exporting node...");
+        const infoDialog = showInfoDialog("Exporting nodes...");
         return $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/node-export',
@@ -288,7 +288,7 @@ class NodesRoute extends DtbRoute {
             contentType: 'application/json; charset=utf-8'
         }).done((result) => handleTaskCreation(result, {
             taskId: result.taskId,
-            message: 'Exporting node...',
+            message: 'Exporting nodes...',
             doneCallback: (success) =>  new ExportResultDialog(success).init().open(),
             alwaysCallback: () => setState('exports')
         })).fail(handleAjaxError).always(() => {
@@ -323,7 +323,7 @@ class NodesRoute extends DtbRoute {
     }
 
     doImportNode(exportName) {
-        const infoDialog = showInfoDialog("Importing node...");
+        const infoDialog = showInfoDialog("Importing nodes...");
         return $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/node-import',
@@ -334,14 +334,13 @@ class NodesRoute extends DtbRoute {
                 exportName: exportName
             }),
             contentType: 'application/json; charset=utf-8'
-        }).done((result) => {
-            if (handleResultError(result)) {
-                new ImportResultDialog([exportName], result.success).init().
-                    open();
-            }
-        }).fail(handleAjaxError).always(() => {
+        }).done((result) => handleTaskCreation(result, {
+            taskId: result.taskId,
+            message: 'Importing nodes...',
+            doneCallback: (success) =>  new ImportResultDialog([exportName], success).init().open(),
+            alwaysCallback: () => RcdHistoryRouter.refresh()
+        })).fail(handleAjaxError).always(() => {
             infoDialog.close();
-            RcdHistoryRouter.refresh();
         });
     }
 
