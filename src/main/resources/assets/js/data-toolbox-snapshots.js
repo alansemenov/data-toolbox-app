@@ -71,9 +71,12 @@ class SnapshotsRoute extends DtbRoute {
                 snapshotName: snapshotName || ('snapshot-' + toLocalDateTimeFormat(new Date(), '-', '-'))
             }),
             contentType: 'application/json; charset=utf-8'
-        }).done(handleResultError).fail(handleAjaxError).always(() => {
+        }).done((result) => handleTaskCreation(result, {
+            taskId: result.taskId,
+            message: 'Creating snapshot...',
+            alwaysCallback: () => this.retrieveSnapshots()
+        })).fail(handleAjaxError).always(() => {
             infoDialog.close();
-            this.retrieveSnapshots();
         });
     }
 
@@ -82,16 +85,19 @@ class SnapshotsRoute extends DtbRoute {
     }
 
     doDeleteSnapshots() {
-        const infoDialog = showInfoDialog("Deleting selected snapshots...");
+        const infoDialog = showInfoDialog("Deleting snapshots...");
         const snapshotNames = this.tableCard.getSelectedRows().map((row) => row.attributes['snapshot']);
         $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/snapshot-delete',
             data: JSON.stringify({snapshotNames: snapshotNames}),
             contentType: 'application/json; charset=utf-8'
-        }).done(handleResultError).fail(handleAjaxError).always(() => {
+        }).done((result) => handleTaskCreation(result, {
+            taskId: result.taskId,
+            message: 'Deleting snapshots...',
+            alwaysCallback: () => this.retrieveSnapshots()
+        })).fail(handleAjaxError).always(() => {
             infoDialog.close();
-            this.retrieveSnapshots();
         });
     }
 
@@ -103,7 +109,10 @@ class SnapshotsRoute extends DtbRoute {
             url: config.servicesUrl + '/snapshot-restore',
             data: JSON.stringify({snapshotName: snapshotName}),
             contentType: 'application/json; charset=utf-8'
-        }).done(handleResultError).fail(handleAjaxError).always(() => {
+        }).done((result) => handleTaskCreation(result, {
+            taskId: result.taskId,
+            message: 'Restoring snapshot...'
+        })).fail(handleAjaxError).always(() => {
             infoDialog.close();
         });
     }
