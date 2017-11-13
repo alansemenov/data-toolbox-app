@@ -90,14 +90,13 @@
                 exportNames: exportNames
             }),
             contentType: 'application/json; charset=utf-8'
-        }).done(function (result) {
-            if (handleResultError(result)) {
-                new ImportResultDialog(exportNames, result.success, 'content').init().
-                    open();
-            }
-        }).fail(handleAjaxError).always(() => {
+        }).done((result) => handleTaskCreation(result, {
+            taskId: result.taskId,
+            message: 'Exporting content...',
+            doneCallback: (success) =>  new ImportResultDialog(exportNames, success, 'content').init().open(),
+            alwaysCallback: () => retrieveExports()
+        })).fail(handleAjaxError).always(() => {
             infoDialog.close();
-            retrieveExports();
         });
     }
 

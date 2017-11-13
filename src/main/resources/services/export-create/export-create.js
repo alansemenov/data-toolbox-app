@@ -7,9 +7,9 @@ exports.post = function (req) {
     var exportName = body.exportName;
 
     var taskId = taskLib.submit({
-        description: 'Node export',
+        description: 'Content export',
         task: function () {
-            taskLib.progress({info: 'Exporting content...'});
+            taskLib.progress({info: 'Exporting contents...'});
             taskLib.progress({info: bean.create('cms-repo', 'draft', '/content' + contentPath, exportName)});
         }
     });
