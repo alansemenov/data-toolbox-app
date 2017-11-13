@@ -150,7 +150,7 @@ class NodesRoute extends DtbRoute {
     }
 
     doDeleteNodes() {
-        const infoDialog = showInfoDialog("Deleting selected nodes...");
+        const infoDialog = showInfoDialog("Deleting nodes...");
         const nodeKeys = this.tableCard.getSelectedRows().map((row) => row.attributes['id']);
         $.ajax({
             method: 'POST',
@@ -161,9 +161,12 @@ class NodesRoute extends DtbRoute {
                 keys: nodeKeys
             }),
             contentType: 'application/json; charset=utf-8'
-        }).done(handleResultError).fail(handleAjaxError).always(() => {
+        }).done((result) => handleTaskCreation(result, {
+            taskId: result.taskId,
+            message: 'Deleting nodes...',
+            alwaysCallback: () => this.retrieveNodes()
+        })).fail(handleAjaxError).always(() => {
             infoDialog.close();
-            this.retrieveNodes();
         });
     }
 

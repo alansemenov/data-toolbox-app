@@ -1,4 +1,5 @@
 var nodeLib = require('/lib/xp/node');
+var taskLib = require('/lib/xp/task');
 
 exports.post = function (req) {
     var body = JSON.parse(req.body);
@@ -6,10 +7,18 @@ exports.post = function (req) {
     var branchName = body.branchName;
     var keys = body.keys;
 
-    var result = runSafely(deleteNodes, [repositoryName, branchName, keys]);
+    var taskId = taskLib.submit({
+        description: 'Node deletion',
+        task: function () {
+            taskLib.progress({info: 'Deleting nodes...'});
+            var result = runSafely(deleteNodes, [repositoryName, branchName, keys])
+            taskLib.progress({info: JSON.stringify(result)});
+        }
+    });
+
     return {
         contentType: 'application/json',
-        body: result
+        body: {taskId: taskId}
     };
 };
 
@@ -20,7 +29,7 @@ function deleteNodes(repositoryName, branchName, keys) {
     });
 
     return {
-        success: repoConnection.delete(keys)
+        success: repoConnection.delete(keys).length
     };
 }
 
