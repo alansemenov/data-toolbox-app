@@ -74,17 +74,36 @@ class ExportsRoute extends DtbRoute {
 
     dowloadExports() {
         const exportNames = this.tableCard.getSelectedRows().map((row) => row.attributes['export']);
-        const exportNamesInput = new RcdInputElement().init().
-            setAttribute('type', 'hidden').
-            setAttribute('name', 'exportNames').
-            setAttribute('value', exportNames);
-        const downloadForm = new RcdFormElement().init().
-            setAttribute('action', config.servicesUrl + '/export-download').
-            setAttribute('method', 'post').
-            addChild(exportNamesInput);
-        document.body.appendChild(downloadForm.domElement);
-        downloadForm.submit();
-        document.body.removeChild(downloadForm.domElement);
+        const infoDialog = showInfoDialog("Archiving exports...");
+        $.ajax({
+            method: 'POST',
+            url: config.servicesUrl + '/export-archive',
+            data: JSON.stringify({exportNames: exportNames}),
+            contentType: 'application/json; charset=utf-8'
+        }).done((result) => handleTaskCreation(result, {
+            taskId: result.taskId,
+            message: 'Archiving exports...',
+            doneCallback: (success) => {
+                const archiveNameInput = new RcdInputElement().init().
+                setAttribute('type', 'hidden').
+                setAttribute('name', 'archiveName').
+                setAttribute('value', success);
+                const fileNameInput = new RcdInputElement().init().
+                setAttribute('type', 'hidden').
+                setAttribute('name', 'fileName').
+                setAttribute('value', (exportNames.length == 1 ? exportNames[0] : "export-download") + '.zip');
+                const downloadForm = new RcdFormElement().init().
+                setAttribute('action', config.servicesUrl + '/export-download').
+                setAttribute('method', 'post').
+                addChild(archiveNameInput).
+                addChild(fileNameInput);
+                document.body.appendChild(downloadForm.domElement);
+                downloadForm.submit();
+                document.body.removeChild(downloadForm.domElement);
+            }
+        })).fail(handleAjaxError).always(() => {
+            infoDialog.close();
+        });
     }
 
     uploadExports() {
