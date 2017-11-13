@@ -164,6 +164,7 @@ class NodesRoute extends DtbRoute {
         }).done((result) => handleTaskCreation(result, {
             taskId: result.taskId,
             message: 'Deleting nodes...',
+            doneCallback: (success) => displaySnackbar(success + ' node' + (success > 1 ? 's': '') + ' deleted'),
             alwaysCallback: () => this.retrieveNodes()
         })).fail(handleAjaxError).always(() => {
             infoDialog.close();

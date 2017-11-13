@@ -74,6 +74,7 @@ class SnapshotsRoute extends DtbRoute {
         }).done((result) => handleTaskCreation(result, {
             taskId: result.taskId,
             message: 'Creating snapshot...',
+            doneCallback: () => displaySnackbar('Snapshot created'),
             alwaysCallback: () => this.retrieveSnapshots()
         })).fail(handleAjaxError).always(() => {
             infoDialog.close();
@@ -95,6 +96,7 @@ class SnapshotsRoute extends DtbRoute {
         }).done((result) => handleTaskCreation(result, {
             taskId: result.taskId,
             message: 'Deleting snapshots...',
+            doneCallback: () => displaySnackbar('Snapshot' + (snapshotNames > 1 ? 's' : '') + ' deleted'),
             alwaysCallback: () => this.retrieveSnapshots()
         })).fail(handleAjaxError).always(() => {
             infoDialog.close();
@@ -111,7 +113,8 @@ class SnapshotsRoute extends DtbRoute {
             contentType: 'application/json; charset=utf-8'
         }).done((result) => handleTaskCreation(result, {
             taskId: result.taskId,
-            message: 'Restoring snapshot...'
+            message: 'Restoring snapshot...',
+            doneCallback: () => displaySnackbar('Snapshot restored')
         })).fail(handleAjaxError).always(() => {
             infoDialog.close();
         });

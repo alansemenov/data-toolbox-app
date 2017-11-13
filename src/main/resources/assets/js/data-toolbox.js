@@ -16,10 +16,14 @@ function createApp() {
 function handleResultError(result) {
     if (result.error) {
         console.log(result.error);
-        new RcdMaterialSnackbar(result.error).init().open();
+        displaySnackbar(result.error);
         return false;
     }
     return true;
+}
+
+function displaySnackbar(text) {
+    new RcdMaterialSnackbar(text).init().open();
 }
 
 function handleAjaxError(jqXHR, textStatus, errorThrown) {
