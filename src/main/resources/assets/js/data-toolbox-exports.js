@@ -117,7 +117,7 @@ class ExportsRoute extends DtbRoute {
     }
 
     doUploadExports() {
-        const infoDialog = showInfoDialog("Uploading export archive...");
+        const infoDialog = showInfoDialog("Uploading exports...");
         const formData = new FormData(this.uploadForm.domElement);
         $.ajax({
             method: 'POST',
@@ -125,9 +125,12 @@ class ExportsRoute extends DtbRoute {
             data: formData,
             contentType: false,
             processData: false
-        }).done(handleResultError).fail(handleAjaxError).always(() => {
+        }).done((result) => handleTaskCreation(result, {
+            taskId: result.taskId,
+            message: 'Uploading exports...',
+            alwaysCallback: () => this.retrieveExports()
+        })).fail(handleAjaxError).always(() => {
             infoDialog.close();
-            this.retrieveExports();
         });
     }
 

@@ -57,7 +57,7 @@ import com.enonic.xp.security.SystemConstants;
 import com.enonic.xp.vfs.VirtualFiles;
 
 public class RcdDumpScriptBean
-    extends RcdScriptBean
+    extends RcdDataScriptBean
 {
     private Supplier<ExportService> exportServiceSupplier;
 
@@ -96,7 +96,7 @@ public class RcdDumpScriptBean
         return runSafely( () -> {
             final RcdJsonArray dumpsJsonArray = RcdJsonService.createJsonArray();
 
-            final Path dumpDirectoryPath = getDumpDirectoryPath();
+            final Path dumpDirectoryPath = getDirectoryPath();
             if ( dumpDirectoryPath.toFile().exists() )
             {
                 RcdFileService.listSubPaths( dumpDirectoryPath, dumpPath -> {
@@ -235,7 +235,7 @@ public class RcdDumpScriptBean
 
     private boolean isExportDump( final String dumpName )
     {
-        final Path dumpPath = getDumpDirectoryPath().
+        final Path dumpPath = getDirectoryPath().
             resolve( dumpName );
         return isExportDump( dumpPath );
     }
@@ -318,7 +318,7 @@ public class RcdDumpScriptBean
 
     private NodeImportResult importRepoBranch( final RepositoryId repositoryId, final Branch branch, final String dumpName )
     {
-        final Path sourcePath = getDumpDirectoryPath().
+        final Path sourcePath = getDirectoryPath().
             resolve( dumpName ).
             resolve( repositoryId.toString() ).
             resolve( branch.getValue() );
@@ -405,83 +405,32 @@ public class RcdDumpScriptBean
             {
                 final String dumpName = dumpNames[i];
                 reportProgress( "Deleting dumps", i, dumpNames.length );
-                final Path dumpPath = getDumpDirectoryPath().resolve( dumpName );
+                final Path dumpPath = getDirectoryPath().resolve( dumpName );
                 RcdFileService.delete( dumpPath );
             }
             return createSuccessResult();
         }, "Error while deleting dumps" );
     }
 
-    public String archive( final String... dumpNames )
+    @Override
+    protected Path getArchiveDirectoryPath()
     {
-        return runSafely( () -> {
-            final java.nio.file.Path[] dumpPaths = Arrays.stream( dumpNames ).
-                map( dumpName -> getDumpDirectoryPath().resolve( dumpName ) ).
-                toArray( size -> new java.nio.file.Path[size] );
-            final String dumpArchiveName = ( dumpNames.length == 1 ? dumpNames[0] : "dump-archive" ) + "-";
-            final Path dumpArchivePath;
-            try
-            {
-                dumpArchivePath = Files.createTempFile( DUMP_ARCHIVE_DIRECTORY_PATH, dumpArchiveName, ".zip" );
-            }
-            catch ( IOException e )
-            {
-                throw new RcdException( "Error while creating archive file", e );
-            }
-            dumpArchivePath.toFile().deleteOnExit();
-
-            LOGGER.debug( "Archiving folders " + Arrays.toString( dumpNames ) + " into [" + dumpArchivePath.toAbsolutePath() + "]..." );
-            RcdZipService.zip( dumpArchivePath, dumpPaths );
-            LOGGER.debug( "Folders " + Arrays.toString( dumpNames ) + " archived" );
-
-            final RcdJsonString result = RcdJsonService.createJsonValue( dumpArchivePath.getFileName().toString() );
-            return createSuccessResult( result );
-        }, "Error while archiving dumps" );
+        return DUMP_ARCHIVE_DIRECTORY_PATH;
     }
 
-    public TemporaryFileByteSource download( final String archiveName )
-        throws IOException
-    {
-        final File archiveFile = new File( DUMP_ARCHIVE_DIRECTORY_PATH.toFile(), archiveName );
-        return new TemporaryFileByteSource( archiveFile );
-    }
-
-    public String upload( String filename, ByteSource dumpArchiveByteSource )
-        throws IOException
-    {
-        final java.nio.file.Path exportArchivePath = Files.createTempFile( DUMP_ARCHIVE_DIRECTORY_PATH, filename, ".tmp" );
-        final File exportArchiveFile = exportArchivePath.toFile();
-        exportArchiveFile.deleteOnExit();
-        try (FileOutputStream tmp = new FileOutputStream( exportArchiveFile ))
-        {
-            dumpArchiveByteSource.copyTo( tmp );
-        }
-        return exportArchivePath.getFileName().toString();
-    }
-
-    public String unarchive( final String archiveName )
-        throws IOException
-    {
-        final File archiveFile = new File( DUMP_ARCHIVE_DIRECTORY_PATH.toFile(), archiveName );
-        return runSafely( () -> {
-            LOGGER.debug( "Unarchiving [" + archiveFile.getAbsolutePath() + "] into [" + getDumpDirectoryPath() + "]..." );
-            Predicate<ZipEntry> filter = zipEntry -> !zipEntry.getName().startsWith( "__MACOSX/" );
-            RcdZipService.unzip( archiveFile.toPath(), getDumpDirectoryPath(), filter );
-            LOGGER.debug( "Dumps unarchived!" );
-            return createSuccessResult();
-        }, "Error while unarchiving dumps", () -> {
-            if (archiveFile.exists()) {
-                archiveFile.delete();
-            }
-        } );
-    }
-
-    private Path getDumpDirectoryPath()
+    @Override
+    protected Path getDirectoryPath()
     {
         return HomeDir.get().
             toFile().
             toPath().
             resolve( "data/dump" );
+    }
+
+    @Override
+    protected String getType()
+    {
+        return "dump";
     }
 
     private Context createContext( final RepositoryId repositoryId, final Branch branch )
