@@ -115,6 +115,7 @@
         }).done((result) => handleTaskCreation(result, {
             taskId: result.taskId,
             message: 'Deleting exports...',
+            doneCallback: () => displaySnackbar('Export' + (exportNames.length > 1 ? 's' : '') + ' deleted'),
             alwaysCallback: () => retrieveExports()
         })).fail(handleAjaxError).always(() => {
             infoDialog.close();
@@ -179,6 +180,7 @@
         }).done((result) => handleTaskCreation(result, {
             taskId: result.taskId,
             message: 'Uploading exports...',
+            doneCallback: () => displaySnackbar('Export(s) uploaded'),
             alwaysCallback: () => retrieveExports()
         })).fail(handleAjaxError).always(() => {
             infoDialog.close();
@@ -261,6 +263,10 @@
         return new RcdMaterialDetailsDialog({title: title, text: text, callback: callback}).
             init().
             open();
+    }
+
+    function displaySnackbar(text) {
+        new RcdMaterialSnackbar(text).init().open(exportWidgetContainer);
     }
 }());
 
