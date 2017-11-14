@@ -66,6 +66,7 @@ class ExportsRoute extends DtbRoute {
         }).done((result) => handleTaskCreation(result, {
             taskId: result.taskId,
             message: 'Deleting exports...',
+            doneCallback: () => displaySnackbar('Export' + (exportNames.length > 1 ? 's' : '') + ' deleted'),
             alwaysCallback: () => this.retrieveExports()
         })).fail(handleAjaxError).always(() => {
             infoDialog.close();
@@ -128,6 +129,7 @@ class ExportsRoute extends DtbRoute {
         }).done((result) => handleTaskCreation(result, {
             taskId: result.taskId,
             message: 'Uploading exports...',
+            doneCallback: () => displaySnackbar('Export(s) uploaded'),
             alwaysCallback: () => this.retrieveExports()
         })).fail(handleAjaxError).always(() => {
             infoDialog.close();

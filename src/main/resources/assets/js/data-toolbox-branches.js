@@ -73,7 +73,9 @@ class BranchesRoute extends DtbRoute {
                 branchName: branchName || ('branch-' + toLocalDateTimeFormat(new Date(), '-', '-')).toLowerCase()
             }),
             contentType: 'application/json; charset=utf-8'
-        }).done(handleResultError).fail(handleAjaxError).always(() => {
+        })
+            .done((result) => handleResultError &&  displaySnackbar('Branch created'))
+            .fail(handleAjaxError).always(() => {
             infoDialog.close();
             this.retrieveBranches();
         });
@@ -94,7 +96,9 @@ class BranchesRoute extends DtbRoute {
                 branchNames: branchNames
             }),
             contentType: 'application/json; charset=utf-8'
-        }).done(handleResultError).fail(handleAjaxError).always(() => {
+        })
+            .done((result) => handleResultError &&  displaySnackbar('Branch' + (branchNames.length > 1 ?'es' : '') + ' deleted'))
+            .fail(handleAjaxError).always(() => {
             infoDialog.close();
             this.retrieveBranches();
         });

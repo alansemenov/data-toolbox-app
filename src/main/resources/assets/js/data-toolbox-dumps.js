@@ -103,6 +103,7 @@ class DumpsRoute extends DtbRoute {
         }).done((result) => handleTaskCreation(result, {
             taskId: result.taskId,
             message: 'Deleting dumps...',
+            doneCallback: () => displaySnackbar('Dump' + (dumpNames.length > 1 ? 's' : '') + ' deleted'),
             alwaysCallback: () => this.retrieveDumps()
         })).fail(handleAjaxError).always(() => {
             infoDialog.close();
@@ -200,6 +201,7 @@ class DumpsRoute extends DtbRoute {
         }).done((result) => handleTaskCreation(result, {
             taskId: result.taskId,
             message: 'Uploading dumps...',
+            doneCallback: () => displaySnackbar('Dump(s) uploaded'),
             alwaysCallback: () => this.retrieveDumps()
         })).fail(handleAjaxError).always(() => {
             infoDialog.close();

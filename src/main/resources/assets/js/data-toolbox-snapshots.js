@@ -96,7 +96,7 @@ class SnapshotsRoute extends DtbRoute {
         }).done((result) => handleTaskCreation(result, {
             taskId: result.taskId,
             message: 'Deleting snapshots...',
-            doneCallback: () => displaySnackbar('Snapshot' + (snapshotNames > 1 ? 's' : '') + ' deleted'),
+            doneCallback: () => displaySnackbar('Snapshot' + (snapshotNames.length > 1 ? 's' : '') + ' deleted'),
             alwaysCallback: () => this.retrieveSnapshots()
         })).fail(handleAjaxError).always(() => {
             infoDialog.close();
