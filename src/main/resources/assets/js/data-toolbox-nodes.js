@@ -15,6 +15,8 @@ class NodesRoute extends DtbRoute {
             setTooltip('Export selected node');
         const importIconArea = new RcdImageIconArea(config.assetsUrl + '/icons/import-icon.svg', () => this.importNode()).init().
             setTooltip('Import node export');
+        const moveIconArea = new RcdImageIconArea(config.assetsUrl + '/icons/rename.svg', () => this.moveNode()).init().
+            setTooltip('Move/rename node');
         const filterIconArea = new RcdGoogleMaterialIconArea('filter_list', () => this.filterNodes()).init().
             setTooltip('Filter nodes');
         const sortIconArea = new RcdGoogleMaterialIconArea('sort', () => this.sortNodes()).init().
@@ -31,6 +33,7 @@ class NodesRoute extends DtbRoute {
             addColumn('', {icon: true, classes: ['mobile-cell']}).
             addIconArea(exportIconArea, {min: 1, max: 1}).
             addIconArea(importIconArea, {max: 0}).
+            addIconArea(moveIconArea, {min: 1, max: 1}).
             addIconArea(filterIconArea, {max: 0}).
             addIconArea(sortIconArea, {max: 0}).
             addIconArea(deleteIconArea, {min: 1});
@@ -225,6 +228,41 @@ class NodesRoute extends DtbRoute {
         } else {
             return value;
         }
+    }
+
+    moveNode() {
+        const nodePath = this.tableCard.getSelectedRows().map((row) => row.attributes['path'])[0];
+        showInputDialog({
+            title: "Move/rename node",
+            confirmationLabel: "MOVE",
+            label: "New path",
+            placeholder: '',
+            value: nodePath,
+            callback: (value) => value && this.doMoveNode(value)
+        });
+    }
+    
+    doMoveNode(newNodePath) {
+        const nodeId = this.tableCard.getSelectedRows().map((row) => row.attributes['id'])[0];
+        const infoDialog = showLongInfoDialog("Moving nodes...");
+        return $.ajax({
+            method: 'POST',
+            url: config.servicesUrl + '/node-move',
+            data: JSON.stringify({
+                repositoryName: getRepoParameter(),
+                branchName: getBranchParameter(),
+                source: nodeId,
+                target: newNodePath
+            }),
+            contentType: 'application/json; charset=utf-8'
+        }).done((result) => handleTaskCreation(result, {
+            taskId: result.taskId,
+            message: 'Moving nodes...',
+            doneCallback: (success) =>  displaySnackbar('Node(s) moved'),
+            alwaysCallback: () => RcdHistoryRouter.refresh()
+        })).fail(handleAjaxError).always(() => {
+            infoDialog.close();
+        });
     }
 
     filterNodes() {
