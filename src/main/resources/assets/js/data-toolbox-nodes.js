@@ -40,7 +40,7 @@ class NodesRoute extends DtbRoute {
     }
 
     retrieveNodes() {
-        const infoDialog = showInfoDialog('Retrieving node list...');
+        const infoDialog = showShortInfoDialog('Retrieving node list...');
         return $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/node-getchildren',
@@ -150,7 +150,7 @@ class NodesRoute extends DtbRoute {
     }
 
     doDeleteNodes() {
-        const infoDialog = showInfoDialog("Deleting nodes...");
+        const infoDialog = showLongInfoDialog("Deleting nodes...");
         const nodeKeys = this.tableCard.getSelectedRows().map((row) => row.attributes['id']);
         $.ajax({
             method: 'POST',
@@ -176,7 +176,7 @@ class NodesRoute extends DtbRoute {
             nodeKey = this.tableCard.getSelectedRows().map((row) => row.attributes['id'])[0];
         }
 
-        const infoDialog = showInfoDialog("Retrieving node info...");
+        const infoDialog = showShortInfoDialog("Retrieving node info...");
         return $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/node-get',
@@ -279,7 +279,7 @@ class NodesRoute extends DtbRoute {
     }
 
     doExportNode(exportName) {
-        const infoDialog = showInfoDialog("Exporting nodes...");
+        const infoDialog = showLongInfoDialog("Exporting nodes...");
         return $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/node-export',
@@ -301,7 +301,7 @@ class NodesRoute extends DtbRoute {
     }
 
     importNode() {
-        const infoDialog = showInfoDialog("Retrieving node export list...");
+        const infoDialog = showShortInfoDialog("Retrieving node export list...");
         return $.ajax({
             url: config.servicesUrl + '/export-list'
         }).done((result) => {
@@ -327,7 +327,7 @@ class NodesRoute extends DtbRoute {
     }
 
     doImportNode(exportName) {
-        const infoDialog = showInfoDialog("Importing nodes...");
+        const infoDialog = showLongInfoDialog("Importing nodes...");
         return $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/node-import',

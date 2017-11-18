@@ -30,7 +30,7 @@ class RepositoriesRoute extends DtbRoute {
     }
 
     retrieveRepositories() {
-        const infoDialog = showInfoDialog('Retrieving repository list...');
+        const infoDialog = showShortInfoDialog('Retrieving repository list...');
         return $.ajax({
             url: config.servicesUrl + '/repository-list'
         }).done((result) => {
@@ -63,7 +63,7 @@ class RepositoriesRoute extends DtbRoute {
     }
 
     doCreateRepository(repositoryName) {
-        const infoDialog = showInfoDialog('Creating repository...');
+        const infoDialog = showLongInfoDialog('Creating repository...');
         $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/repository-create',
@@ -84,7 +84,7 @@ class RepositoriesRoute extends DtbRoute {
     }
 
     doDeleteRepositories() {
-        const infoDialog = showInfoDialog("Deleting selected repositories...");
+        const infoDialog = showLongInfoDialog("Deleting repositories...");
         const repositoryNames = this.tableCard.getSelectedRows().map((row) => row.attributes['repository']);
         $.ajax({
             method: 'POST',

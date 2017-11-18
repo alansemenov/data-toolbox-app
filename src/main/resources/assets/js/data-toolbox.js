@@ -45,10 +45,16 @@ function handleAjaxError(jqXHR, textStatus, errorThrown) {
         init().open();
 }
 
-function showInfoDialog(text) {
+function showLongInfoDialog(text) {
+    return new RcdMaterialInfoDialog({text: text, overlay: true}).
+    init().
+    open();
+}
+
+function showShortInfoDialog(text) {
     return new RcdMaterialInfoDialog({text: text}).
-        init().
-        open();
+    init().
+    open();
 }
 
 function showConfirmationDialog(text, confirmationLabel, callback) {

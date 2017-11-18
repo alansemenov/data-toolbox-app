@@ -20,7 +20,7 @@ class MetaRoute extends DtbRoute {
     }
 
     retrieveMeta() {
-        const infoDialog = showInfoDialog('Retrieving metadata...');
+        const infoDialog = showShortInfoDialog('Retrieving metadata...');
         return $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/meta-get',

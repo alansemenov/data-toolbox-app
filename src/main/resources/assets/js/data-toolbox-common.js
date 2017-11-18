@@ -347,7 +347,7 @@ class DtbRoute extends RcdMaterialRoute {
 
 function handleTaskCreation(result, params) {
     if (handleResultError(result)) {
-        const infoDialog = showInfoDialog(params.message);
+        const infoDialog = showLongInfoDialog(params.message);
         retrieveTask({
             taskId: params.taskId,
             doneCallback: (task) => {

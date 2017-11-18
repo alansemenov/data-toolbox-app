@@ -21,7 +21,7 @@ class BranchesRoute extends DtbRoute {
     }
     
     retrieveBranches() {
-        const infoDialog = showInfoDialog('Retrieving branch list...');
+        const infoDialog = showShortInfoDialog('Retrieving branch list...');
         return $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/repository-get',
@@ -64,7 +64,7 @@ class BranchesRoute extends DtbRoute {
     }
 
     doCreateBranch(branchName) {
-        const infoDialog = showInfoDialog('Creating branch...');
+        const infoDialog = showLongInfoDialog('Creating branch...');
         $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/branch-create',
@@ -86,7 +86,7 @@ class BranchesRoute extends DtbRoute {
     }
 
     doDeleteBranches() {
-        const infoDialog = showInfoDialog('Deleting selected branches...');
+        const infoDialog = showLongInfoDialog('Deleting branches...');
         const branchNames = this.tableCard.getSelectedRows().map((row) => row.attributes['branch']);
         $.ajax({
             method: 'POST',

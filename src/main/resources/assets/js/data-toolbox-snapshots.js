@@ -31,7 +31,7 @@ class SnapshotsRoute extends DtbRoute {
     }
 
     retrieveSnapshots() {
-        const infoDialog = showInfoDialog('Retrieving snapshot list...');
+        const infoDialog = showShortInfoDialog('Retrieving snapshot list...');
         return $.ajax({
             url: config.servicesUrl + '/snapshot-list'
         }).done((result) => {
@@ -63,7 +63,7 @@ class SnapshotsRoute extends DtbRoute {
     }
 
     doCreateSnapshot(snapshotName) {
-        const infoDialog = showInfoDialog('Creating snapshot...');
+        const infoDialog = showLongInfoDialog('Creating snapshot...');
         $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/snapshot-create',
@@ -86,7 +86,7 @@ class SnapshotsRoute extends DtbRoute {
     }
 
     doDeleteSnapshots() {
-        const infoDialog = showInfoDialog("Deleting snapshots...");
+        const infoDialog = showLongInfoDialog("Deleting snapshots...");
         const snapshotNames = this.tableCard.getSelectedRows().map((row) => row.attributes['snapshot']);
         $.ajax({
             method: 'POST',
@@ -104,7 +104,7 @@ class SnapshotsRoute extends DtbRoute {
     }
 
     restoreSnapshot() {
-        const infoDialog = showInfoDialog("Restoring snapshot...");
+        const infoDialog = showLongInfoDialog("Restoring snapshot...");
         const snapshotName = this.tableCard.getSelectedRows().map((row) => row.attributes['snapshot'])[0];
         $.ajax({
             method: 'POST',

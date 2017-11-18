@@ -36,7 +36,7 @@ class DumpsRoute extends DtbRoute {
     }
 
     retrieveDumps() {
-        const infoDialog = showInfoDialog('Retrieving dump list...');
+        const infoDialog = showShortInfoDialog('Retrieving dump list...');
         return $.ajax({
             url: config.servicesUrl + '/dump-list'
         }).done((result) => {
@@ -70,7 +70,7 @@ class DumpsRoute extends DtbRoute {
     }
 
     doCreateDump(dumpName) {
-        const infoDialog = showInfoDialog('Creating dump...');
+        const infoDialog = showLongInfoDialog('Creating dump...');
         $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/dump-create',
@@ -93,7 +93,7 @@ class DumpsRoute extends DtbRoute {
     }
 
     doDeleteDumps() {
-        const infoDialog = showInfoDialog("Deleting dumps...");
+        const infoDialog = showLongInfoDialog("Deleting dumps...");
         const dumpNames = this.tableCard.getSelectedRows().map((row) => row.attributes['dump']);
         $.ajax({
             method: 'POST',
@@ -122,7 +122,7 @@ class DumpsRoute extends DtbRoute {
     }
 
     doLoadDump(dumpName, dumpType) {
-        const infoDialog = showInfoDialog("Loading dump...");
+        const infoDialog = showLongInfoDialog("Loading dump...");
         $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/dump-load',
@@ -147,7 +147,7 @@ class DumpsRoute extends DtbRoute {
 
     downloadDumps() {
         const dumpNames = this.tableCard.getSelectedRows().map((row) => row.attributes['dump']);
-        const infoDialog = showInfoDialog("Archiving dumps...");
+        const infoDialog = showLongInfoDialog("Archiving dumps...");
         $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/dump-archive',
@@ -190,7 +190,7 @@ class DumpsRoute extends DtbRoute {
     }
 
     doUploadDumps() {
-        const infoDialog = showInfoDialog("Uploading dumps...");
+        const infoDialog = showLongInfoDialog("Uploading dumps...");
         const formData = new FormData(this.uploadForm.domElement);
         $.ajax({
             method: 'POST',

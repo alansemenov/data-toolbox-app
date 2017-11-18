@@ -28,7 +28,7 @@
     }, 200);
 
     function retrieveExports() {
-        const infoDialog = showInfoDialog('Retrieving export list...', exportWidgetContainer);
+        const infoDialog = showShortInfoDialog('Retrieving export list...', exportWidgetContainer);
         return $.ajax({
             url: config.servicesUrl + '/export-list'
         }).done(function (result) {
@@ -59,7 +59,7 @@
     }
 
     function doCreateExport(exportName) {
-        const infoDialog = showInfoDialog("Exporting content...");
+        const infoDialog = showLongInfoDialog("Exporting content...");
         return $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/export-create',
@@ -79,7 +79,7 @@
     }
 
     function loadExports() {
-        const infoDialog = showInfoDialog("Loading selected exports...");
+        const infoDialog = showLongInfoDialog("Importing contents...");
         const exportNames = tableCard.getSelectedRows().
             map((row) => row.attributes['export']);
         return $.ajax({
@@ -92,7 +92,7 @@
             contentType: 'application/json; charset=utf-8'
         }).done((result) => handleTaskCreation(result, {
             taskId: result.taskId,
-            message: 'Exporting content...',
+            message: 'Importing contents...',
             doneCallback: (success) =>  new ImportResultDialog(exportNames, success, 'content').init().open(),
             alwaysCallback: () => retrieveExports()
         })).fail(handleAjaxError).always(() => {
@@ -105,7 +105,7 @@
     }
 
     function doDeleteExports() {
-        const infoDialog = showInfoDialog("Deleting exports...",);
+        const infoDialog = showLongInfoDialog("Deleting exports...",);
         const exportNames = tableCard.getSelectedRows().map((row) => row.attributes['export']);
         $.ajax({
             method: 'POST',
@@ -124,7 +124,7 @@
 
     function dowloadExports() {
         const exportNames = tableCard.getSelectedRows().map((row) => row.attributes['export']);
-        const infoDialog = showInfoDialog("Archiving exports...");
+        const infoDialog = showLongInfoDialog("Archiving exports...");
         $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/export-archive',
@@ -169,7 +169,7 @@
     }
 
     function doUploadExports() {
-        const infoDialog = showInfoDialog("Uploading exports...");
+        const infoDialog = showLongInfoDialog("Uploading exports...");
         const formData = new FormData(uploadForm.domElement);
         $.ajax({
             method: 'POST',
@@ -235,10 +235,16 @@
             init().open(exportWidgetContainer);
     }
 
-    function showInfoDialog(text) {
-        return new RcdMaterialInfoDialog({text: text}).
+    function showLongInfoDialog(text) {
+        return new RcdMaterialInfoDialog({text: text, overlay: true}).
             init().
-            open(exportWidgetContainer);
+            open();
+    }
+
+    function showShortInfoDialog(text) {
+        return new RcdMaterialInfoDialog({text: text}).
+        init().
+        open(exportWidgetContainer);
     }
 
     function showConfirmationDialog(text, confirmationLabel, callback) {

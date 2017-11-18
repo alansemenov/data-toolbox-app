@@ -32,7 +32,7 @@ class ExportsRoute extends DtbRoute {
     }
 
     retrieveExports() {
-        const infoDialog = showInfoDialog('Retrieving export list...');
+        const infoDialog = showShortInfoDialog('Retrieving export list...');
         return $.ajax({
             url: config.servicesUrl + '/export-list'
         }).done((result) => {
@@ -56,7 +56,7 @@ class ExportsRoute extends DtbRoute {
     }
 
     doDeleteExports() {
-        const infoDialog = showInfoDialog("Deleting exports...");
+        const infoDialog = showLongInfoDialog("Deleting exports...");
         const exportNames = this.tableCard.getSelectedRows().map((row) => row.attributes['export']);
         $.ajax({
             method: 'POST',
@@ -75,7 +75,7 @@ class ExportsRoute extends DtbRoute {
 
     dowloadExports() {
         const exportNames = this.tableCard.getSelectedRows().map((row) => row.attributes['export']);
-        const infoDialog = showInfoDialog("Archiving exports...");
+        const infoDialog = showLongInfoDialog("Archiving exports...");
         $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/export-archive',
@@ -118,7 +118,7 @@ class ExportsRoute extends DtbRoute {
     }
 
     doUploadExports() {
-        const infoDialog = showInfoDialog("Uploading exports...");
+        const infoDialog = showLongInfoDialog("Uploading exports...");
         const formData = new FormData(this.uploadForm.domElement);
         $.ajax({
             method: 'POST',

@@ -25,7 +25,7 @@ class FieldsRoute extends DtbRoute {
     }
 
     retrieveFields() {
-        const infoDialog = showInfoDialog('Retrieving fields...');
+        const infoDialog = showShortInfoDialog('Retrieving fields...');
         return $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/fields-list',
