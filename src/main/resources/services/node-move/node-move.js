@@ -5,14 +5,14 @@ exports.post = function (req) {
     var body = JSON.parse(req.body);
     var repositoryName = body.repositoryName;
     var branchName = body.branchName;
-    var source = body.source;
+    var sources = body.sources;
     var target = body.target;
 
     var taskId = taskLib.submit({
         description: 'Node move',
         task: function () {
             taskLib.progress({info: 'Moving nodes...'});
-            var result = runSafely(moveNodes, [repositoryName, branchName, source, target])
+            var result = runSafely(moveNodes, [repositoryName, branchName, sources, target])
             taskLib.progress({info: JSON.stringify(result)});
         }
     });
@@ -23,17 +23,21 @@ exports.post = function (req) {
     };
 };
 
-function moveNodes(repositoryName, branchName, source, target) {
+function moveNodes(repositoryName, branchName, sources, target) {
     var repoConnection = nodeLib.connect({
         repoId: repositoryName,
         branch: branchName
     });
-
-    return {
-        success: repoConnection.move({
+    
+    var success = sources.map(function(source) {
+        return repoConnection.move({
             source: source,
             target: target
         })._path
+    });
+
+    return {
+        success: success
     };
 }
 

@@ -33,7 +33,7 @@ class NodesRoute extends DtbRoute {
             addColumn('', {icon: true, classes: ['mobile-cell']}).
             addIconArea(exportIconArea, {min: 1, max: 1}).
             addIconArea(importIconArea, {max: 0}).
-            addIconArea(moveIconArea, {min: 1, max: 1}).
+            addIconArea(moveIconArea, {min: 1}).
             addIconArea(filterIconArea, {max: 0}).
             addIconArea(sortIconArea, {max: 0}).
             addIconArea(deleteIconArea, {min: 1});
@@ -231,19 +231,43 @@ class NodesRoute extends DtbRoute {
     }
 
     moveNode() {
-        const nodePath = this.tableCard.getSelectedRows().map((row) => row.attributes['path'])[0];
-        showInputDialog({
-            title: "Move/rename node",
-            confirmationLabel: "MOVE",
-            label: "New path",
+        const nodeCount = this.tableCard.getSelectedRows().map((row) => row.attributes['path']).length;
+        const title = nodeCount == 1 ? 'Move/rename node' : 'Move nodes';
+        const currentValue = nodeCount == 1 ? this.tableCard.getSelectedRows().map((row) => row.attributes['path'])[0] : this.getPathPrefix();
+        const currentActionLabel = nodeCount == 1 ? 'RENAME' : 'MOVE';
+        const currentLabel = nodeCount == 1 ? 'New name/path/parent path' : 'New parent path';
+        const inputDialog = new RcdMaterialInputDialog({
+            title: title,
+            confirmationLabel: currentActionLabel,
+            label: currentLabel,
             placeholder: '',
-            value: nodePath,
-            callback: (value) => value && this.doMoveNode(value)
+            value: currentValue,
+            callback: (value) => isValid(value) && this.doMoveNode(value)
+        }).init();
+        
+        //TODO Implement clean solution. Adapt Framework
+        inputDialog.addInputListener((source) => {
+            const newValue = source.getValue();
+            inputDialog.enable(isValid(newValue));
+            if (nodeCount == 1) {
+                const newActionLabel = newValue.slice(-1) === '/' ? 'MOVE' : 'RENAME';
+                inputDialog.setConfirmationLabel(newActionLabel);
+            }
         });
+        
+        function isValid(value) {
+            if (!value) {
+                return false;
+            }
+            if (nodeCount > 1 && value.slice(-1) !== '/') {
+                return false;
+            }
+            return true;
+        }
+        inputDialog.open();
     }
     
     doMoveNode(newNodePath) {
-        const nodeId = this.tableCard.getSelectedRows().map((row) => row.attributes['id'])[0];
         const infoDialog = showLongInfoDialog("Moving nodes...");
         return $.ajax({
             method: 'POST',
@@ -251,7 +275,7 @@ class NodesRoute extends DtbRoute {
             data: JSON.stringify({
                 repositoryName: getRepoParameter(),
                 branchName: getBranchParameter(),
-                source: nodeId,
+                sources: this.tableCard.getSelectedRows().map((row) => row.attributes['id']),
                 target: newNodePath
             }),
             contentType: 'application/json; charset=utf-8'
@@ -442,6 +466,11 @@ class NodesRoute extends DtbRoute {
         addActionDefinition({
             iconSrc: config.assetsUrl + '/icons/import-icon.svg',
             definition: 'Import previously exported nodes as children under the current node (or as root node)'
+        }).
+        addActionDefinition({
+            iconSrc: config.assetsUrl + '/icons/rename.svg',
+            definition: 'Move or rename node(s). If the value ends in slash \'/\', it specifies the parent path where to be moved. ' +
+                        'Otherwise it means the new desired path or name for the node.'
         }).
         addActionDefinition({
             iconName: 'filter_list',
