@@ -1,3 +1,38 @@
+class FieldDialog extends RcdMaterialModalDialog {
+    constructor(params) {
+        super(params.title, params.text, true, true);
+        this.callback = params.callback;
+        this.valueField = new RcdMaterialTextField('Value', 'value').init()
+            .setValue(params.value || '');
+        this.typeField = new RcdMaterialDropdown('Type', ['BinaryReference', 'Boolean', 'DateTime', 'Double', 'GeoPoint', 'Link', 'LocalDate', 'LocalDateTime', 'LocalTime', 'Long', 'PropertySet', 'Reference', 'String', 'Xml'])
+            .init()
+            .selectOption(params.type || 'String');
+        this.confirmationLabel = params.confirmationLabel || 'OK';
+    }
+
+    init() {
+        const closeCallback = () => this.close();
+        const confirmationCallback = (source, event) => {
+            this.close();
+            this.callback(this.valueField.getValue(), this.typeField.getSelectedValue());
+            event.stopPropagation();
+        };
+        return super.init()
+            .addAction('CANCEL', closeCallback)
+            .addAction(this.confirmationLabel, confirmationCallback)
+            .addKeyUpListener('Enter', confirmationCallback)
+            .addKeyUpListener('Escape', closeCallback)
+            .addItem(this.valueField)
+            .addItem(this.typeField);
+    }
+
+    open(parent) {
+        super.open(parent);
+        this.valueField.focus().select();
+        return this;
+    }
+}
+
 class FieldsRoute extends DtbRoute {
     constructor() {
         super({
@@ -11,14 +46,15 @@ class FieldsRoute extends DtbRoute {
     }
     
     createLayout() {
-        this.tableCard = new RcdMaterialTableCard('Fields').init().
-            addClass('dtb-table-card-fields').
-            addColumn('Name', {classes:['non-mobile-cell']}).
-            addColumn('Index', {classes:['non-mobile-cell', 'index']}).
-            addColumn('Name[Idx]', {classes:['mobile-cell']}).
-            addColumn('Value', {classes:['non-mobile-cell']}).
-            addColumn('Type', {classes:['non-mobile-cell', 'type']}).
-            addColumn('Type: Value', {classes:['mobile-cell']});
+        this.tableCard = new RcdMaterialTableCard('Fields').init()
+            .addClass('dtb-table-card-fields')
+            .addColumn('Name', {classes:['non-mobile-cell']})
+            .addColumn('Index', {classes:['non-mobile-cell', 'index']})
+            .addColumn('Name[Idx]', {classes:['mobile-cell']})
+            .addColumn('Value', {classes:['non-mobile-cell']})
+            .addColumn('Type', {classes:['non-mobile-cell', 'type']})
+            .addColumn('Type: Value', {classes:['mobile-cell']})
+            .addColumn(null, {icon: true});
 
         return new RcdMaterialLayout().init().
             addChild(this.tableCard);
@@ -53,6 +89,7 @@ class FieldsRoute extends DtbRoute {
             addCell('', {classes:['non-mobile-cell']}).
             addCell('', {classes:['non-mobile-cell']}).
             addCell('', {classes:['mobile-cell']}).
+            addCell('', {icon:true}).
             addClass('rcd-clickable');
         
         if(getFieldParameter()) {
@@ -65,13 +102,23 @@ class FieldsRoute extends DtbRoute {
             const fields = result.success.hits;
 
             fields.forEach(field => {
-                const row = this.tableCard.createRow({selectable:false}).
-                    addCell(field.name, {classes:['non-mobile-cell']}).
-                    addCell(field.index, {classes:['non-mobile-cell']}).
-                    addCell(field.name + '[' + field.index + ']', {classes:['mobile-cell']}).
-                    addCell(field.value, {classes:['non-mobile-cell']}).
-                    addCell(field.type, {classes:['non-mobile-cell']}).
-                    addCell(field.type + ': ' + field.value, {classes:['mobile-cell']});
+
+                let editFieldIconArea = null;
+                if (field.type !== 'PropertySet') {
+                    const editFieldCallback = () => this.editField(field);
+                    editFieldIconArea = new RcdGoogleMaterialIconArea('edit', (source, event) => {editFieldCallback();event.stopPropagation();})
+                        .init()
+                        .setTooltip('Edit field');
+                }
+
+                const row = this.tableCard.createRow({selectable:false})
+                    .addCell(field.name, {classes:['non-mobile-cell']})
+                    .addCell(field.index, {classes:['non-mobile-cell']})
+                    .addCell(field.name + '[' + field.index + ']', {classes:['mobile-cell']})
+                    .addCell(field.value, {classes:['non-mobile-cell']})
+                    .addCell(field.type, {classes:['non-mobile-cell']})
+                    .addCell(field.type + ': ' + field.value, {classes:['mobile-cell']})
+                    .addCell(editFieldIconArea, {icon:true});
                 
                 if(field.type === 'PropertySet') {
                     row.addClass('rcd-clickable').
@@ -103,6 +150,20 @@ class FieldsRoute extends DtbRoute {
                 nextCallback: nextCallback
             });
         }
+    }
+    
+    editField(field) {
+        new FieldDialog({
+            title: "Edit field",
+            confirmationLabel: "EDIT",
+            value: field.value,
+            type: field.type,
+            callback: (value, type) => this.doEditField(field, value, type)
+        }).init().open();
+    }
+
+    doEditField(field, newValue) {
+        
     }
     
     refreshBreadcrumbs() {
