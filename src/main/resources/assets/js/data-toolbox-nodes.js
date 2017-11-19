@@ -232,8 +232,9 @@ class NodesRoute extends DtbRoute {
 
     moveNode() {
         const nodeCount = this.tableCard.getSelectedRows().map((row) => row.attributes['path']).length;
+        const pathPrefix = this.getPathPrefix();
         const title = nodeCount == 1 ? 'Move/rename node' : 'Move nodes';
-        const currentValue = nodeCount == 1 ? this.tableCard.getSelectedRows().map((row) => row.attributes['path'])[0] : this.getPathPrefix();
+        const currentValue = nodeCount == 1 ? this.tableCard.getSelectedRows().map((row) => row.attributes['path'])[0] : pathPrefix;
         const currentActionLabel = nodeCount == 1 ? 'RENAME' : 'MOVE';
         const currentLabel = nodeCount == 1 ? 'New name/path/parent path' : 'New parent path';
         const inputDialog = new RcdMaterialInputDialog({
@@ -250,7 +251,7 @@ class NodesRoute extends DtbRoute {
             const newValue = source.getValue();
             inputDialog.enable(isValid(newValue));
             if (nodeCount == 1) {
-                const newActionLabel = newValue.slice(-1) === '/' ? 'MOVE' : 'RENAME';
+                const newActionLabel = isRename(newValue) ? 'RENAME' : 'MOVE';
                 inputDialog.setConfirmationLabel(newActionLabel);
             }
         });
@@ -263,6 +264,17 @@ class NodesRoute extends DtbRoute {
                 return false;
             }
             return true;
+        }
+        
+        function isRename(value) {
+            if (!value) {
+                return false;
+            }
+            if (value.startsWith(pathPrefix)){
+                const subValue = value.substr(pathPrefix.length);
+                return subValue.length > 0 && subValue.indexOf('/') === -1;
+            }
+            return false;
         }
         inputDialog.open();
     }
@@ -470,7 +482,7 @@ class NodesRoute extends DtbRoute {
         addActionDefinition({
             iconSrc: config.assetsUrl + '/icons/rename.svg',
             definition: 'Move or rename node(s). If the value ends in slash \'/\', it specifies the parent path where to be moved. ' +
-                        'Otherwise it means the new desired path or name for the node.'
+                        'Otherwise, it means the new desired path or name for the node (available only if one node is selected).'
         }).
         addActionDefinition({
             iconName: 'filter_list',
