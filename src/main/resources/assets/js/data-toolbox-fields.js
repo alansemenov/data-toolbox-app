@@ -1,13 +1,18 @@
 class FieldDialog extends RcdMaterialModalDialog {
+    
     constructor(params) {
-        super(params.title, params.text, true, true);
+        super(params.action + ' field', params.text, true, true);
+        this.action == params.action;
         this.callback = params.callback;
-        this.typeField = new RcdMaterialDropdown('Type', ['BinaryReference', 'Boolean', 'DateTime', 'Double', 'GeoPoint', 'Link', 'LocalDate', 'LocalDateTime', 'LocalTime', 'Long', 'PropertySet', 'Reference', 'String', 'Xml'])
+        let options = ['BinaryReference', 'Boolean', 'DateTime', 'Double', 'GeoPoint', 'Link', 'LocalDate', 'LocalDateTime', 'LocalTime', 'Long', 'PropertySet', 'Reference', 'String', 'Xml'];
+        if (params.action === 'Edit') {
+            options.splice(options.indexOf('PropertySet'), 1);
+        }
+        this.typeField = new RcdMaterialDropdown('Type', options)
             .init()
-            .selectOption(params.type || 'String');
+            .selectOption(params.field.type || 'String');
         this.valueField = new RcdMaterialTextField('Value', 'value').init()
-            .setValue(params.value || '');
-        this.confirmationLabel = params.confirmationLabel || 'OK';
+            .setValue(params.field.value || '');
     }
 
     init() {
@@ -19,7 +24,7 @@ class FieldDialog extends RcdMaterialModalDialog {
         };
         return super.init()
             .addAction('CANCEL', closeCallback)
-            .addAction(this.confirmationLabel, confirmationCallback)
+            .addAction(this.action , confirmationCallback)
             .addKeyUpListener('Enter', confirmationCallback)
             .addKeyUpListener('Escape', closeCallback)
             .addItem(this.typeField)
@@ -154,10 +159,8 @@ class FieldsRoute extends DtbRoute {
     
     editField(field) {
         new FieldDialog({
-            title: "Edit field",
-            confirmationLabel: "EDIT",
-            value: field.value,
-            type: field.type,
+            action: 'Edit',
+            field: field,
             callback: (type, value) => this.doEditField(field, type, value)
         }).init().open();
     }
