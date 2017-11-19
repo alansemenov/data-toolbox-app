@@ -2,11 +2,11 @@ class FieldDialog extends RcdMaterialModalDialog {
     constructor(params) {
         super(params.title, params.text, true, true);
         this.callback = params.callback;
-        this.valueField = new RcdMaterialTextField('Value', 'value').init()
-            .setValue(params.value || '');
         this.typeField = new RcdMaterialDropdown('Type', ['BinaryReference', 'Boolean', 'DateTime', 'Double', 'GeoPoint', 'Link', 'LocalDate', 'LocalDateTime', 'LocalTime', 'Long', 'PropertySet', 'Reference', 'String', 'Xml'])
             .init()
             .selectOption(params.type || 'String');
+        this.valueField = new RcdMaterialTextField('Value', 'value').init()
+            .setValue(params.value || '');
         this.confirmationLabel = params.confirmationLabel || 'OK';
     }
 
@@ -14,7 +14,7 @@ class FieldDialog extends RcdMaterialModalDialog {
         const closeCallback = () => this.close();
         const confirmationCallback = (source, event) => {
             this.close();
-            this.callback(this.valueField.getValue(), this.typeField.getSelectedValue());
+            this.callback(this.typeField.getSelectedValue(), this.valueField.getValue() );
             event.stopPropagation();
         };
         return super.init()
@@ -22,8 +22,8 @@ class FieldDialog extends RcdMaterialModalDialog {
             .addAction(this.confirmationLabel, confirmationCallback)
             .addKeyUpListener('Enter', confirmationCallback)
             .addKeyUpListener('Escape', closeCallback)
-            .addItem(this.valueField)
-            .addItem(this.typeField);
+            .addItem(this.typeField)
+            .addItem(this.valueField);
     }
 
     open(parent) {
@@ -158,12 +158,29 @@ class FieldsRoute extends DtbRoute {
             confirmationLabel: "EDIT",
             value: field.value,
             type: field.type,
-            callback: (value, type) => this.doEditField(field, value, type)
+            callback: (type, value) => this.doEditField(field, type, value)
         }).init().open();
     }
 
-    doEditField(field, newValue) {
-        
+    doEditField(field, type, newValue) {
+        const infoDialog = showShortInfoDialog('Updating field...');
+        const fieldParameter = (getFieldParameter() ? getFieldParameter() + '.': '') + field.name;
+        return $.ajax({
+            method: 'POST',
+            url: config.servicesUrl + '/field-update',
+            data: JSON.stringify({
+                repositoryName: getRepoParameter(),
+                branchName: getBranchParameter(),
+                path: getPathParameter(),
+                field: fieldParameter,
+                value: newValue,
+                type: type
+            }),
+            contentType: 'application/json; charset=utf-8'
+        }).done((result) => handleResultError(result) && displaySnackbar('Field updated')).fail(handleAjaxError).always(() => {
+            infoDialog.close();
+            RcdHistoryRouter.refresh();
+        });
     }
     
     refreshBreadcrumbs() {

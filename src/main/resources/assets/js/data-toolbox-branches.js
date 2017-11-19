@@ -74,7 +74,7 @@ class BranchesRoute extends DtbRoute {
             }),
             contentType: 'application/json; charset=utf-8'
         })
-            .done((result) => handleResultError &&  displaySnackbar('Branch created'))
+            .done((result) => handleResultError(result) &&  displaySnackbar('Branch created'))
             .fail(handleAjaxError).always(() => {
             infoDialog.close();
             this.retrieveBranches();
@@ -97,7 +97,7 @@ class BranchesRoute extends DtbRoute {
             }),
             contentType: 'application/json; charset=utf-8'
         })
-            .done((result) => handleResultError &&  displaySnackbar('Branch' + (branchNames.length > 1 ?'es' : '') + ' deleted'))
+            .done((result) => handleResultError(result) &&  displaySnackbar('Branch' + (branchNames.length > 1 ?'es' : '') + ' deleted'))
             .fail(handleAjaxError).always(() => {
             infoDialog.close();
             this.retrieveBranches();

@@ -72,7 +72,7 @@ class RepositoriesRoute extends DtbRoute {
             }),
             contentType: 'application/json; charset=utf-8'
         })
-            .done((result) => handleResultError &&  displaySnackbar('Repository created'))
+            .done((result) => handleResultError(result) &&  displaySnackbar('Repository created'))
             .fail(handleAjaxError).always(() => {
             infoDialog.close();
             this.retrieveRepositories();
@@ -92,7 +92,7 @@ class RepositoriesRoute extends DtbRoute {
             data: JSON.stringify({repositoryNames: repositoryNames}),
             contentType: 'application/json; charset=utf-8'
         })
-            .done((result) => handleResultError &&  displaySnackbar('Repositor' + (repositoryNames.length > 1 ?'ies' : 'y') + ' deleted'))
+            .done((result) => handleResultError(result) &&  displaySnackbar('Repositor' + (repositoryNames.length > 1 ?'ies' : 'y') + ' deleted'))
             .fail(handleAjaxError).always(() => {
             infoDialog.close();
             this.retrieveRepositories();
