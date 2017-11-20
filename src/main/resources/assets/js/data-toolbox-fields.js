@@ -215,7 +215,6 @@ class FieldsRoute extends DtbRoute {
 
     doCreateField(name, type, value) {
         const infoDialog = showShortInfoDialog('Creating field...');
-        const fieldParameter = (getFieldParameter() ? getFieldParameter() + '.' : '') + name;
         return $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/field-create',
@@ -223,7 +222,8 @@ class FieldsRoute extends DtbRoute {
                 repositoryName: getRepoParameter(),
                 branchName: getBranchParameter(),
                 path: getPathParameter(),
-                field: fieldParameter,
+                parentPath: getFieldParameter(),
+                name: name,
                 type: type,
                 value: value
             }),

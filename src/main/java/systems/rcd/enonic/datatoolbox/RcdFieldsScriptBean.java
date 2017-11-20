@@ -107,13 +107,15 @@ public class RcdFieldsScriptBean
         }, "Error while editing field" );
     }
 
-    public String create( final String repositoryName, final String branchName, final String path, final String field, final String type,
-                          final String valueString)
+    public String create( final String repositoryName, final String branchName, final String path, final String parentPath,
+                          final String name, final String type, final String valueString )
     {
         return runSafely( () -> {
             NodeEditor nodeEditor = ( editableNode ) -> {
                 final Value value = createValue( type, valueString );
-                editableNode.data.addProperty( field, value );
+                final PropertySet parentPropertySet =
+                    parentPath != null ? editableNode.data.getPropertySet( parentPath ) : editableNode.data.getRoot();
+                parentPropertySet.addProperty( name, value );
             };
             final UpdateNodeParams updateNodeParams = UpdateNodeParams.create().
                 path( NodePath.create( path ).build() ).
@@ -123,7 +125,7 @@ public class RcdFieldsScriptBean
                 callWith( () -> this.nodeServiceSupplier.get().update( updateNodeParams ) );
 
             return createSuccessResult();
-        }, "Error while editing field" );
+        }, "Error while creating field" );
     }
 
     private Value createValue( String type, String value )
