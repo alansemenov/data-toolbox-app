@@ -107,6 +107,25 @@ public class RcdFieldsScriptBean
         }, "Error while editing field" );
     }
 
+    public String create( final String repositoryName, final String branchName, final String path, final String field, final String type,
+                          final String valueString)
+    {
+        return runSafely( () -> {
+            NodeEditor nodeEditor = ( editableNode ) -> {
+                final Value value = createValue( type, valueString );
+                editableNode.data.addProperty( field, value );
+            };
+            final UpdateNodeParams updateNodeParams = UpdateNodeParams.create().
+                path( NodePath.create( path ).build() ).
+                editor( nodeEditor ).
+                build();
+            createContext( RepositoryId.from( repositoryName ), Branch.from( branchName ) ).
+                callWith( () -> this.nodeServiceSupplier.get().update( updateNodeParams ) );
+
+            return createSuccessResult();
+        }, "Error while editing field" );
+    }
+
     private Value createValue( String type, String value )
     {
         switch ( type )
