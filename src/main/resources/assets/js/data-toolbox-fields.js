@@ -64,6 +64,8 @@ class FieldsRoute extends DtbRoute {
     createLayout() {
         const createFieldIconArea = new RcdGoogleMaterialIconArea('add_circle', () => this.createField()).init()
             .setTooltip('Create field');
+        const deleteFieldIconArea = new RcdGoogleMaterialIconArea('delete', () => this.deleteFields()).init()
+            .setTooltip('Delete selected fields', RcdMaterialTooltipAlignment.RIGHT);
 
         this.tableCard = new RcdMaterialTableCard('Fields').init()
             .addClass('dtb-table-card-fields')
@@ -74,7 +76,8 @@ class FieldsRoute extends DtbRoute {
             .addColumn('Type', {classes: ['non-mobile-cell', 'type']})
             .addColumn('Type: Value', {classes: ['mobile-cell']})
             .addColumn(null, {icon: true})
-            .addIconArea(createFieldIconArea);
+            .addIconArea(createFieldIconArea, {max:0})
+            .addIconArea(deleteFieldIconArea, {min:1});
 
         return new RcdMaterialLayout().init().addChild(this.tableCard);
     }
@@ -129,14 +132,16 @@ class FieldsRoute extends DtbRoute {
                         .setTooltip('Edit field');
                 }
 
-                const row = this.tableCard.createRow({selectable: false})
+                const row = this.tableCard.createRow()
                     .addCell(field.name, {classes: ['non-mobile-cell']})
                     .addCell(field.index, {classes: ['non-mobile-cell']})
                     .addCell(field.name + '[' + field.index + ']', {classes: ['mobile-cell']})
                     .addCell(field.value, {classes: ['non-mobile-cell']})
                     .addCell(field.type, {classes: ['non-mobile-cell']})
                     .addCell(field.type + ': ' + field.value, {classes: ['mobile-cell']})
-                    .addCell(editFieldIconArea, {icon: true});
+                    .addCell(editFieldIconArea, {icon: true})
+                    .setAttribute('name', field.name)
+                    .setAttribute('index', field.index);
 
                 if (field.type === 'PropertySet') {
                     row.addClass('rcd-clickable').addClickListener(() => setState('fields', {
@@ -229,6 +234,39 @@ class FieldsRoute extends DtbRoute {
             }),
             contentType: 'application/json; charset=utf-8'
         }).done((result) => handleResultError(result) && displaySnackbar('Field created')).fail(handleAjaxError).always(() => {
+            infoDialog.close();
+            RcdHistoryRouter.refresh();
+        });
+    }
+
+    deleteFields() {
+        showConfirmationDialog('Delete selected fields?', 'DELETE', () => this.doDeleteFields());
+    }
+
+    doDeleteFields() {
+        const infoDialog = showLongInfoDialog('Deleting fields...');
+        let fields = {};
+        const selectedRows = this.tableCard.getSelectedRows();
+        selectedRows.forEach((row) =>{
+            if (!fields[row.attributes['name']]) {
+                fields[row.attributes['name']] = [];
+            }
+            fields[row.attributes['name']].push(row.attributes['index'])
+        });
+        $.ajax({
+            method: 'POST',
+            url: config.servicesUrl + '/field-delete',
+            data: JSON.stringify({
+                repositoryName: getRepoParameter(),
+                branchName: getBranchParameter(),
+                path: getPathParameter(),
+                parentPath: getFieldParameter(),
+                fields: fields
+            }),
+            contentType: 'application/json; charset=utf-8'
+        })
+            .done((result) => handleResultError(result) &&  displaySnackbar('Field' + (selectedRows.length > 1 ?'s' : '') + ' deleted'))
+            .fail(handleAjaxError).always(() => {
             infoDialog.close();
             RcdHistoryRouter.refresh();
         });

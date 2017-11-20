@@ -4,11 +4,14 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Supplier;
 
 import org.apache.commons.lang.StringEscapeUtils;
 
+import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import systems.rcd.fwk.core.exc.RcdException;
 import systems.rcd.fwk.core.format.json.RcdJsonService;
 import systems.rcd.fwk.core.format.json.data.RcdJsonArray;
@@ -126,6 +129,31 @@ public class RcdFieldsScriptBean
 
             return createSuccessResult();
         }, "Error while creating field" );
+    }
+
+    public String delete( final String repositoryName, final String branchName, final String path, final String parentPath,
+                          final ScriptObjectMirror fields )
+    {
+        return runSafely( () -> {
+            NodeEditor nodeEditor = ( editableNode ) -> {
+                final PropertySet parentPropertySet =
+                    parentPath != null ? editableNode.data.getPropertySet( parentPath ) : editableNode.data.getRoot();
+
+                Arrays.stream( fields.getOwnKeys( true ) ).forEach( fieldName -> {
+                    final Integer[] indexes = ( (ScriptObjectMirror) fields.getMember( fieldName ) ).to( Integer[].class );
+                    Arrays.stream( indexes ).sorted( Comparator.reverseOrder() ).forEach(
+                        index -> parentPropertySet.removeProperty( fieldName + "[" + index + "]" ) );
+                } );
+            };
+            final UpdateNodeParams updateNodeParams = UpdateNodeParams.create().
+                path( NodePath.create( path ).build() ).
+                editor( nodeEditor ).
+                build();
+            createContext( RepositoryId.from( repositoryName ), Branch.from( branchName ) ).
+                callWith( () -> this.nodeServiceSupplier.get().update( updateNodeParams ) );
+
+            return createSuccessResult();
+        }, "Error while deleting fields" );
     }
 
     private Value createValue( String type, String value )
