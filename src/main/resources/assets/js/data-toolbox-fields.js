@@ -1,5 +1,9 @@
-class FieldDialog extends RcdMaterialModalDialog {
+const Formats = {
+    BOOLEAN_REGEXP: /^(?:true|false)?$/i
+}
 
+class FieldDialog extends RcdMaterialModalDialog {
+    
     constructor(params) {
         super(params.action + ' field', params.text, true, true);
         this.enabled = true;
@@ -63,12 +67,11 @@ class FieldDialog extends RcdMaterialModalDialog {
         }
         const type = this.typeField.getSelectedValue();
         const value = this.valueField.getValue();
-        const lowerCasedValue = value.toLowerCase();
         switch (type) {
         case 'Boolean':
-            if (value !== '' && 'true' !== lowerCasedValue && 'false' !== lowerCasedValue) {
+            if (!Formats.BOOLEAN_REGEXP.test(value)) {
                 return false;
-            } 
+            }
             break;
         }
         return true;
