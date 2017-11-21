@@ -30,7 +30,7 @@ class FieldDialog extends RcdMaterialModalDialog {
         };
         return super.init()
             .addAction('CANCEL', closeCallback)
-            .addAction(this.action, confirmationCallback)
+            .addAction(this.action == 'Create' ? 'Create' : 'Update', confirmationCallback)
             .addKeyUpListener('Enter', confirmationCallback)
             .addKeyUpListener('Escape', closeCallback)
             .addItem(this.nameField)

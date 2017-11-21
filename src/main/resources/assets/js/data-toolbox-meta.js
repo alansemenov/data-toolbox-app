@@ -66,7 +66,7 @@ class MetaRoute extends DtbRoute {
                 addCell(meta._versionKey);
             this.tableCard.createRow({selectable:false}).
                 addCell('Manual order value').
-                addCell(meta._manualOrderValue);
+                addCell(meta._manualOrderValue || '');
             this.tableCard.createRow({selectable:false}).
                 addCell('Timestamp').
                 addCell(meta._timestamp);
