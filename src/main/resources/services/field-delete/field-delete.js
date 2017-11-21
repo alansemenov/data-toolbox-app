@@ -9,6 +9,6 @@ exports.post = function (req) {
 
     return {
         contentType: 'application/json',
-        body: bean.delete(repositoryName, branchName, path, parentPath, fields)
+        body: bean.delete(repositoryName, branchName, path, parentPath || null, fields)
     }
 };
