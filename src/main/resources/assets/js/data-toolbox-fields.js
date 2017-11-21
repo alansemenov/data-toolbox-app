@@ -17,6 +17,7 @@ class FieldDialog extends RcdMaterialModalDialog {
     constructor(params) {
         super(params.action + ' field', params.text, true, true);
         this.enabled = true;
+        this.valueInputReceived = false;
         this.action = params.action;
         this.callback = params.callback;
         let options = ['BinaryReference', 'Boolean', 'DateTime', 'Double', 'GeoPoint', 'LocalDate', 'LocalDateTime', 'LocalTime',
@@ -60,12 +61,16 @@ class FieldDialog extends RcdMaterialModalDialog {
         
         this.typeField.addChangeListener((source) => {
             this.valueField.show(source.getSelectedValue() !== 'PropertySet');
-            if (this.action === 'Create' && !this.isValidValue()) {
+            if (this.action === 'Create' && !this.valueInputReceived) {
                 this.valueField.setValue(this.generateValue());
+                this.valueField.focus().select();
             }
             this.onInput();
         });
-        this.valueField.addInputListener(() => this.onInput());
+        this.valueField.addInputListener(() => {
+            this.valueInputReceived = true;
+            this.onInput();
+        });
         
         return this;
     }
