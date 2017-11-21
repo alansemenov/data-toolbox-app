@@ -4,11 +4,8 @@ class FieldDialog extends RcdMaterialModalDialog {
         super(params.action + ' field', params.text, true, true);
         this.action = params.action;
         this.callback = params.callback;
-        let options = ['BinaryReference', 'Boolean', 'DateTime', 'Double', 'GeoPoint', 'Link', 'LocalDate', 'LocalDateTime', 'LocalTime',
-            'Long', 'PropertySet', 'Reference', 'String', 'Xml'];
-        if (params.action === 'Edit') {
-            options.splice(options.indexOf('PropertySet'), 1);
-        }
+        let options = ['BinaryReference', 'Boolean', 'DateTime', 'Double', 'GeoPoint', 'LocalDate', 'LocalDateTime', 'LocalTime',
+            'Long', 'PropertySet', 'Reference', 'String', 'Xml']; //TODO Removed Link type for now
         this.nameField = params.action == 'Create' && new RcdMaterialTextField('Name', 'Name').init();
         this.typeField = new RcdMaterialDropdown('Type', options)
             .init()
