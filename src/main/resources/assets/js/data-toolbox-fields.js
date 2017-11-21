@@ -150,8 +150,7 @@ class FieldDialog extends RcdMaterialModalDialog {
         case 'Boolean':
             return 'false';
         case 'DateTime':
-            const dateIsoString = new Date().toISOString();
-            return dateIsoString.substring(0, dateIsoString.length - 1);
+            return new Date().toISOString();
         case 'Double':
             return '0.0';
         case 'GeoPoint':
