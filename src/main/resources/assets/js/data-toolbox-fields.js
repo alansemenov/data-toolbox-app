@@ -2,6 +2,7 @@ class FieldDialog extends RcdMaterialModalDialog {
 
     constructor(params) {
         super(params.action + ' field', params.text, true, true);
+        this.enabled = true;
         this.action = params.action;
         this.callback = params.callback;
         let options = ['BinaryReference', 'Boolean', 'DateTime', 'Double', 'GeoPoint', 'LocalDate', 'LocalDateTime', 'LocalTime',
@@ -17,15 +18,18 @@ class FieldDialog extends RcdMaterialModalDialog {
     init() {
         const closeCallback = () => this.close();
         const confirmationCallback = (source, event) => {
-            this.close();
-            if (this.action == 'Create') {
-                this.callback(this.nameField.getValue(), this.typeField.getSelectedValue(), this.valueField.getValue());
-            } else {
-                this.callback(this.typeField.getSelectedValue(), this.valueField.getValue());
+            if (this.enabled) {
+                this.close();
+                if (this.action == 'Create') {
+                    this.callback(this.nameField.getValue(), this.typeField.getSelectedValue(), this.valueField.getValue());
+                } else {
+                    this.callback(this.typeField.getSelectedValue(), this.valueField.getValue());
+                }
             }
             event.stopPropagation();
         };
-        return super.init()
+        
+        super.init()
             .addAction('CANCEL', closeCallback)
             .addAction(this.action == 'Create' ? 'Create' : 'Update', confirmationCallback)
             .addKeyUpListener('Enter', confirmationCallback)
@@ -33,6 +37,19 @@ class FieldDialog extends RcdMaterialModalDialog {
             .addItem(this.nameField)
             .addItem(this.typeField)
             .addItem(this.valueField);
+        
+        if (this.action === 'Create') {
+            this.enable(false);
+            this.nameField.addInputListener((source) => {
+                this.enable(source.getValue() !== '');
+            });
+        }
+        this.typeField.addChangeListener((source) => {
+            this.valueField.show(source.getSelectedValue() !== 'PropertySet');
+        });
+        
+        
+        return this;
     }
 
     open(parent) {
@@ -43,6 +60,11 @@ class FieldDialog extends RcdMaterialModalDialog {
             this.valueField.focus().select();
         }
         return this;
+    }
+
+    enable(enabled) {
+        this.enabled = enabled;
+        this.dialog.actions.children[1].enable(enabled); //TODO Refactor
     }
 }
 
@@ -119,7 +141,7 @@ class FieldsRoute extends DtbRoute {
             fields.forEach(field => {
 
                 let editFieldIconArea = null;
-                if (field.type !== 'PropertySet') {
+                if (field.type !== 'PropertySet' && field.type !== 'Link') {  //TODO Removed Link type for now
                     const editFieldCallback = () => this.editField(field);
                     editFieldIconArea = new RcdGoogleMaterialIconArea('edit', (source, event) => {
                         editFieldCallback();
