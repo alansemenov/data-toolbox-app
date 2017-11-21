@@ -1,7 +1,7 @@
 //Permissives Regexps. Stricter validation is done server-side
 const Formats = {
     BINARY_REFERENCE_REGEXP: /.+/i,
-    BOOLEAN_REGEXP: /^(?:true|false)?$/i,
+    BOOLEAN_REGEXP: /^(?:true|false)$/i,
     DATE_TIME_REGEXP: /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/i,
     DOUBLE_REGEXP: /.+/, 
     GEO_POINT_REGEXP: /^[^,]+,[^,]+$/,
@@ -60,6 +60,9 @@ class FieldDialog extends RcdMaterialModalDialog {
         
         this.typeField.addChangeListener((source) => {
             this.valueField.show(source.getSelectedValue() !== 'PropertySet');
+            if (this.action === 'Create' && !this.isValidValue()) {
+                this.valueField.setValue(this.generateValue());
+            }
             this.onInput();
         });
         this.valueField.addInputListener(() => this.onInput());
@@ -75,6 +78,11 @@ class FieldDialog extends RcdMaterialModalDialog {
         if (this.nameField && this.nameField.getValue() === '') {
             return false;
         }
+        
+        return this.isValidValue();
+    }
+    
+    isValidValue() {
         const type = this.typeField.getSelectedValue();
         const value = this.valueField.getValue();
         switch (type) {
@@ -130,6 +138,29 @@ class FieldDialog extends RcdMaterialModalDialog {
             break;
         }
         return true;
+    }
+    
+    generateValue() {
+        switch (this.typeField.getSelectedValue()) {
+        case 'Boolean':
+            return 'false';
+        case 'DateTime':
+            const dateIsoString = new Date().toISOString();
+            return dateIsoString.substring(0, dateIsoString.length - 1);
+        case 'Double':
+            return '0.0';
+        case 'GeoPoint':
+            return '59.9090313,10.7421944';
+        case 'LocalDate':
+            return toLocalDateFormat();
+        case 'LocalDateTime':
+            return toLocalDateTimeFormat();
+        case 'LocalTime':
+            return toLocalTimeFormat();
+        case 'Long':
+            return '0';
+        }
+        return '';
     }
 
     open(parent) {
