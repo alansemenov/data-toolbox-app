@@ -1,5 +1,15 @@
+//Permissives Regexps. Stricter validation is done server-side
 const Formats = {
-    BOOLEAN_REGEXP: /^(?:true|false)?$/i
+    BINARY_REFERENCE_REGEXP: /.+/i,
+    BOOLEAN_REGEXP: /^(?:true|false)?$/i,
+    DATE_TIME_REGEXP: /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/i,
+    DOUBLE_REGEXP: /.+/, 
+    GEO_POINT_REGEXP: /^[^,]+,[^,]+$/,
+    LOCAL_DATE_REGEXP: /^\d{4}-\d{2}-\d{2}$/, 
+    LOCAL_DATE_TIME_REGEXP: /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/i,
+    LOCAL_TIME_REGEXP: /^\d{1,2}:\d{2}:\d{2}/,
+    LONG_REGEXP: /.+/,
+    REFERENCE_REGEXP: /^[a-z0-9A-Z_\-\.:]+$/
 }
 
 class FieldDialog extends RcdMaterialModalDialog {
@@ -68,8 +78,53 @@ class FieldDialog extends RcdMaterialModalDialog {
         const type = this.typeField.getSelectedValue();
         const value = this.valueField.getValue();
         switch (type) {
+        case 'BinaryReference':
+            if (!Formats.BINARY_REFERENCE_REGEXP.test(value)) {
+                return false;
+            }
+            break;
         case 'Boolean':
             if (!Formats.BOOLEAN_REGEXP.test(value)) {
+                return false;
+            }
+            break;
+        case 'DateTime':
+            if (!Formats.DATE_TIME_REGEXP.test(value)) {
+                return false;
+            }
+            break;
+        case 'Double':
+            if (!Formats.DOUBLE_REGEXP.test(value)) {
+                return false;
+            }
+            break;
+        case 'GeoPoint':
+            if (!Formats.GEO_POINT_REGEXP.test(value)) {
+                return false;
+            }
+            break;
+        case 'LocalDate':
+            if (!Formats.LOCAL_DATE_REGEXP.test(value)) {
+                return false;
+            }
+            break;
+        case 'LocalDateTime':
+            if (!Formats.LOCAL_DATE_TIME_REGEXP.test(value)) {
+                return false;
+            }
+            break;
+        case 'LocalTime':
+            if (!Formats.LOCAL_TIME_REGEXP.test(value)) {
+                return false;
+            }
+            break;
+        case 'Long':
+            if (!Formats.LONG_REGEXP.test(value)) {
+                return false;
+            }
+            break;
+        case 'Reference':
+            if (!Formats.REFERENCE_REGEXP.test(value)) {
                 return false;
             }
             break;
