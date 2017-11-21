@@ -38,18 +38,40 @@ class FieldDialog extends RcdMaterialModalDialog {
             .addItem(this.typeField)
             .addItem(this.valueField);
         
-        if (this.action === 'Create') {
+        
+        if (this.nameField) {
             this.enable(false);
-            this.nameField.addInputListener((source) => {
-                this.enable(source.getValue() !== '');
-            });
+            this.nameField.addInputListener(() => this.onInput());
         }
+        
         this.typeField.addChangeListener((source) => {
             this.valueField.show(source.getSelectedValue() !== 'PropertySet');
+            this.onInput();
         });
-        
+        this.valueField.addInputListener(() => this.onInput());
         
         return this;
+    }
+    
+    onInput() {
+        this.enable(this.shouldEnable());
+    }
+    
+    shouldEnable() {
+        if (this.nameField && this.nameField.getValue() === '') {
+            return false;
+        }
+        const type = this.typeField.getSelectedValue();
+        const value = this.valueField.getValue();
+        const lowerCasedValue = value.toLowerCase();
+        switch (type) {
+        case 'Boolean':
+            if (value !== '' && 'true' !== lowerCasedValue && 'false' !== lowerCasedValue) {
+                return false;
+            } 
+            break;
+        }
+        return true;
     }
 
     open(parent) {
