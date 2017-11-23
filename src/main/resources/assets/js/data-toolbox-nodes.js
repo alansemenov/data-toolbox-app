@@ -90,13 +90,13 @@ class NodesRoute extends DtbRoute {
                 const displayPermissionsCallback = () => setState('permissions',{repo: getRepoParameter(), branch: getBranchParameter(), path: node._path});
                 const displayJsonCallback = () => this.displayNodeAsJson(node._id);
                 
-                const displayMetaDataIconArea = new RcdImageIconArea(config.assetsUrl + '/icons/meta.svg', (source, event) => {displayMetaDataCallback();event.stopPropagation();}).init().setTooltip('Display metadata');
-                const displayPropertiesIconArea = new RcdImageIconArea(config.assetsUrl + '/icons/properties.svg', (source, event) => {displayPropertiesCallback();event.stopPropagation();}).init().setTooltip('Display data');
+                const displayMetaDataIconArea = new RcdImageIconArea(config.assetsUrl + '/icons/meta.svg', (source, event) => {displayMetaDataCallback();event.stopPropagation();}).init().setTooltip('Display system properties');
+                const displayPropertiesIconArea = new RcdImageIconArea(config.assetsUrl + '/icons/properties.svg', (source, event) => {displayPropertiesCallback();event.stopPropagation();}).init().setTooltip('Display properties');
                 const displayPermissionsIconArea = new RcdGoogleMaterialIconArea('lock', (source, event) => {displayPermissionsCallback();event.stopPropagation();}).init().setTooltip('Display permissions');
                 const displayJsonIconArea = new RcdImageIconArea(config.assetsUrl + '/icons/json.svg', (source, event) => {displayJsonCallback();event.stopPropagation();}).init().setTooltip('Display as JSON');
                 
-                const moreIconAreaItems =  [{text:'Display metadata', callback: displayMetaDataCallback}, 
-                    {text:'Display data', callback: displayPropertiesCallback}, 
+                const moreIconAreaItems =  [{text:'Display system properties', callback: displayMetaDataCallback}, 
+                    {text:'Display properties', callback: displayPropertiesCallback}, 
                     {text:'Display permissions', callback: displayPermissionsCallback}, 
                     {text:'Display as JSON', callback: displayJsonCallback}];
                 const moreIconArea = new RcdGoogleMaterialIconArea('more_vert', (source, event) => {

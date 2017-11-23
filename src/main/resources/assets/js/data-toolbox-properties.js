@@ -418,7 +418,7 @@ class PropertiesRoute extends DtbRoute {
             new RcdMaterialBreadcrumb(branchName, () => setState('nodes', {repo: repositoryName, branch: branchName})).init()]);
 
         if (path === '/') {
-            this.breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb('root!data',
+            this.breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb('root!properties',
                 property ? () => setState('properties', {repo: repositoryName, branch: branchName, path: path}) : undefined).init());
         } else {
             this.breadcrumbsLayout.addBreadcrumb(
@@ -426,10 +426,10 @@ class PropertiesRoute extends DtbRoute {
         }
 
         if (path === '/') {
-            app.setTitle('Root node data');
+            app.setTitle('Root node properties');
         } else {
             const pathElements = path.substring(1).split('/');
-            app.setTitle(pathElements[pathElements.length - 1] + ' data');
+            app.setTitle(pathElements[pathElements.length - 1] + ' properties');
 
             let currentPath = '';
             pathElements.forEach((subPathElement, index, array) => {
@@ -440,7 +440,7 @@ class PropertiesRoute extends DtbRoute {
                     this.breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb(subPathElement,
                         () => setState('nodes', {repo: repositoryName, branch: branchName, path: constCurrentPath})).init());
                 } else {
-                    this.breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb(subPathElement + '!data',
+                    this.breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb(subPathElement + '!properties',
                         property ? () => setState('properties', {repo: repositoryName, branch: branchName, path: path}) : undefined).init());
                 }
             });
@@ -471,7 +471,7 @@ class PropertiesRoute extends DtbRoute {
     displayHelp() {
         const viewDefinition = 'The view represents node properties in a tree structure. ' +
                                'See <a class="rcd-material-link" href="http://xp.readthedocs.io/en/6.10/developer/node-domain/property.html">Property</a> and <a class="rcd-material-link" href="http://xp.readthedocs.io/en/6.10/developer/node-domain/value-types.html">Value Types</a> for more information. ';
-        new HelpDialog('Data', [viewDefinition]).init()
+        new HelpDialog('Properties', [viewDefinition]).init()
             .addActionDefinition({
                 iconName: 'add_circle',
                 definition: 'Create a property.'
