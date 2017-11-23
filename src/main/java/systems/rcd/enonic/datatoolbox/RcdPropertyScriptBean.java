@@ -37,7 +37,7 @@ import com.enonic.xp.util.GeoPoint;
 import com.enonic.xp.util.Link;
 import com.enonic.xp.util.Reference;
 
-public class RcdFieldsScriptBean
+public class RcdPropertyScriptBean
     extends RcdScriptBean
 {
     private Supplier<NodeService> nodeServiceSupplier;
@@ -48,12 +48,12 @@ public class RcdFieldsScriptBean
         nodeServiceSupplier = context.getService( NodeService.class );
     }
 
-    public String list( final String repositoryName, final String branchName, final String path, final String field, final int start,
+    public String list( final String repositoryName, final String branchName, final String path, final String propertyPath, final int start,
                         final int count )
     {
         return runSafely( () -> {
             final RcdJsonObject result = RcdJsonService.createJsonObject();
-            final RcdJsonArray fieldJsonArray = result.createArray( "hits" );
+            final RcdJsonArray propertyJsonArray = result.createArray( "hits" );
 
             final Node node = createContext( RepositoryId.from( repositoryName ), Branch.from( branchName ) ).
                 callWith( () -> this.nodeServiceSupplier.get().getByPath( NodePath.create( path ).build() ) );
@@ -62,7 +62,7 @@ public class RcdFieldsScriptBean
             if ( node != null )
             {
 
-                final PropertySet propertySet = field == null ? node.data().getRoot() : node.data().getSet( field );
+                final PropertySet propertySet = propertyPath == null ? node.data().getRoot() : node.data().getSet( propertyPath );
                 if ( propertySet != null )
                 {
                     final List<Property> propertyList = (List<Property>) propertySet.getProperties();
@@ -70,7 +70,7 @@ public class RcdFieldsScriptBean
                     propertyList.stream().skip( start ).limit( count ).forEach( property -> {
                         String value = "PropertySet".equals( property.getType().getName() ) ? "" : property.getValue().toString();
                         value = StringEscapeUtils.escapeHtml( value );
-                        fieldJsonArray.createObject().
+                        propertyJsonArray.createObject().
                             put( "name", property.getName() ).
                             put( "index", property.getIndex() ).
                             put( "value", value ).
@@ -79,10 +79,10 @@ public class RcdFieldsScriptBean
                 }
             }
             return createSuccessResult( result );
-        }, "Error while listing fields" );
+        }, "Error while listing properties" );
     }
 
-    public String update( final String repositoryName, final String branchName, final String path, final String field, final String type,
+    public String update( final String repositoryName, final String branchName, final String path, final String propertyPath, final String type,
                           final String valueString )
     {
         return runSafely( () -> {
@@ -90,14 +90,14 @@ public class RcdFieldsScriptBean
                 final Value value = createValue( type, valueString );
 
                 //TODO Workaround. Bug if existing property with different type
-                final Property property = editableNode.data.getProperty( field );
+                final Property property = editableNode.data.getProperty( propertyPath );
                 final int propertiesCount = property.getParent().countProperties( property.getName() );
                 if ( propertiesCount == 1 )
                 {
-                    editableNode.data.removeProperty( field );
+                    editableNode.data.removeProperty( propertyPath );
                 }
 
-                editableNode.data.setProperty( field, value );
+                editableNode.data.setProperty( propertyPath, value );
             };
             final UpdateNodeParams updateNodeParams = UpdateNodeParams.create().
                 path( NodePath.create( path ).build() ).
@@ -107,7 +107,7 @@ public class RcdFieldsScriptBean
                 callWith( () -> this.nodeServiceSupplier.get().update( updateNodeParams ) );
 
             return createSuccessResult();
-        }, "Error while editing field" );
+        }, "Error while editing property" );
     }
 
     public String create( final String repositoryName, final String branchName, final String path, final String parentPath,
@@ -128,21 +128,21 @@ public class RcdFieldsScriptBean
                 callWith( () -> this.nodeServiceSupplier.get().update( updateNodeParams ) );
 
             return createSuccessResult();
-        }, "Error while creating field" );
+        }, "Error while creating property" );
     }
 
     public String delete( final String repositoryName, final String branchName, final String path, final String parentPath,
-                          final ScriptObjectMirror fields )
+                          final ScriptObjectMirror properties )
     {
         return runSafely( () -> {
             NodeEditor nodeEditor = ( editableNode ) -> {
                 final PropertySet parentPropertySet =
                     parentPath != null ? editableNode.data.getPropertySet( parentPath ) : editableNode.data.getRoot();
 
-                Arrays.stream( fields.getOwnKeys( true ) ).forEach( fieldName -> {
-                    final Integer[] indexes = ( (ScriptObjectMirror) fields.getMember( fieldName ) ).to( Integer[].class );
+                Arrays.stream( properties.getOwnKeys( true ) ).forEach( propertyName -> {
+                    final Integer[] indexes = ( (ScriptObjectMirror) properties.getMember( propertyName ) ).to( Integer[].class );
                     Arrays.stream( indexes ).sorted( Comparator.reverseOrder() ).forEach(
-                        index -> parentPropertySet.removeProperty( fieldName + "[" + index + "]" ) );
+                        index -> parentPropertySet.removeProperty( propertyName + "[" + index + "]" ) );
                 } );
             };
             final UpdateNodeParams updateNodeParams = UpdateNodeParams.create().
@@ -153,7 +153,7 @@ public class RcdFieldsScriptBean
                 callWith( () -> this.nodeServiceSupplier.get().update( updateNodeParams ) );
 
             return createSuccessResult();
-        }, "Error while deleting fields" );
+        }, "Error while deleting properties" );
     }
 
     private Value createValue( String type, String value )
@@ -189,7 +189,7 @@ public class RcdFieldsScriptBean
             case "Xml":
                 return ValueFactory.newXml( value );
             default:
-                throw new RcdException( "Unknown Field value type [" + type + "]", null );
+                throw new RcdException( "Unknown Property value type [" + type + "]", null );
         }
     }
 

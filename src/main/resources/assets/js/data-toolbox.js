@@ -6,7 +6,7 @@ function createApp() {
     addRoute(new BranchesRoute().init()).
     addRoute(new NodesRoute().init()).
     addRoute(new MetaRoute().init()).
-    addRoute(new FieldsRoute().init()).
+    addRoute(new PropertiesRoute().init()).
     addRoute(new PermissionsRoute().init()).
     addRoute(new SnapshotsRoute().init()).
     addRoute(new ExportsRoute().init()).
@@ -113,8 +113,8 @@ function getSortParameter() {
     return RcdHistoryRouter.getParameters().sort || '';
 }
 
-function getFieldParameter() {
-    return RcdHistoryRouter.getParameters().field;
+function getPropertyParameter() {
+    return RcdHistoryRouter.getParameters().property;
 }
 
 var app = createApp();

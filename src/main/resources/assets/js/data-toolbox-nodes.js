@@ -86,17 +86,17 @@ class NodesRoute extends DtbRoute {
             result.success.hits.forEach((node) => {
                 
                 const displayMetaDataCallback = () => setState('meta',{repo: getRepoParameter(), branch: getBranchParameter(), path: node._path});
-                const displayFieldsCallback = () => setState('fields',{repo: getRepoParameter(), branch: getBranchParameter(), path: node._path});
+                const displayPropertiesCallback = () => setState('properties',{repo: getRepoParameter(), branch: getBranchParameter(), path: node._path});
                 const displayPermissionsCallback = () => setState('permissions',{repo: getRepoParameter(), branch: getBranchParameter(), path: node._path});
                 const displayJsonCallback = () => this.displayNodeAsJson(node._id);
                 
                 const displayMetaDataIconArea = new RcdImageIconArea(config.assetsUrl + '/icons/meta.svg', (source, event) => {displayMetaDataCallback();event.stopPropagation();}).init().setTooltip('Display metadata');
-                const displayFieldsIconArea = new RcdImageIconArea(config.assetsUrl + '/icons/fields.svg', (source, event) => {displayFieldsCallback();event.stopPropagation();}).init().setTooltip('Display data');
+                const displayPropertiesIconArea = new RcdImageIconArea(config.assetsUrl + '/icons/properties.svg', (source, event) => {displayPropertiesCallback();event.stopPropagation();}).init().setTooltip('Display data');
                 const displayPermissionsIconArea = new RcdGoogleMaterialIconArea('lock', (source, event) => {displayPermissionsCallback();event.stopPropagation();}).init().setTooltip('Display permissions');
                 const displayJsonIconArea = new RcdImageIconArea(config.assetsUrl + '/icons/json.svg', (source, event) => {displayJsonCallback();event.stopPropagation();}).init().setTooltip('Display as JSON');
                 
                 const moreIconAreaItems =  [{text:'Display metadata', callback: displayMetaDataCallback}, 
-                    {text:'Display data', callback: displayFieldsCallback}, 
+                    {text:'Display data', callback: displayPropertiesCallback}, 
                     {text:'Display permissions', callback: displayPermissionsCallback}, 
                     {text:'Display as JSON', callback: displayJsonCallback}];
                 const moreIconArea = new RcdGoogleMaterialIconArea('more_vert', (source, event) => {
@@ -108,7 +108,7 @@ class NodesRoute extends DtbRoute {
                     addCell(node._name).
                     addCell(node._id, {classes: ['non-mobile-cell']}).
                     addCell(displayMetaDataIconArea, {icon: true, classes: ['non-mobile-cell']}).
-                    addCell(displayFieldsIconArea, {icon: true, classes: ['non-mobile-cell']}).
+                    addCell(displayPropertiesIconArea, {icon: true, classes: ['non-mobile-cell']}).
                     addCell(displayPermissionsIconArea, {icon: true, classes: ['non-mobile-cell']}).
                     addCell(displayJsonIconArea, {icon: true, classes: ['non-mobile-cell']}).
                     addCell(moreIconArea, {icon: true, classes: ['mobile-cell']}).
@@ -493,12 +493,12 @@ class NodesRoute extends DtbRoute {
         addActionDefinition({
             iconName: 'sort',
             definition: 'Sort the nodes based on an expression. ' +
-                        'The sorting expression is composed of a node field to sort on and the direction: ascending or descending.' +
+                        'The sorting expression is composed of a node property to sort on and the direction: ascending or descending.' +
                         'Examples: "_timestamp DESC", "_name ASC"'
         }).
         addActionDefinition({iconName: 'delete', definition: 'Delete the selected nodes.'}).
         addActionDefinition({iconSrc: config.assetsUrl + '/icons/meta.svg',definition: 'Display the node metadata.'}).
-        addActionDefinition({iconSrc: config.assetsUrl + '/icons/fields.svg',definition: 'Display the node fields.'}).
+        addActionDefinition({iconSrc: config.assetsUrl + '/icons/properties.svg',definition: 'Display the node properties.'}).
         addActionDefinition({iconName: 'lock',definition: 'Display the node permissions.'}).
         addActionDefinition({iconSrc: config.assetsUrl + '/icons/json.svg',definition: 'Display the node as JSON.'}).
         open();

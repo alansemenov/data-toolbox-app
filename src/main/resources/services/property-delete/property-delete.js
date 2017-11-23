@@ -4,11 +4,11 @@ exports.post = function (req) {
     var branchName = body.branchName;
     var path = body.path;
     var parentPath = body.parentPath;
-    var fields = body.fields;
-    var bean = __.newBean('systems.rcd.enonic.datatoolbox.RcdFieldsScriptBean');
+    var properties = body.properties;
+    var bean = __.newBean('systems.rcd.enonic.datatoolbox.RcdPropertyScriptBean');
 
     return {
         contentType: 'application/json',
-        body: bean.delete(repositoryName, branchName, path, parentPath || null, fields)
+        body: bean.delete(repositoryName, branchName, path, parentPath || null, properties)
     }
 };

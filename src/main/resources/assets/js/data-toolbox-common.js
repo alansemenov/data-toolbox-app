@@ -344,9 +344,9 @@ class DtbRoute extends RcdMaterialRoute {
         return path && path !== '/' ? (path + '/') : '/';
     }
     
-    getParentField() {
-        const field = getFieldParameter();
-        return field && field.substring(0, field.lastIndexOf('.'));
+    getParentProperty() {
+        const property = getPropertyParameter();
+        return property && property.substring(0, property.lastIndexOf('.'));
     }
 }
 

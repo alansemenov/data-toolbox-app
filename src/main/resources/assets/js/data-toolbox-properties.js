@@ -12,10 +12,10 @@ const Formats = {
     REFERENCE_REGEXP: /^[a-z0-9A-Z_\-\.:]+$/
 }
 
-class FieldDialog extends RcdMaterialModalDialog {
+class PropertyDialog extends RcdMaterialModalDialog {
     
     constructor(params) {
-        super(params.action + ' field', params.text, true, true);
+        super(params.action + ' property', params.text, true, true);
         this.enabled = true;
         this.valueInputReceived = false;
         this.action = params.action;
@@ -23,11 +23,11 @@ class FieldDialog extends RcdMaterialModalDialog {
         let options = ['BinaryReference', 'Boolean', 'DateTime', 'Double', 'GeoPoint', 'LocalDate', 'LocalDateTime', 'LocalTime',
             'Long', 'PropertySet', 'Reference', 'String', 'Xml']; //TODO Removed Link type for now
         this.nameField = params.action == 'Create' && new RcdMaterialTextField('Name', 'Name').init();
-        this.typeField = new RcdMaterialDropdown('Type', options)
+        this.typeDropdown = new RcdMaterialDropdown('Type', options)
             .init()
-            .selectOption(params.field && params.field.type || 'String');
+            .selectOption(params.property && params.property.type || 'String');
         this.valueField = new RcdMaterialTextField('Value', 'Value').init()
-            .setValue(params.field && params.field.value || '');
+            .setValue(params.property && params.property.value || '');
     }
 
     init() {
@@ -36,9 +36,9 @@ class FieldDialog extends RcdMaterialModalDialog {
             if (this.enabled) {
                 this.close();
                 if (this.action == 'Create') {
-                    this.callback(this.nameField.getValue(), this.typeField.getSelectedValue(), this.valueField.getValue());
+                    this.callback(this.nameField.getValue(), this.typeDropdown.getSelectedValue(), this.valueField.getValue());
                 } else {
-                    this.callback(this.typeField.getSelectedValue(), this.valueField.getValue());
+                    this.callback(this.typeDropdown.getSelectedValue(), this.valueField.getValue());
                 }
             }
             event.stopPropagation();
@@ -50,7 +50,7 @@ class FieldDialog extends RcdMaterialModalDialog {
             .addKeyUpListener('Enter', confirmationCallback)
             .addKeyUpListener('Escape', closeCallback)
             .addItem(this.nameField)
-            .addItem(this.typeField)
+            .addItem(this.typeDropdown)
             .addItem(this.valueField);
         
         
@@ -59,7 +59,7 @@ class FieldDialog extends RcdMaterialModalDialog {
             this.nameField.addInputListener(() => this.onInput());
         }
         
-        this.typeField.addChangeListener((source) => {
+        this.typeDropdown.addChangeListener((source) => {
             this.valueField.show(source.getSelectedValue() !== 'PropertySet');
             if (this.action === 'Create' && !this.valueInputReceived) {
                 this.valueField.setValue(this.generateValue());
@@ -88,7 +88,7 @@ class FieldDialog extends RcdMaterialModalDialog {
     }
     
     isValidValue() {
-        const type = this.typeField.getSelectedValue();
+        const type = this.typeDropdown.getSelectedValue();
         const value = this.valueField.getValue();
         switch (type) {
         case 'BinaryReference':
@@ -146,7 +146,7 @@ class FieldDialog extends RcdMaterialModalDialog {
     }
     
     generateValue() {
-        switch (this.typeField.getSelectedValue()) {
+        switch (this.typeDropdown.getSelectedValue()) {
         case 'Boolean':
             return 'false';
         case 'DateTime':
@@ -183,26 +183,26 @@ class FieldDialog extends RcdMaterialModalDialog {
     }
 }
 
-class FieldsRoute extends DtbRoute {
+class PropertiesRoute extends DtbRoute {
     constructor() {
         super({
-            state: 'fields'
+            state: 'properties'
         });
     }
 
     onDisplay() {
         this.refreshBreadcrumbs();
-        this.retrieveFields();
+        this.retrieveProperties();
     }
 
     createLayout() {
-        const createFieldIconArea = new RcdGoogleMaterialIconArea('add_circle', () => this.createField()).init()
-            .setTooltip('Create field');
-        const deleteFieldIconArea = new RcdGoogleMaterialIconArea('delete', () => this.deleteFields()).init()
-            .setTooltip('Delete selected fields', RcdMaterialTooltipAlignment.RIGHT);
+        const createPropertyIconArea = new RcdGoogleMaterialIconArea('add_circle', () => this.createProperty()).init()
+            .setTooltip('Create property');
+        const deletePropertyIconArea = new RcdGoogleMaterialIconArea('delete', () => this.deleteProperties()).init()
+            .setTooltip('Delete selected properties', RcdMaterialTooltipAlignment.RIGHT);
 
-        this.tableCard = new RcdMaterialTableCard('Fields').init()
-            .addClass('dtb-table-card-fields')
+        this.tableCard = new RcdMaterialTableCard('Properties').init()
+            .addClass('dtb-table-card-properties')
             .addColumn('Name', {classes: ['non-mobile-cell']})
             .addColumn('Index', {classes: ['non-mobile-cell', 'index']})
             .addColumn('Name[Idx]', {classes: ['mobile-cell']})
@@ -210,104 +210,104 @@ class FieldsRoute extends DtbRoute {
             .addColumn('Type', {classes: ['non-mobile-cell', 'type']})
             .addColumn('Type: Value', {classes: ['mobile-cell']})
             .addColumn(null, {icon: true})
-            .addIconArea(createFieldIconArea, {max:0})
-            .addIconArea(deleteFieldIconArea, {min:1});
+            .addIconArea(createPropertyIconArea, {max:0})
+            .addIconArea(deletePropertyIconArea, {min:1});
 
         return new RcdMaterialLayout().init().addChild(this.tableCard);
     }
 
-    retrieveFields() {
-        const infoDialog = showShortInfoDialog('Retrieving fields...');
+    retrieveProperties() {
+        const infoDialog = showShortInfoDialog('Retrieving properties...');
         return $.ajax({
             method: 'POST',
-            url: config.servicesUrl + '/fields-list',
+            url: config.servicesUrl + '/property-list',
             data: JSON.stringify({
                 repositoryName: getRepoParameter(),
                 branchName: getBranchParameter(),
                 path: getPathParameter(),
-                field: getFieldParameter(),
+                property: getPropertyParameter(),
                 start: getStartParameter(),
                 count: getCountParameter()
             }),
             contentType: 'application/json; charset=utf-8'
-        }).done((result) => this.onFieldsRetrieval(result)).fail(handleAjaxError).always(() => {
+        }).done((result) => this.onPropertiesRetrieval(result)).fail(handleAjaxError).always(() => {
             infoDialog.close();
         });
     }
 
-    onFieldsRetrieval(result) {
+    onPropertiesRetrieval(result) {
         this.tableCard.deleteRows();
 
         const headerRow = this.tableCard.createRow({selectable: false}).addCell('..', {classes: ['non-mobile-cell']}).addCell('',
             {classes: ['non-mobile-cell']}).addCell('..', {classes: ['mobile-cell']}).addCell('', {classes: ['non-mobile-cell']}).addCell(
             '', {classes: ['non-mobile-cell']}).addCell('', {classes: ['mobile-cell']}).addCell('', {icon: true}).addClass('rcd-clickable');
 
-        if (getFieldParameter()) {
-            headerRow.addClickListener(() => setState('fields',
-                {repo: getRepoParameter(), branch: getBranchParameter(), path: getPathParameter(), field: this.getParentField()}));
+        if (getPropertyParameter()) {
+            headerRow.addClickListener(() => setState('properties',
+                {repo: getRepoParameter(), branch: getBranchParameter(), path: getPathParameter(), property: this.getParentProperty()}));
         } else {
             headerRow.addClickListener(
                 () => setState('nodes', {repo: getRepoParameter(), branch: getBranchParameter(), path: this.getParentPath()}));
         }
 
         if (handleResultError(result)) {
-            const fields = result.success.hits;
+            const properties = result.success.hits;
 
-            fields.forEach(field => {
+            properties.forEach(property => {
 
-                let editFieldIconArea = null;
-                if (field.type !== 'PropertySet' && field.type !== 'Link') {  //TODO Removed Link type for now
-                    const editFieldCallback = () => this.editField(field);
-                    editFieldIconArea = new RcdGoogleMaterialIconArea('edit', (source, event) => {
-                        editFieldCallback();
+                let editPropertyIconArea = null;
+                if (property.type !== 'PropertySet' && property.type !== 'Link') {  //TODO Removed Link type for now
+                    const editPropertyCallback = () => this.editProperty(property);
+                    editPropertyIconArea = new RcdGoogleMaterialIconArea('edit', (source, event) => {
+                        editPropertyCallback();
                         event.stopPropagation();
                     })
                         .init()
-                        .setTooltip('Edit field');
+                        .setTooltip('Edit property');
                 }
 
                 const row = this.tableCard.createRow()
-                    .addCell(field.name, {classes: ['non-mobile-cell']})
-                    .addCell(field.index, {classes: ['non-mobile-cell']})
-                    .addCell(field.name + '[' + field.index + ']', {classes: ['mobile-cell']})
-                    .addCell(field.value, {classes: ['non-mobile-cell']})
-                    .addCell(field.type, {classes: ['non-mobile-cell']})
-                    .addCell(field.type + ': ' + field.value, {classes: ['mobile-cell']})
-                    .addCell(editFieldIconArea, {icon: true})
-                    .setAttribute('name', field.name)
-                    .setAttribute('index', field.index);
+                    .addCell(property.name, {classes: ['non-mobile-cell']})
+                    .addCell(property.index, {classes: ['non-mobile-cell']})
+                    .addCell(property.name + '[' + property.index + ']', {classes: ['mobile-cell']})
+                    .addCell(property.value, {classes: ['non-mobile-cell']})
+                    .addCell(property.type, {classes: ['non-mobile-cell']})
+                    .addCell(property.type + ': ' + property.value, {classes: ['mobile-cell']})
+                    .addCell(editPropertyIconArea, {icon: true})
+                    .setAttribute('name', property.name)
+                    .setAttribute('index', property.index);
 
-                if (field.type === 'PropertySet') {
-                    row.addClass('rcd-clickable').addClickListener(() => setState('fields', {
+                if (property.type === 'PropertySet') {
+                    row.addClass('rcd-clickable').addClickListener(() => setState('properties', {
                         repo: getRepoParameter(),
                         branch: getBranchParameter(),
                         path: getPathParameter(),
-                        field: (getFieldParameter() ? getFieldParameter() + '.' + field.name : field.name) + '[' + field.index + ']'
+                        property: (getPropertyParameter() ? getPropertyParameter() + '.' + property.name : property.name) + '[' + property.index + ']'
                     }))
                 }
             });
 
             const startInt = parseInt(getStartParameter());
             const countInt = parseInt(getCountParameter());
-            const previousCallback = () => setState('fields', {
+            const previousCallback = () => setState('properties', {
                 repo: getRepoParameter(),
                 branch: getBranchParameter(),
                 path: getPathParameter(),
-                field: getFieldParameter(),
+                property: getPropertyParameter(),
                 start: Math.max(0, startInt - countInt),
                 count: getCountParameter()
             });
-            const nextCallback = () => setState('fields', {
+            const nextCallback = () => setState('properties', {
                 repo: getRepoParameter(),
                 branch: getBranchParameter(),
                 path: getPathParameter(),
-                field: getFieldParameter(),
+                property: getPropertyParameter(),
                 start: startInt + countInt,
                 count: getCountParameter()
             });
             this.tableCard.setFooter({
                 start: parseInt(getStartParameter()),
-                count: fields.length,
+                count: properties.length,
                 total: result.success.total,
                 previousCallback: previousCallback,
                 nextCallback: nextCallback
@@ -315,91 +315,91 @@ class FieldsRoute extends DtbRoute {
         }
     }
 
-    editField(field) {
-        new FieldDialog({
+    editProperty(property) {
+        new PropertyDialog({
             action: 'Edit',
-            field: field,
-            callback: (type, value) => this.doEditField(field, type, value)
+            property: property,
+            callback: (type, value) => this.doEditProperty(property, type, value)
         }).init().open();
     }
 
-    doEditField(field, type, newValue) {
-        const infoDialog = showShortInfoDialog('Updating field...');
-        const fieldParameter = (getFieldParameter() ? getFieldParameter() + '.' : '') + field.name +
-                               (field.index ? '[' + field.index + ']' : '');
+    doEditProperty(property, type, newValue) {
+        const infoDialog = showShortInfoDialog('Updating property...');
+        const propertyParameter = (getPropertyParameter() ? getPropertyParameter() + '.' : '') + property.name +
+                               (property.index ? '[' + property.index + ']' : '');
         return $.ajax({
             method: 'POST',
-            url: config.servicesUrl + '/field-update',
+            url: config.servicesUrl + '/property-update',
             data: JSON.stringify({
                 repositoryName: getRepoParameter(),
                 branchName: getBranchParameter(),
                 path: getPathParameter(),
-                field: fieldParameter,
+                property: propertyParameter,
                 value: newValue,
                 type: type
             }),
             contentType: 'application/json; charset=utf-8'
-        }).done((result) => handleResultError(result) && displaySnackbar('Field updated')).fail(handleAjaxError).always(() => {
+        }).done((result) => handleResultError(result) && displaySnackbar('Property updated')).fail(handleAjaxError).always(() => {
             infoDialog.close();
             RcdHistoryRouter.refresh();
         });
     }
 
-    createField() {
-        new FieldDialog({
+    createProperty() {
+        new PropertyDialog({
             action: 'Create',
-            callback: (name, type, value) => this.doCreateField(name, type, value)
+            callback: (name, type, value) => this.doCreateProperty(name, type, value)
         }).init().open();
     }
 
-    doCreateField(name, type, value) {
-        const infoDialog = showShortInfoDialog('Creating field...');
+    doCreateProperty(name, type, value) {
+        const infoDialog = showShortInfoDialog('Creating property...');
         return $.ajax({
             method: 'POST',
-            url: config.servicesUrl + '/field-create',
+            url: config.servicesUrl + '/property-create',
             data: JSON.stringify({
                 repositoryName: getRepoParameter(),
                 branchName: getBranchParameter(),
                 path: getPathParameter(),
-                parentPath: getFieldParameter(),
+                parentPath: getPropertyParameter(),
                 name: name,
                 type: type,
                 value: value
             }),
             contentType: 'application/json; charset=utf-8'
-        }).done((result) => handleResultError(result) && displaySnackbar('Field created')).fail(handleAjaxError).always(() => {
+        }).done((result) => handleResultError(result) && displaySnackbar('Property created')).fail(handleAjaxError).always(() => {
             infoDialog.close();
             RcdHistoryRouter.refresh();
         });
     }
 
-    deleteFields() {
-        showConfirmationDialog('Delete selected fields?', 'DELETE', () => this.doDeleteFields());
+    deleteProperties() {
+        showConfirmationDialog('Delete selected properties?', 'DELETE', () => this.doDeleteProperties());
     }
 
-    doDeleteFields() {
-        const infoDialog = showLongInfoDialog('Deleting fields...');
-        let fields = {};
+    doDeleteProperties() {
+        const infoDialog = showLongInfoDialog('Deleting properties...');
+        let properties = {};
         const selectedRows = this.tableCard.getSelectedRows();
         selectedRows.forEach((row) =>{
-            if (!fields[row.attributes['name']]) {
-                fields[row.attributes['name']] = [];
+            if (!properties[row.attributes['name']]) {
+                properties[row.attributes['name']] = [];
             }
-            fields[row.attributes['name']].push(row.attributes['index'])
+            properties[row.attributes['name']].push(row.attributes['index'])
         });
         $.ajax({
             method: 'POST',
-            url: config.servicesUrl + '/field-delete',
+            url: config.servicesUrl + '/property-delete',
             data: JSON.stringify({
                 repositoryName: getRepoParameter(),
                 branchName: getBranchParameter(),
                 path: getPathParameter(),
-                parentPath: getFieldParameter(),
-                fields: fields
+                parentPath: getPropertyParameter(),
+                properties: properties
             }),
             contentType: 'application/json; charset=utf-8'
         })
-            .done((result) => handleResultError(result) &&  displaySnackbar('Field' + (selectedRows.length > 1 ?'s' : '') + ' deleted'))
+            .done((result) => handleResultError(result) &&  displaySnackbar('Property' + (selectedRows.length > 1 ?'s' : '') + ' deleted'))
             .fail(handleAjaxError).always(() => {
             infoDialog.close();
             RcdHistoryRouter.refresh();
@@ -410,7 +410,7 @@ class FieldsRoute extends DtbRoute {
         const repositoryName = getRepoParameter();
         const branchName = getBranchParameter();
         const path = getPathParameter();
-        const field = getFieldParameter();
+        const property = getPropertyParameter();
 
         this.breadcrumbsLayout.setBreadcrumbs([new RcdMaterialBreadcrumb('Data Toolbox', () => setState()).init(),
             new RcdMaterialBreadcrumb('Data Tree', () => setState('repositories')).init(),
@@ -419,7 +419,7 @@ class FieldsRoute extends DtbRoute {
 
         if (path === '/') {
             this.breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb('root!data',
-                field ? () => setState('fields', {repo: repositoryName, branch: branchName, path: path}) : undefined).init());
+                property ? () => setState('properties', {repo: repositoryName, branch: branchName, path: path}) : undefined).init());
         } else {
             this.breadcrumbsLayout.addBreadcrumb(
                 new RcdMaterialBreadcrumb('root', () => setState('nodes', {repo: repositoryName, branch: branchName, path: '/'})).init());
@@ -441,27 +441,27 @@ class FieldsRoute extends DtbRoute {
                         () => setState('nodes', {repo: repositoryName, branch: branchName, path: constCurrentPath})).init());
                 } else {
                     this.breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb(subPathElement + '!data',
-                        field ? () => setState('fields', {repo: repositoryName, branch: branchName, path: path}) : undefined).init());
+                        property ? () => setState('properties', {repo: repositoryName, branch: branchName, path: path}) : undefined).init());
                 }
             });
         }
 
-        if (field) {
-            const fieldElements = field.split('.');
-            let currentField = '';
-            fieldElements.forEach((subFieldElement, index, array) => {
-                currentField += currentField ? '.' + subFieldElement : subFieldElement;
-                const constCurrentField = currentField;
-                const simplifiedSubFieldElement = subFieldElement.endsWith('[0]')
-                    ? subFieldElement.substring(0, subFieldElement.length - 3)
-                    : subFieldElement;
+        if (property) {
+            const propertyElements = property.split('.');
+            let currentProperty = '';
+            propertyElements.forEach((subPropertyElement, index, array) => {
+                currentProperty += currentProperty ? '.' + subPropertyElement : subPropertyElement;
+                const constCurrentProperty = currentProperty;
+                const simplifiedSubPropertyElement = subPropertyElement.endsWith('[0]')
+                    ? subPropertyElement.substring(0, subPropertyElement.length - 3)
+                    : subPropertyElement;
 
                 if (index < array.length - 1) {
-                    this.breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb(simplifiedSubFieldElement,
-                        () => setState('fields', {repo: repositoryName, branch: branchName, path: path, field: constCurrentField})).init(),
+                    this.breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb(simplifiedSubPropertyElement,
+                        () => setState('properties', {repo: repositoryName, branch: branchName, path: path, property: constCurrentProperty})).init(),
                         ' . ');
                 } else {
-                    this.breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb(simplifiedSubFieldElement, undefined).init(), ' . ');
+                    this.breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb(simplifiedSubPropertyElement, undefined).init(), ' . ');
                 }
             });
         }
@@ -469,7 +469,7 @@ class FieldsRoute extends DtbRoute {
     }
 
     displayHelp() {
-        const viewDefinition = 'The view represents node data fields in a tree structure. Modification of fields will be provided in an ulterior version.';
+        const viewDefinition = 'The view represents node data properties in a tree structure. Modification of properties will be provided in an ulterior version.';
         new HelpDialog('Data', [viewDefinition]).init().open();
     }
 }
