@@ -469,7 +469,21 @@ class PropertiesRoute extends DtbRoute {
     }
 
     displayHelp() {
-        const viewDefinition = 'The view represents node data properties in a tree structure. Modification of properties will be provided in an ulterior version.';
-        new HelpDialog('Data', [viewDefinition]).init().open();
+        const viewDefinition = 'The view represents node properties in a tree structure. ' +
+                               'See <a class="rcd-material-link" href="http://xp.readthedocs.io/en/6.10/developer/node-domain/property.html">Property</a> and <a class="rcd-material-link" href="http://xp.readthedocs.io/en/6.10/developer/node-domain/value-types.html">Value Types</a> for more information. ';
+        new HelpDialog('Data', [viewDefinition]).init()
+            .addActionDefinition({
+                iconName: 'add_circle',
+                definition: 'Create a property.'
+            })
+            .addActionDefinition({
+                iconName: 'delete',
+                definition: 'Delete the selected properties.'
+            })
+            .addActionDefinition({
+                iconName: 'edit',
+                definition: 'Edit property.'
+            })
+            .open();
     }
 }
