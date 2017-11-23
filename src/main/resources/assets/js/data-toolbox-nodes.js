@@ -85,7 +85,7 @@ class NodesRoute extends DtbRoute {
         if (handleResultError(result)) {
             result.success.hits.forEach((node) => {
                 
-                const displayMetaDataCallback = () => setState('meta',{repo: getRepoParameter(), branch: getBranchParameter(), path: node._path});
+                const displayMetaDataCallback = () => setState('system-properties',{repo: getRepoParameter(), branch: getBranchParameter(), path: node._path});
                 const displayPropertiesCallback = () => setState('properties',{repo: getRepoParameter(), branch: getBranchParameter(), path: node._path});
                 const displayPermissionsCallback = () => setState('permissions',{repo: getRepoParameter(), branch: getBranchParameter(), path: node._path});
                 const displayJsonCallback = () => this.displayNodeAsJson(node._id);

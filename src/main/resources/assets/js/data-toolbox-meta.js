@@ -1,7 +1,7 @@
 class MetaRoute extends DtbRoute {
     constructor() {
         super({
-            state: 'meta'
+            state: 'system-properties'
         });
     }
 
