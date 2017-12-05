@@ -335,8 +335,10 @@ class DtbRoute extends RcdMaterialRoute {
 
     getParentPath() {
         const path = getPathParameter();
-        const parentPath = path && path.substring(0, path.lastIndexOf('/'));
-        return parentPath ? parentPath : '/';
+        if (!path || path === '/') {
+            return null;
+        }
+        return path.substring(0, path.lastIndexOf('/')) || '/';
     }
 
     getPathPrefix() {

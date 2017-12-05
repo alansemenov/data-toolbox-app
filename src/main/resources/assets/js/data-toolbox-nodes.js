@@ -76,7 +76,7 @@ class NodesRoute extends DtbRoute {
             addClass('rcd-clickable').
             addClickListener(() => {
                 if (getPathParameter()) {
-                    setState('nodes', {repo:getRepoParameter(), branch: getBranchParameter() + (getPathParameter() === '/' ? '' : '&path=' + this.getParentPath() ) })
+                    setState('nodes', {repo:getRepoParameter(), branch: getBranchParameter(), path: getPathParameter() === '/' ? null : this.getParentPath()});
                 } else {
                     setState('branches', {repo:getRepoParameter()});
                 }

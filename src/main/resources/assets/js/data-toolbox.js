@@ -82,6 +82,11 @@ function showDetailsDialog(title, text, callback) {
 }
 
 function setState(state,params) {
+    for( let paramKey in params) {
+        if (params[paramKey] == null) {
+            delete params[paramKey];
+        }
+    }
     RcdHistoryRouter.setState(state, params);
 }
 
