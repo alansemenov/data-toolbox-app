@@ -15,6 +15,8 @@ class NodesRoute extends DtbRoute {
             setTooltip('Export selected node');
         const importIconArea = new RcdImageIconArea(config.assetsUrl + '/icons/import-icon.svg', () => this.importNode()).init().
             setTooltip('Import node export');
+        const moveIconArea = new RcdImageIconArea(config.assetsUrl + '/icons/rename.svg', () => this.moveNode()).init().
+            setTooltip('Move/rename node');
         const filterIconArea = new RcdGoogleMaterialIconArea('filter_list', () => this.filterNodes()).init().
             setTooltip('Filter nodes');
         const sortIconArea = new RcdGoogleMaterialIconArea('sort', () => this.sortNodes()).init().
@@ -31,6 +33,7 @@ class NodesRoute extends DtbRoute {
             addColumn('', {icon: true, classes: ['mobile-cell']}).
             addIconArea(exportIconArea, {min: 1, max: 1}).
             addIconArea(importIconArea, {max: 0}).
+            addIconArea(moveIconArea, {min: 1}).
             addIconArea(filterIconArea, {max: 0}).
             addIconArea(sortIconArea, {max: 0}).
             addIconArea(deleteIconArea, {min: 1});
@@ -40,7 +43,7 @@ class NodesRoute extends DtbRoute {
     }
 
     retrieveNodes() {
-        const infoDialog = showInfoDialog('Retrieving node list...');
+        const infoDialog = showShortInfoDialog('Retrieving node list...');
         return $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/node-getchildren',
@@ -73,7 +76,7 @@ class NodesRoute extends DtbRoute {
             addClass('rcd-clickable').
             addClickListener(() => {
                 if (getPathParameter()) {
-                    setState('nodes', {repo:getRepoParameter(), branch: getBranchParameter() + (getPathParameter() === '/' ? '' : '&path=' + this.getParentPath() ) })
+                    setState('nodes', {repo:getRepoParameter(), branch: getBranchParameter(), path: getPathParameter() === '/' ? null : this.getParentPath()});
                 } else {
                     setState('branches', {repo:getRepoParameter()});
                 }
@@ -82,18 +85,18 @@ class NodesRoute extends DtbRoute {
         if (handleResultError(result)) {
             result.success.hits.forEach((node) => {
                 
-                const displayMetaDataCallback = () => setState('meta',{repo: getRepoParameter(), branch: getBranchParameter(), path: node._path});
-                const displayFieldsCallback = () => setState('fields',{repo: getRepoParameter(), branch: getBranchParameter(), path: node._path});
+                const displayMetaDataCallback = () => setState('system-properties',{repo: getRepoParameter(), branch: getBranchParameter(), path: node._path});
+                const displayPropertiesCallback = () => setState('properties',{repo: getRepoParameter(), branch: getBranchParameter(), path: node._path});
                 const displayPermissionsCallback = () => setState('permissions',{repo: getRepoParameter(), branch: getBranchParameter(), path: node._path});
                 const displayJsonCallback = () => this.displayNodeAsJson(node._id);
                 
-                const displayMetaDataIconArea = new RcdImageIconArea(config.assetsUrl + '/icons/meta.svg', (source, event) => {displayMetaDataCallback();event.stopPropagation();}).init().setTooltip('Display metadata');
-                const displayFieldsIconArea = new RcdImageIconArea(config.assetsUrl + '/icons/fields.svg', (source, event) => {displayFieldsCallback();event.stopPropagation();}).init().setTooltip('Display data');
+                const displayMetaDataIconArea = new RcdImageIconArea(config.assetsUrl + '/icons/meta.svg', (source, event) => {displayMetaDataCallback();event.stopPropagation();}).init().setTooltip('Display system properties');
+                const displayPropertiesIconArea = new RcdImageIconArea(config.assetsUrl + '/icons/properties.svg', (source, event) => {displayPropertiesCallback();event.stopPropagation();}).init().setTooltip('Display properties');
                 const displayPermissionsIconArea = new RcdGoogleMaterialIconArea('lock', (source, event) => {displayPermissionsCallback();event.stopPropagation();}).init().setTooltip('Display permissions');
                 const displayJsonIconArea = new RcdImageIconArea(config.assetsUrl + '/icons/json.svg', (source, event) => {displayJsonCallback();event.stopPropagation();}).init().setTooltip('Display as JSON');
                 
-                const moreIconAreaItems =  [{text:'Display metadata', callback: displayMetaDataCallback}, 
-                    {text:'Display data', callback: displayFieldsCallback}, 
+                const moreIconAreaItems =  [{text:'Display system properties', callback: displayMetaDataCallback}, 
+                    {text:'Display properties', callback: displayPropertiesCallback}, 
                     {text:'Display permissions', callback: displayPermissionsCallback}, 
                     {text:'Display as JSON', callback: displayJsonCallback}];
                 const moreIconArea = new RcdGoogleMaterialIconArea('more_vert', (source, event) => {
@@ -105,7 +108,7 @@ class NodesRoute extends DtbRoute {
                     addCell(node._name).
                     addCell(node._id, {classes: ['non-mobile-cell']}).
                     addCell(displayMetaDataIconArea, {icon: true, classes: ['non-mobile-cell']}).
-                    addCell(displayFieldsIconArea, {icon: true, classes: ['non-mobile-cell']}).
+                    addCell(displayPropertiesIconArea, {icon: true, classes: ['non-mobile-cell']}).
                     addCell(displayPermissionsIconArea, {icon: true, classes: ['non-mobile-cell']}).
                     addCell(displayJsonIconArea, {icon: true, classes: ['non-mobile-cell']}).
                     addCell(moreIconArea, {icon: true, classes: ['mobile-cell']}).
@@ -150,7 +153,7 @@ class NodesRoute extends DtbRoute {
     }
 
     doDeleteNodes() {
-        const infoDialog = showInfoDialog("Deleting selected nodes...");
+        const infoDialog = showLongInfoDialog("Deleting nodes...");
         const nodeKeys = this.tableCard.getSelectedRows().map((row) => row.attributes['id']);
         $.ajax({
             method: 'POST',
@@ -161,9 +164,13 @@ class NodesRoute extends DtbRoute {
                 keys: nodeKeys
             }),
             contentType: 'application/json; charset=utf-8'
-        }).done(handleResultError).fail(handleAjaxError).always(() => {
+        }).done((result) => handleTaskCreation(result, {
+            taskId: result.taskId,
+            message: 'Deleting nodes...',
+            doneCallback: (success) => displaySnackbar(success + ' node' + (success > 1 ? 's': '') + ' deleted'),
+            alwaysCallback: () => this.retrieveNodes()
+        })).fail(handleAjaxError).always(() => {
             infoDialog.close();
-            this.retrieveNodes();
         });
     }
 
@@ -172,7 +179,7 @@ class NodesRoute extends DtbRoute {
             nodeKey = this.tableCard.getSelectedRows().map((row) => row.attributes['id'])[0];
         }
 
-        const infoDialog = showInfoDialog("Retrieving node info...");
+        const infoDialog = showShortInfoDialog("Retrieving node info...");
         return $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/node-get',
@@ -221,6 +228,77 @@ class NodesRoute extends DtbRoute {
         } else {
             return value;
         }
+    }
+
+    moveNode() {
+        const nodeCount = this.tableCard.getSelectedRows().map((row) => row.attributes['path']).length;
+        const pathPrefix = this.getPathPrefix();
+        const title = nodeCount == 1 ? 'Move/rename node' : 'Move nodes';
+        const currentValue = nodeCount == 1 ? this.tableCard.getSelectedRows().map((row) => row.attributes['path'])[0] : pathPrefix;
+        const currentActionLabel = nodeCount == 1 ? 'RENAME' : 'MOVE';
+        const currentLabel = nodeCount == 1 ? 'New name/path/parent path' : 'New parent path';
+        const inputDialog = new RcdMaterialInputDialog({
+            title: title,
+            confirmationLabel: currentActionLabel,
+            label: currentLabel,
+            placeholder: '',
+            value: currentValue,
+            callback: (value) => isValid(value) && this.doMoveNode(value)
+        }).init();
+        
+        //TODO Implement clean solution. Adapt Framework
+        inputDialog.addInputListener((source) => {
+            const newValue = source.getValue();
+            inputDialog.enable(isValid(newValue));
+            if (nodeCount == 1) {
+                const newActionLabel = isRename(newValue) ? 'RENAME' : 'MOVE';
+                inputDialog.setConfirmationLabel(newActionLabel);
+            }
+        });
+        
+        function isValid(value) {
+            if (!value) {
+                return false;
+            }
+            if (nodeCount > 1 && value.slice(-1) !== '/') {
+                return false;
+            }
+            return true;
+        }
+        
+        function isRename(value) {
+            if (!value) {
+                return false;
+            }
+            if (value.startsWith(pathPrefix)){
+                const subValue = value.substr(pathPrefix.length);
+                return subValue.length > 0 && subValue.indexOf('/') === -1;
+            }
+            return false;
+        }
+        inputDialog.open();
+    }
+    
+    doMoveNode(newNodePath) {
+        const infoDialog = showLongInfoDialog("Moving nodes...");
+        return $.ajax({
+            method: 'POST',
+            url: config.servicesUrl + '/node-move',
+            data: JSON.stringify({
+                repositoryName: getRepoParameter(),
+                branchName: getBranchParameter(),
+                sources: this.tableCard.getSelectedRows().map((row) => row.attributes['id']),
+                target: newNodePath
+            }),
+            contentType: 'application/json; charset=utf-8'
+        }).done((result) => handleTaskCreation(result, {
+            taskId: result.taskId,
+            message: 'Moving nodes...',
+            doneCallback: (success) =>  displaySnackbar('Node(s) moved'),
+            alwaysCallback: () => RcdHistoryRouter.refresh()
+        })).fail(handleAjaxError).always(() => {
+            infoDialog.close();
+        });
     }
 
     filterNodes() {
@@ -275,7 +353,7 @@ class NodesRoute extends DtbRoute {
     }
 
     doExportNode(exportName) {
-        const infoDialog = showInfoDialog("Exporting selected node...");
+        const infoDialog = showLongInfoDialog("Exporting nodes...");
         return $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/node-export',
@@ -286,19 +364,18 @@ class NodesRoute extends DtbRoute {
                 exportName: exportName
             }),
             contentType: 'application/json; charset=utf-8'
-        }).done((result) => {
-            if (handleResultError(result)) {
-                new ExportResultDialog(result.success).init().
-                    open();
-            }
-        }).fail(handleAjaxError).always(() => {
+        }).done((result) => handleTaskCreation(result, {
+            taskId: result.taskId,
+            message: 'Exporting nodes...',
+            doneCallback: (success) =>  new ExportResultDialog(success).init().open(),
+            alwaysCallback: () => setState('exports')
+        })).fail(handleAjaxError).always(() => {
             infoDialog.close();
-            setState('exports');
         });
     }
 
     importNode() {
-        const infoDialog = showInfoDialog("Retrieving node export list...");
+        const infoDialog = showShortInfoDialog("Retrieving node export list...");
         return $.ajax({
             url: config.servicesUrl + '/export-list'
         }).done((result) => {
@@ -324,7 +401,7 @@ class NodesRoute extends DtbRoute {
     }
 
     doImportNode(exportName) {
-        const infoDialog = showInfoDialog("Importing node...");
+        const infoDialog = showLongInfoDialog("Importing nodes...");
         return $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/node-import',
@@ -335,14 +412,13 @@ class NodesRoute extends DtbRoute {
                 exportName: exportName
             }),
             contentType: 'application/json; charset=utf-8'
-        }).done((result) => {
-            if (handleResultError(result)) {
-                new ImportResultDialog([exportName], result.success).init().
-                    open();
-            }
-        }).fail(handleAjaxError).always(() => {
+        }).done((result) => handleTaskCreation(result, {
+            taskId: result.taskId,
+            message: 'Importing nodes...',
+            doneCallback: (success) =>  new ImportResultDialog([exportName], success).init().open(),
+            alwaysCallback: () => RcdHistoryRouter.refresh()
+        })).fail(handleAjaxError).always(() => {
             infoDialog.close();
-            RcdHistoryRouter.refresh();
         });
     }
 
@@ -404,6 +480,11 @@ class NodesRoute extends DtbRoute {
             definition: 'Import previously exported nodes as children under the current node (or as root node)'
         }).
         addActionDefinition({
+            iconSrc: config.assetsUrl + '/icons/rename.svg',
+            definition: 'Move or rename node(s). If the value ends in slash \'/\', it specifies the parent path where to be moved. ' +
+                        'Otherwise, it means the new desired path or name for the node (available only if one node is selected).'
+        }).
+        addActionDefinition({
             iconName: 'filter_list',
             definition: 'Filter the nodes based on a query expression. ' +
                         'Example: "_id = \'role:system.admin"\'. ' +
@@ -412,12 +493,12 @@ class NodesRoute extends DtbRoute {
         addActionDefinition({
             iconName: 'sort',
             definition: 'Sort the nodes based on an expression. ' +
-                        'The sorting expression is composed of a node field to sort on and the direction: ascending or descending.' +
+                        'The sorting expression is composed of a node property to sort on and the direction: ascending or descending.' +
                         'Examples: "_timestamp DESC", "_name ASC"'
         }).
         addActionDefinition({iconName: 'delete', definition: 'Delete the selected nodes.'}).
-        addActionDefinition({iconSrc: config.assetsUrl + '/icons/meta.svg',definition: 'Display the node metadata.'}).
-        addActionDefinition({iconSrc: config.assetsUrl + '/icons/fields.svg',definition: 'Display the node fields.'}).
+        addActionDefinition({iconSrc: config.assetsUrl + '/icons/meta.svg',definition: 'Display the node system properties.'}).
+        addActionDefinition({iconSrc: config.assetsUrl + '/icons/properties.svg',definition: 'Display the node properties.'}).
         addActionDefinition({iconName: 'lock',definition: 'Display the node permissions.'}).
         addActionDefinition({iconSrc: config.assetsUrl + '/icons/json.svg',definition: 'Display the node as JSON.'}).
         open();

@@ -32,7 +32,7 @@ class PermissionsRoute extends DtbRoute {
     }
 
     retrievePermissions() {
-        const infoDialog = showInfoDialog('Retrieving permissions...');
+        const infoDialog = showShortInfoDialog('Retrieving permissions...');
         return $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/permission-list',

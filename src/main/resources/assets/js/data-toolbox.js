@@ -1,12 +1,12 @@
 function createApp() {
-    return new RcdMaterialSinglePageApplication('Data toolbox').
+    return new RcdMaterialSinglePageApplication({title:'Data toolbox'}).
     init().
     setDefaultRoute(createPresentationRoute()).
     addRoute(new RepositoriesRoute().init()).
     addRoute(new BranchesRoute().init()).
     addRoute(new NodesRoute().init()).
     addRoute(new MetaRoute().init()).
-    addRoute(new FieldsRoute().init()).
+    addRoute(new PropertiesRoute().init()).
     addRoute(new PermissionsRoute().init()).
     addRoute(new SnapshotsRoute().init()).
     addRoute(new ExportsRoute().init()).
@@ -16,28 +16,45 @@ function createApp() {
 function handleResultError(result) {
     if (result.error) {
         console.log(result.error);
-        new RcdMaterialSnackbar(result.error).init().open();
+        displaySnackbar(result.error);
         return false;
     }
     return true;
 }
 
-function handleAjaxError(jqXHR) {
+function displaySnackbar(text) {
+    new RcdMaterialSnackbar(text).init().open();
+}
+
+function handleAjaxError(jqXHR, textStatus, errorThrown) {
     let errorMessage;
     if (jqXHR.status) {
-        errorMessage = 'Error ' + jqXHR.status + ': ' + jqXHR.statusText;
+        if (jqXHR.status === 200) {
+            errorMessage = 'Error: ' + textStatus;
+        } else {
+            errorMessage = 'Error ' + jqXHR.status + ': ' + jqXHR.statusText;
+        }
     } else {
         errorMessage = 'Connection refused';
     }
     console.log(errorMessage);
+    if (errorThrown) {
+        console.log(errorThrown);
+    }
     new RcdMaterialSnackbar(errorMessage).
         init().open();
 }
 
-function showInfoDialog(text) {
+function showLongInfoDialog(text) {
+    return new RcdMaterialInfoDialog({text: text, overlay: true}).
+    init().
+    open();
+}
+
+function showShortInfoDialog(text) {
     return new RcdMaterialInfoDialog({text: text}).
-        init().
-        open();
+    init().
+    open();
 }
 
 function showConfirmationDialog(text, confirmationLabel, callback) {
@@ -65,22 +82,12 @@ function showDetailsDialog(title, text, callback) {
 }
 
 function setState(state,params) {
-    let stateBuilder = state;
-    if (params) {
-        stateBuilder += '?';
-        let firstParameter = true;
-        for(paramName in params) {
-            if (params[paramName]) {
-                if (firstParameter) {
-                    firstParameter = false;
-                } else {
-                    stateBuilder += '&'
-                }
-                stateBuilder += paramName + '=' + params[paramName];   
-            }
+    for( let paramKey in params) {
+        if (params[paramKey] == null) {
+            delete params[paramKey];
         }
     }
-    RcdHistoryRouter.setState(stateBuilder);
+    RcdHistoryRouter.setState(state, params);
 }
 
 function getRepoParameter() {
@@ -111,8 +118,8 @@ function getSortParameter() {
     return RcdHistoryRouter.getParameters().sort || '';
 }
 
-function getFieldParameter() {
-    return RcdHistoryRouter.getParameters().field;
+function getPropertyParameter() {
+    return RcdHistoryRouter.getParameters().property;
 }
 
 var app = createApp();

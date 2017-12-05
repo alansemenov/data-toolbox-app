@@ -1,5 +1,6 @@
 package systems.rcd.enonic.datatoolbox;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -10,9 +11,11 @@ import java.util.zip.ZipEntry;
 
 import com.google.common.io.ByteSource;
 
+import systems.rcd.fwk.core.exc.RcdException;
 import systems.rcd.fwk.core.format.json.RcdJsonService;
 import systems.rcd.fwk.core.format.json.data.RcdJsonArray;
 import systems.rcd.fwk.core.format.json.data.RcdJsonObject;
+import systems.rcd.fwk.core.format.json.data.RcdJsonString;
 import systems.rcd.fwk.core.format.json.data.RcdJsonValue;
 import systems.rcd.fwk.core.io.file.RcdFileService;
 import systems.rcd.fwk.core.util.zip.RcdZipService;
@@ -38,13 +41,28 @@ import com.enonic.xp.security.SystemConstants;
 import com.enonic.xp.vfs.VirtualFiles;
 
 public class RcdExportScriptBean
-    extends RcdScriptBean
+    extends RcdDataScriptBean
 {
     private Supplier<ExportService> exportServiceSupplier;
 
     private Supplier<RepositoryService> repositoryServiceSupplier;
 
     private Supplier<NodeRepositoryService> nodeRepositoryServiceSupplier;
+
+    private static final Path EXPORT_ARCHIVE_DIRECTORY_PATH;
+
+    static
+    {
+        try
+        {
+            EXPORT_ARCHIVE_DIRECTORY_PATH = Files.createTempDirectory( "export-archives-" );
+            LOGGER.debug( "Created export archive directory:" + EXPORT_ARCHIVE_DIRECTORY_PATH.toAbsolutePath() );
+        }
+        catch ( IOException e )
+        {
+            throw new RcdException( "Error while creating export archive directory", e );
+        }
+    }
 
     @Override
     public void initialize( final BeanContext context )
@@ -59,7 +77,7 @@ public class RcdExportScriptBean
         return runSafely( () -> {
             final RcdJsonArray exportJsonArray = RcdJsonService.createJsonArray();
 
-            final Path exportDirectoryPath = getExportDirectoryPath();
+            final Path exportDirectoryPath = getDirectoryPath();
             if ( exportDirectoryPath.toFile().exists() )
             {
                 RcdFileService.listSubPaths( exportDirectoryPath, exportPath -> {
@@ -82,7 +100,7 @@ public class RcdExportScriptBean
         return runSafely( () -> {
             final ExportNodesParams exportNodesParams = ExportNodesParams.create().
                 sourceNodePath( NodePath.create( nodePath ).build() ).
-                targetDirectory( getExportDirectoryPath().resolve( exportName ).toString() ).
+                targetDirectory( getDirectoryPath().resolve( exportName ).toString() ).
                 dryRun( false ).
                 includeNodeIds( true ).
                 build();
@@ -140,46 +158,22 @@ public class RcdExportScriptBean
     public String delete( final String... exportNames )
     {
         return runSafely( () -> {
-            for ( String exportName : exportNames )
+            for ( int i = 0; i < exportNames.length; i++ )
             {
-                final Path exportPath = getExportDirectoryPath().resolve( exportName );
+                final String exportName = exportNames[i];
+                reportProgress( "Deleting exports", i, exportNames.length );
+                final Path exportPath = getDirectoryPath().resolve( exportName );
                 RcdFileService.delete( exportPath );
             }
             return createSuccessResult();
         }, "Error while deleting export" );
     }
 
-    public TemporaryFileByteSource download( final String... exportNames )
-        throws IOException
-    {
-        final java.nio.file.Path[] exportPaths = Arrays.stream( exportNames ).
-            map( exportName -> getExportDirectoryPath().resolve( exportName ) ).
-            toArray( size -> new java.nio.file.Path[size] );
-
-        final String exportArchiveName = ( exportNames.length == 1 ? exportNames[0] : "export-archive" ) + "-";
-        final java.nio.file.Path exportArchivePath = Files.createTempFile( exportArchiveName, ".zip" );
-        RcdZipService.zip( exportArchivePath, exportPaths );
-        return new TemporaryFileByteSource( exportArchivePath.toFile() );
-    }
-
-
-    public void upload( String filename, ByteSource exportArchiveByteSource )
-        throws IOException
-    {
-        final java.nio.file.Path exportArchivePath = Files.createTempFile( filename, ".tmp" );
-        try (TemporaryFileOutputStream tmp = new TemporaryFileOutputStream( exportArchivePath.toFile() ))
-        {
-            exportArchiveByteSource.copyTo( tmp );
-            Predicate<ZipEntry> filter = zipEntry -> !zipEntry.getName().startsWith( "__MACOSX/" );
-            RcdZipService.unzip( exportArchivePath, getExportDirectoryPath(), filter );
-        }
-    }
-
     private NodeImportResult load( NodePath nodePath, String exportName )
     {
         final ImportNodesParams importNodesParams = ImportNodesParams.create().
             targetNodePath( nodePath ).
-            source( VirtualFiles.from( getExportDirectoryPath().resolve( exportName ) ) ).
+            source( VirtualFiles.from( getDirectoryPath().resolve( exportName ) ) ).
             dryRun( false ).
             includeNodeIds( true ).
             includePermissions( true ).
@@ -205,7 +199,14 @@ public class RcdExportScriptBean
         }
     }
 
-    private Path getExportDirectoryPath()
+    @Override
+    protected Path getArchiveDirectoryPath()
+    {
+        return EXPORT_ARCHIVE_DIRECTORY_PATH;
+    }
+
+    @Override
+    protected Path getDirectoryPath()
     {
         return HomeDir.get().
             toFile().
@@ -213,6 +214,11 @@ public class RcdExportScriptBean
             resolve( "data/export" );
     }
 
+    @Override
+    protected String getType()
+    {
+        return "export";
+    }
 
     private Context createContext( final String repositoryName, final String branch )
     {

@@ -2,14 +2,13 @@ var taskLib = require('/lib/xp/task');
 
 exports.post = function (req) {
     var bean = __.newBean('systems.rcd.enonic.datatoolbox.RcdDumpScriptBean');
-    var body = JSON.parse(req.body);
-    var dumpName = body.dumpName;
+    var dumpNames = JSON.parse(req.body).dumpNames;
 
     var taskId = taskLib.submit({
-        description: 'Dump creation',
+        description: 'Dump archiving',
         task: function () {
-            taskLib.progress({info: 'Creating dump...'});
-            taskLib.progress({info: bean.create(dumpName)});
+            taskLib.progress({info: 'Archiving dumps...'});
+            taskLib.progress({info: bean.archive(dumpNames)});
         }
     });
 

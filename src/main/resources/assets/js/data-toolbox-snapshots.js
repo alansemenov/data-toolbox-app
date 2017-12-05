@@ -31,7 +31,7 @@ class SnapshotsRoute extends DtbRoute {
     }
 
     retrieveSnapshots() {
-        const infoDialog = showInfoDialog('Retrieving snapshot list...');
+        const infoDialog = showShortInfoDialog('Retrieving snapshot list...');
         return $.ajax({
             url: config.servicesUrl + '/snapshot-list'
         }).done((result) => {
@@ -63,7 +63,7 @@ class SnapshotsRoute extends DtbRoute {
     }
 
     doCreateSnapshot(snapshotName) {
-        const infoDialog = showInfoDialog('Creating snapshot...');
+        const infoDialog = showLongInfoDialog('Creating snapshot...');
         $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/snapshot-create',
@@ -71,9 +71,13 @@ class SnapshotsRoute extends DtbRoute {
                 snapshotName: snapshotName || ('snapshot-' + toLocalDateTimeFormat(new Date(), '-', '-'))
             }),
             contentType: 'application/json; charset=utf-8'
-        }).done(handleResultError).fail(handleAjaxError).always(() => {
+        }).done((result) => handleTaskCreation(result, {
+            taskId: result.taskId,
+            message: 'Creating snapshot...',
+            doneCallback: () => displaySnackbar('Snapshot created'),
+            alwaysCallback: () => this.retrieveSnapshots()
+        })).fail(handleAjaxError).always(() => {
             infoDialog.close();
-            this.retrieveSnapshots();
         });
     }
 
@@ -82,28 +86,36 @@ class SnapshotsRoute extends DtbRoute {
     }
 
     doDeleteSnapshots() {
-        const infoDialog = showInfoDialog("Deleting selected snapshots...");
+        const infoDialog = showLongInfoDialog("Deleting snapshots...");
         const snapshotNames = this.tableCard.getSelectedRows().map((row) => row.attributes['snapshot']);
         $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/snapshot-delete',
             data: JSON.stringify({snapshotNames: snapshotNames}),
             contentType: 'application/json; charset=utf-8'
-        }).done(handleResultError).fail(handleAjaxError).always(() => {
+        }).done((result) => handleTaskCreation(result, {
+            taskId: result.taskId,
+            message: 'Deleting snapshots...',
+            doneCallback: () => displaySnackbar('Snapshot' + (snapshotNames.length > 1 ? 's' : '') + ' deleted'),
+            alwaysCallback: () => this.retrieveSnapshots()
+        })).fail(handleAjaxError).always(() => {
             infoDialog.close();
-            this.retrieveSnapshots();
         });
     }
 
     restoreSnapshot() {
-        const infoDialog = showInfoDialog("Restoring snapshot...");
+        const infoDialog = showLongInfoDialog("Restoring snapshot...");
         const snapshotName = this.tableCard.getSelectedRows().map((row) => row.attributes['snapshot'])[0];
         $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/snapshot-restore',
             data: JSON.stringify({snapshotName: snapshotName}),
             contentType: 'application/json; charset=utf-8'
-        }).done(handleResultError).fail(handleAjaxError).always(() => {
+        }).done((result) => handleTaskCreation(result, {
+            taskId: result.taskId,
+            message: 'Restoring snapshot...',
+            doneCallback: () => displaySnackbar('Snapshot restored')
+        })).fail(handleAjaxError).always(() => {
             infoDialog.close();
         });
     }

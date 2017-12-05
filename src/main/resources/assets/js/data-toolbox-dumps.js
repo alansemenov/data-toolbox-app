@@ -28,7 +28,7 @@ class DumpsRoute extends DtbRoute {
             addIconArea(new RcdImageIconArea(config.assetsUrl + '/icons/load.svg', () => this.loadDump()).init().setTooltip('Load selected system dump'),
                 {min: 1, max: 1}).
             addIconArea(new RcdGoogleMaterialIconArea('file_download',
-                () => this.dowloadDumps()).init().setTooltip('Archive and download selected system dumps'), {min: 1}).
+                () => this.downloadDumps()).init().setTooltip('Archive and download selected system dumps'), {min: 1}).
             addIconArea(new RcdGoogleMaterialIconArea('file_upload', () => this.uploadDumps()).init().setTooltip('Upload and unarchive system dumps', RcdMaterialTooltipAlignment.RIGHT), {max: 0}).
             addIconArea(new RcdGoogleMaterialIconArea('delete', () => this.deleteDumps()).init().setTooltip('Delete selected system dumps', RcdMaterialTooltipAlignment.RIGHT), {min: 1});
         return new RcdMaterialLayout().init().
@@ -36,7 +36,7 @@ class DumpsRoute extends DtbRoute {
     }
 
     retrieveDumps() {
-        const infoDialog = showInfoDialog('Retrieving dump list...');
+        const infoDialog = showShortInfoDialog('Retrieving dump list...');
         return $.ajax({
             url: config.servicesUrl + '/dump-list'
         }).done((result) => {
@@ -70,7 +70,7 @@ class DumpsRoute extends DtbRoute {
     }
 
     doCreateDump(dumpName) {
-        const infoDialog = showInfoDialog('Creating dump...');
+        const infoDialog = showLongInfoDialog('Creating dump...');
         $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/dump-create',
@@ -78,14 +78,13 @@ class DumpsRoute extends DtbRoute {
                 dumpName: dumpName || ('dump-' + toLocalDateTimeFormat(new Date(), '-', '-'))
             }),
             contentType: 'application/json; charset=utf-8'
-        }).done((result) => {
-            if (handleResultError(result)) {
-                new DumpResultDialog(result.success).init().
-                    open();
-            }
-        }).fail(handleAjaxError).always(() => {
+        }).done((result) => handleTaskCreation(result, {
+            taskId: result.taskId,
+            message: 'Creating dump...',
+            doneCallback: (success) => new DumpResultDialog(success).init().open(),
+            alwaysCallback: () => this.retrieveDumps()
+        })).fail(handleAjaxError).always(() => {
             infoDialog.close();
-            this.retrieveDumps();
         });
     }
 
@@ -94,16 +93,20 @@ class DumpsRoute extends DtbRoute {
     }
 
     doDeleteDumps() {
-        const infoDialog = showInfoDialog("Deleting selected dumps...");
+        const infoDialog = showLongInfoDialog("Deleting dumps...");
         const dumpNames = this.tableCard.getSelectedRows().map((row) => row.attributes['dump']);
         $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/dump-delete',
             data: JSON.stringify({dumpNames: dumpNames}),
             contentType: 'application/json; charset=utf-8'
-        }).done(handleResultError).fail(handleAjaxError).always(() => {
+        }).done((result) => handleTaskCreation(result, {
+            taskId: result.taskId,
+            message: 'Deleting dumps...',
+            doneCallback: () => displaySnackbar('Dump' + (dumpNames.length > 1 ? 's' : '') + ' deleted'),
+            alwaysCallback: () => this.retrieveDumps()
+        })).fail(handleAjaxError).always(() => {
             infoDialog.close();
-            this.retrieveDumps();
         });
     }
 
@@ -119,40 +122,61 @@ class DumpsRoute extends DtbRoute {
     }
 
     doLoadDump(dumpName, dumpType) {
-        const infoDialog = showInfoDialog("Loading dump...");
+        const infoDialog = showLongInfoDialog("Loading dump...");
         $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/dump-load',
             data: JSON.stringify({dumpName: dumpName}),
             contentType: 'application/json; charset=utf-8'
-        }).done((result) => {
-            if (handleResultError(result)) {
+        }).done((result) => handleTaskCreation(result, {
+            taskId: result.taskId,
+            message: 'Loading dump...',
+            doneCallback: (success) => {
                 if (dumpType === 'export') {
-                    new LoadExportDumpDialog(result.success).init().
-                        open();
+                    new LoadExportDumpDialog(success).init().
+                    open();
                 } else {
-                    new DumpResultDialog(result.success, true).init().
-                        open();
+                    new DumpResultDialog(success, true).init().
+                    open();
                 }
             }
-        }).fail(handleAjaxError).always(() => {
+        })).fail(handleAjaxError).always(() => {
             infoDialog.close();
         });
     }
 
-    dowloadDumps() {
+    downloadDumps() {
         const dumpNames = this.tableCard.getSelectedRows().map((row) => row.attributes['dump']);
-        const dumpNamesInput = new RcdInputElement().init().
-            setAttribute('type', 'hidden').
-            setAttribute('name', 'dumpNames').
-            setAttribute('value', dumpNames);
-        const downloadForm = new RcdFormElement().init().
-            setAttribute('action', config.servicesUrl + '/dump-download').
-            setAttribute('method', 'post').
-            addChild(dumpNamesInput);
-        document.body.appendChild(downloadForm.getDomElement());
-        downloadForm.submit();
-        document.body.removeChild(downloadForm.getDomElement());
+        const infoDialog = showLongInfoDialog("Archiving dumps...");
+        $.ajax({
+            method: 'POST',
+            url: config.servicesUrl + '/dump-archive',
+            data: JSON.stringify({dumpNames: dumpNames}),
+            contentType: 'application/json; charset=utf-8'
+        }).done((result) => handleTaskCreation(result, {
+            taskId: result.taskId,
+            message: 'Archiving dumps...',
+            doneCallback: (success) => {
+                const archiveNameInput = new RcdInputElement().init().
+                setAttribute('type', 'hidden').
+                setAttribute('name', 'archiveName').
+                setAttribute('value', success);
+                const fileNameInput = new RcdInputElement().init().
+                setAttribute('type', 'hidden').
+                setAttribute('name', 'fileName').
+                setAttribute('value', (dumpNames.length == 1 ? dumpNames[0] : "dump-download") + '.zip');
+                const downloadForm = new RcdFormElement().init().
+                setAttribute('action', config.servicesUrl + '/dump-download').
+                setAttribute('method', 'post').
+                addChild(archiveNameInput).
+                addChild(fileNameInput);
+                document.body.appendChild(downloadForm.domElement);
+                downloadForm.submit();
+                document.body.removeChild(downloadForm.domElement);
+            }
+        })).fail(handleAjaxError).always(() => {
+            infoDialog.close();
+        });
     }
 
     uploadDumps() {
@@ -166,17 +190,21 @@ class DumpsRoute extends DtbRoute {
     }
 
     doUploadDumps() {
-        const infoDialog = showInfoDialog("Uploading dump archive...");
-        const formData = new FormData(this.uploadForm.getDomElement());
+        const infoDialog = showLongInfoDialog("Uploading dumps...");
+        const formData = new FormData(this.uploadForm.domElement);
         $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/dump-upload',
             data: formData,
             contentType: false,
             processData: false
-        }).done(handleResultError).fail(handleAjaxError).always(() => {
+        }).done((result) => handleTaskCreation(result, {
+            taskId: result.taskId,
+            message: 'Uploading dumps...',
+            doneCallback: () => displaySnackbar('Dump(s) uploaded'),
+            alwaysCallback: () => this.retrieveDumps()
+        })).fail(handleAjaxError).always(() => {
             infoDialog.close();
-            this.retrieveDumps();
         });
     }
 

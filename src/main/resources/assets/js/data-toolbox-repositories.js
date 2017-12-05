@@ -30,7 +30,7 @@ class RepositoriesRoute extends DtbRoute {
     }
 
     retrieveRepositories() {
-        const infoDialog = showInfoDialog('Retrieving repository list...');
+        const infoDialog = showShortInfoDialog('Retrieving repository list...');
         return $.ajax({
             url: config.servicesUrl + '/repository-list'
         }).done((result) => {
@@ -63,7 +63,7 @@ class RepositoriesRoute extends DtbRoute {
     }
 
     doCreateRepository(repositoryName) {
-        const infoDialog = showInfoDialog('Creating repository...');
+        const infoDialog = showLongInfoDialog('Creating repository...');
         $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/repository-create',
@@ -71,7 +71,9 @@ class RepositoriesRoute extends DtbRoute {
                 repositoryName: repositoryName || ('repository-' + toLocalDateTimeFormat(new Date(), '-', '-')).toLowerCase()
             }),
             contentType: 'application/json; charset=utf-8'
-        }).done(handleResultError).fail(handleAjaxError).always(() => {
+        })
+            .done((result) => handleResultError(result) &&  displaySnackbar('Repository created'))
+            .fail(handleAjaxError).always(() => {
             infoDialog.close();
             this.retrieveRepositories();
         });
@@ -82,14 +84,16 @@ class RepositoriesRoute extends DtbRoute {
     }
 
     doDeleteRepositories() {
-        const infoDialog = showInfoDialog("Deleting selected repositories...");
+        const infoDialog = showLongInfoDialog("Deleting repositories...");
         const repositoryNames = this.tableCard.getSelectedRows().map((row) => row.attributes['repository']);
         $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/repository-delete',
             data: JSON.stringify({repositoryNames: repositoryNames}),
             contentType: 'application/json; charset=utf-8'
-        }).done(handleResultError).fail(handleAjaxError).always(() => {
+        })
+            .done((result) => handleResultError(result) &&  displaySnackbar('Repositor' + (repositoryNames.length > 1 ?'ies' : 'y') + ' deleted'))
+            .fail(handleAjaxError).always(() => {
             infoDialog.close();
             this.retrieveRepositories();
         });

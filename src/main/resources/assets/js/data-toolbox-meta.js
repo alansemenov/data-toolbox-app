@@ -1,7 +1,7 @@
 class MetaRoute extends DtbRoute {
     constructor() {
         super({
-            state: 'meta'
+            state: 'system-properties'
         });
     }
 
@@ -11,7 +11,7 @@ class MetaRoute extends DtbRoute {
     }
     
     createLayout() {
-        this.tableCard = new RcdMaterialTableCard('Metadata').init().
+        this.tableCard = new RcdMaterialTableCard('System properties').init().
             addColumn('Name').
             addColumn('Value');
 
@@ -20,7 +20,7 @@ class MetaRoute extends DtbRoute {
     }
 
     retrieveMeta() {
-        const infoDialog = showInfoDialog('Retrieving metadata...');
+        const infoDialog = showShortInfoDialog('Retrieving system properties...');
         return $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/meta-get',
@@ -66,7 +66,7 @@ class MetaRoute extends DtbRoute {
                 addCell(meta._versionKey);
             this.tableCard.createRow({selectable:false}).
                 addCell('Manual order value').
-                addCell(meta._manualOrderValue);
+                addCell(meta._manualOrderValue || '');
             this.tableCard.createRow({selectable:false}).
                 addCell('Timestamp').
                 addCell(meta._timestamp);
@@ -85,20 +85,20 @@ class MetaRoute extends DtbRoute {
                 new RcdMaterialBreadcrumb(branchName, () => setState('nodes',{repo: repositoryName, branch: branchName})).init()]);
 
         
-        this.breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb(path === '/' ? 'root!metadata' : 'root', path === '/' ? undefined :
+        this.breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb(path === '/' ? 'root!system-properties' : 'root', path === '/' ? undefined :
                                                                           () => setState('nodes', {repo: repositoryName, branch: branchName, path: '/'})).init());
 
         if (path === '/') {
-            app.setTitle('Root node metadata');
+            app.setTitle('Root node system properties');
         } else {
             const pathElements = path.substring(1).split('/')
-            app.setTitle(pathElements[pathElements.length - 1] + ' metadata');
+            app.setTitle(pathElements[pathElements.length - 1] + ' system properties');
 
             let currentPath = '';
             pathElements.forEach((subPathElement, index, array) => {
                 currentPath += '/' + subPathElement;
                 const constCurrentPath = currentPath;
-                this.breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb(index < array.length - 1 ?  subPathElement : subPathElement + '!metadata', index < array.length - 1
+                this.breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb(index < array.length - 1 ?  subPathElement : subPathElement + '!system-properties', index < array.length - 1
                     ? (() => setState('nodes', {repo: repositoryName, branch: branchName, path: constCurrentPath}))
                     : undefined).init());
             });
@@ -107,8 +107,9 @@ class MetaRoute extends DtbRoute {
     }
 
     displayHelp() {
-        const viewDefinition = 'The view lists in a table all the metadata of the current node. Modification of metadata will be provided in an ulterior version.';
-        new HelpDialog('Metadata', [viewDefinition]).
+        const viewDefinition = 'The view lists in a table all the system properties of the current node\' +\n' +
+                               '                               \'See <a class="rcd-material-link" href="http://xp.readthedocs.io/en/6.10/developer/node-domain/system-properties.html">System properties</a> for more information. ';
+        new HelpDialog('System properties', [viewDefinition]).
         init().
         open();
     }

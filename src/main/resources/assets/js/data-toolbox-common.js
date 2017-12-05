@@ -335,12 +335,87 @@ class DtbRoute extends RcdMaterialRoute {
 
     getParentPath() {
         const path = getPathParameter();
-        const parentPath = path && path.substring(0, path.lastIndexOf('/'));
-        return parentPath ? parentPath : '/';
+        if (!path || path === '/') {
+            return null;
+        }
+        return path.substring(0, path.lastIndexOf('/')) || '/';
+    }
+
+    getPathPrefix() {
+        const path = getPathParameter();
+        return path && path !== '/' ? (path + '/') : '/';
     }
     
-    getParentField() {
-        const field = getFieldParameter();
-        return field && field.substring(0, field.lastIndexOf('.'));
+    getParentProperty() {
+        const property = getPropertyParameter();
+        return property && property.substring(0, property.lastIndexOf('.'));
     }
+}
+
+function handleTaskCreation(result, params) {
+    if (handleResultError(result)) {
+        const infoDialog = showLongInfoDialog(params.message);
+        retrieveTask({
+            taskId: params.taskId,
+            doneCallback: (task) => {
+                if (task) {
+                    let result;
+                    try {
+                        result = JSON.parse(task.progress.info);
+                    } catch (e) {
+                        result = {error: "Error while parsing task result: " + e.message};
+                    }
+                    if (handleResultError(result)) {
+                        if(params.doneCallback) {
+                            params.doneCallback(result.success);
+                        }
+                    }
+                }
+            },
+            progressCallback: (task) => infoDialog.setInfoText(task.progress.info),
+            alwaysCallback: () => {
+                infoDialog.close();
+                if (params.alwaysCallback) {
+                    params.alwaysCallback();
+                }
+            }
+        });
+    }
+}
+
+function retrieveTask(params) {
+    const intervalId = setInterval(() => {
+        $.ajax({
+            method: 'POST',
+            url: config.servicesUrl + '/task-get',
+            data: JSON.stringify({
+                taskId: params.taskId
+            }),
+            contentType: 'application/json; charset=utf-8'
+        }).done((result) => {
+            if (handleResultError(result)) {
+                const task = result.success;
+                if (!task || task.state === 'FINISHED') {
+                    clearInterval(intervalId);
+                    params.doneCallback(task);
+                    params.alwaysCallback();
+                } else if (!task || task.state === 'RUNNING'){
+
+                    if (params.progressCallback) {
+                        params.progressCallback(task);
+                    }
+                } else {
+                    clearInterval(intervalId);
+                    params.alwaysCallback();
+                }
+            } else {
+                clearInterval(intervalId);
+                params.alwaysCallback();
+            }
+        }).fail((jqXHR, textStatus, errorThrown) => {
+            clearInterval(intervalId);
+            handleAjaxError(jqXHR, textStatus, errorThrown);
+            params.alwaysCallback();
+        });
+    }, 1000);
 }

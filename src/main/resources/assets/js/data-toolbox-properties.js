@@ -1,0 +1,489 @@
+//Permissives Regexps. Stricter validation is done server-side
+const Formats = {
+    BINARY_REFERENCE_REGEXP: /.+/i,
+    BOOLEAN_REGEXP: /^(?:true|false)$/i,
+    DATE_TIME_REGEXP: /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/i,
+    DOUBLE_REGEXP: /.+/, 
+    GEO_POINT_REGEXP: /^[^,]+,[^,]+$/,
+    LOCAL_DATE_REGEXP: /^\d{4}-\d{2}-\d{2}$/, 
+    LOCAL_DATE_TIME_REGEXP: /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/i,
+    LOCAL_TIME_REGEXP: /^\d{1,2}:\d{2}:\d{2}/,
+    LONG_REGEXP: /.+/,
+    REFERENCE_REGEXP: /^[a-z0-9A-Z_\-\.:]+$/
+}
+
+class PropertyDialog extends RcdMaterialModalDialog {
+    
+    constructor(params) {
+        super(params.action + ' property', params.text, true, true);
+        this.enabled = true;
+        this.valueInputReceived = false;
+        this.action = params.action;
+        this.callback = params.callback;
+        let options = ['BinaryReference', 'Boolean', 'DateTime', 'Double', 'GeoPoint', 'LocalDate', 'LocalDateTime', 'LocalTime',
+            'Long', 'PropertySet', 'Reference', 'String', 'Xml']; //TODO Removed Link type for now
+        this.nameField = params.action == 'Create' && new RcdMaterialTextField('Name', 'Name').init();
+        this.typeDropdown = new RcdMaterialDropdown('Type', options)
+            .init()
+            .selectOption(params.property && params.property.type || 'String');
+        this.valueField = new RcdMaterialTextField('Value', 'Value').init()
+            .setValue(params.property && params.property.value || '');
+    }
+
+    init() {
+        const closeCallback = () => this.close();
+        const confirmationCallback = (source, event) => {
+            if (this.enabled) {
+                this.close();
+                if (this.action == 'Create') {
+                    this.callback(this.nameField.getValue(), this.typeDropdown.getSelectedValue(), this.valueField.getValue());
+                } else {
+                    this.callback(this.typeDropdown.getSelectedValue(), this.valueField.getValue());
+                }
+            }
+            event.stopPropagation();
+        };
+        
+        super.init()
+            .addAction('CANCEL', closeCallback)
+            .addAction(this.action == 'Create' ? 'Create' : 'Update', confirmationCallback)
+            .addKeyUpListener('Enter', confirmationCallback)
+            .addKeyUpListener('Escape', closeCallback)
+            .addItem(this.nameField)
+            .addItem(this.typeDropdown)
+            .addItem(this.valueField);
+        
+        
+        if (this.nameField) {
+            this.enable(false);
+            this.nameField.addInputListener(() => this.onInput());
+        }
+        
+        this.typeDropdown.addChangeListener((source) => {
+            this.valueField.show(source.getSelectedValue() !== 'PropertySet');
+            if (this.action === 'Create' && !this.valueInputReceived) {
+                this.valueField.setValue(this.generateValue());
+                this.valueField.focus().select();
+            }
+            this.onInput();
+        });
+        this.valueField.addInputListener(() => {
+            this.valueInputReceived = true;
+            this.onInput();
+        });
+        
+        return this;
+    }
+    
+    onInput() {
+        this.enable(this.shouldEnable());
+    }
+    
+    shouldEnable() {
+        if (this.nameField && this.nameField.getValue() === '') {
+            return false;
+        }
+        
+        return this.isValidValue();
+    }
+    
+    isValidValue() {
+        const type = this.typeDropdown.getSelectedValue();
+        const value = this.valueField.getValue();
+        switch (type) {
+        case 'BinaryReference':
+            if (!Formats.BINARY_REFERENCE_REGEXP.test(value)) {
+                return false;
+            }
+            break;
+        case 'Boolean':
+            if (!Formats.BOOLEAN_REGEXP.test(value)) {
+                return false;
+            }
+            break;
+        case 'DateTime':
+            if (!Formats.DATE_TIME_REGEXP.test(value)) {
+                return false;
+            }
+            break;
+        case 'Double':
+            if (!Formats.DOUBLE_REGEXP.test(value)) {
+                return false;
+            }
+            break;
+        case 'GeoPoint':
+            if (!Formats.GEO_POINT_REGEXP.test(value)) {
+                return false;
+            }
+            break;
+        case 'LocalDate':
+            if (!Formats.LOCAL_DATE_REGEXP.test(value)) {
+                return false;
+            }
+            break;
+        case 'LocalDateTime':
+            if (!Formats.LOCAL_DATE_TIME_REGEXP.test(value)) {
+                return false;
+            }
+            break;
+        case 'LocalTime':
+            if (!Formats.LOCAL_TIME_REGEXP.test(value)) {
+                return false;
+            }
+            break;
+        case 'Long':
+            if (!Formats.LONG_REGEXP.test(value)) {
+                return false;
+            }
+            break;
+        case 'Reference':
+            if (!Formats.REFERENCE_REGEXP.test(value)) {
+                return false;
+            }
+            break;
+        }
+        return true;
+    }
+    
+    generateValue() {
+        switch (this.typeDropdown.getSelectedValue()) {
+        case 'Boolean':
+            return 'false';
+        case 'DateTime':
+            return new Date().toISOString();
+        case 'Double':
+            return '0.0';
+        case 'GeoPoint':
+            return '59.9090313,10.7421944';
+        case 'LocalDate':
+            return toLocalDateFormat();
+        case 'LocalDateTime':
+            return toLocalDateTimeFormat();
+        case 'LocalTime':
+            return toLocalTimeFormat();
+        case 'Long':
+            return '0';
+        }
+        return '';
+    }
+
+    open(parent) {
+        super.open(parent);
+        if (this.nameField) {
+            this.nameField.focus().select();
+        } else {
+            this.valueField.focus().select();
+        }
+        return this;
+    }
+
+    enable(enabled) {
+        this.enabled = enabled;
+        this.dialog.actions.children[1].enable(enabled); //TODO Refactor
+    }
+}
+
+class PropertiesRoute extends DtbRoute {
+    constructor() {
+        super({
+            state: 'properties'
+        });
+    }
+
+    onDisplay() {
+        this.refreshBreadcrumbs();
+        this.retrieveProperties();
+    }
+
+    createLayout() {
+        const createPropertyIconArea = new RcdGoogleMaterialIconArea('add_circle', () => this.createProperty()).init()
+            .setTooltip('Create property');
+        const deletePropertyIconArea = new RcdGoogleMaterialIconArea('delete', () => this.deleteProperties()).init()
+            .setTooltip('Delete selected properties', RcdMaterialTooltipAlignment.RIGHT);
+
+        this.tableCard = new RcdMaterialTableCard('Properties').init()
+            .addClass('dtb-table-card-properties')
+            .addColumn('Name', {classes: ['non-mobile-cell']})
+            .addColumn('Index', {classes: ['non-mobile-cell', 'index']})
+            .addColumn('Name[Idx]', {classes: ['mobile-cell']})
+            .addColumn('Value', {classes: ['non-mobile-cell']})
+            .addColumn('Type', {classes: ['non-mobile-cell', 'type']})
+            .addColumn('Type: Value', {classes: ['mobile-cell']})
+            .addColumn(null, {icon: true})
+            .addIconArea(createPropertyIconArea, {max:0})
+            .addIconArea(deletePropertyIconArea, {min:1});
+
+        return new RcdMaterialLayout().init().addChild(this.tableCard);
+    }
+
+    retrieveProperties() {
+        const infoDialog = showShortInfoDialog('Retrieving properties...');
+        return $.ajax({
+            method: 'POST',
+            url: config.servicesUrl + '/property-list',
+            data: JSON.stringify({
+                repositoryName: getRepoParameter(),
+                branchName: getBranchParameter(),
+                path: getPathParameter(),
+                property: getPropertyParameter(),
+                start: getStartParameter(),
+                count: getCountParameter()
+            }),
+            contentType: 'application/json; charset=utf-8'
+        }).done((result) => this.onPropertiesRetrieval(result)).fail(handleAjaxError).always(() => {
+            infoDialog.close();
+        });
+    }
+
+    onPropertiesRetrieval(result) {
+        this.tableCard.deleteRows();
+
+        const headerRow = this.tableCard.createRow({selectable: false}).addCell('..', {classes: ['non-mobile-cell']}).addCell('',
+            {classes: ['non-mobile-cell']}).addCell('..', {classes: ['mobile-cell']}).addCell('', {classes: ['non-mobile-cell']}).addCell(
+            '', {classes: ['non-mobile-cell']}).addCell('', {classes: ['mobile-cell']}).addCell('', {icon: true}).addClass('rcd-clickable');
+
+        if (getPropertyParameter()) {
+            headerRow.addClickListener(() => setState('properties',
+                {repo: getRepoParameter(), branch: getBranchParameter(), path: getPathParameter(), property: this.getParentProperty()}));
+        } else {
+            headerRow.addClickListener(
+                () => setState('nodes', {repo: getRepoParameter(), branch: getBranchParameter(), path: this.getParentPath()}));
+        }
+
+        if (handleResultError(result)) {
+            const properties = result.success.hits;
+
+            properties.forEach(property => {
+
+                let editPropertyIconArea = null;
+                if (property.type !== 'PropertySet' && property.type !== 'Link') {  //TODO Removed Link type for now
+                    const editPropertyCallback = () => this.editProperty(property);
+                    editPropertyIconArea = new RcdGoogleMaterialIconArea('edit', (source, event) => {
+                        editPropertyCallback();
+                        event.stopPropagation();
+                    })
+                        .init()
+                        .setTooltip('Edit property');
+                }
+
+                const row = this.tableCard.createRow()
+                    .addCell(property.name, {classes: ['non-mobile-cell']})
+                    .addCell(property.index, {classes: ['non-mobile-cell']})
+                    .addCell(property.name + '[' + property.index + ']', {classes: ['mobile-cell']})
+                    .addCell(property.value, {classes: ['non-mobile-cell']})
+                    .addCell(property.type, {classes: ['non-mobile-cell']})
+                    .addCell(property.type + ': ' + property.value, {classes: ['mobile-cell']})
+                    .addCell(editPropertyIconArea, {icon: true})
+                    .setAttribute('name', property.name)
+                    .setAttribute('index', property.index);
+
+                if (property.type === 'PropertySet') {
+                    row.addClass('rcd-clickable').addClickListener(() => setState('properties', {
+                        repo: getRepoParameter(),
+                        branch: getBranchParameter(),
+                        path: getPathParameter(),
+                        property: (getPropertyParameter() ? getPropertyParameter() + '.' + property.name : property.name) + '[' + property.index + ']'
+                    }))
+                }
+            });
+
+            const startInt = parseInt(getStartParameter());
+            const countInt = parseInt(getCountParameter());
+            const previousCallback = () => setState('properties', {
+                repo: getRepoParameter(),
+                branch: getBranchParameter(),
+                path: getPathParameter(),
+                property: getPropertyParameter(),
+                start: Math.max(0, startInt - countInt),
+                count: getCountParameter()
+            });
+            const nextCallback = () => setState('properties', {
+                repo: getRepoParameter(),
+                branch: getBranchParameter(),
+                path: getPathParameter(),
+                property: getPropertyParameter(),
+                start: startInt + countInt,
+                count: getCountParameter()
+            });
+            this.tableCard.setFooter({
+                start: parseInt(getStartParameter()),
+                count: properties.length,
+                total: result.success.total,
+                previousCallback: previousCallback,
+                nextCallback: nextCallback
+            });
+        }
+    }
+
+    editProperty(property) {
+        new PropertyDialog({
+            action: 'Edit',
+            property: property,
+            callback: (type, value) => this.doEditProperty(property, type, value)
+        }).init().open();
+    }
+
+    doEditProperty(property, type, newValue) {
+        const infoDialog = showShortInfoDialog('Updating property...');
+        const propertyParameter = (getPropertyParameter() ? getPropertyParameter() + '.' : '') + property.name +
+                               (property.index ? '[' + property.index + ']' : '');
+        return $.ajax({
+            method: 'POST',
+            url: config.servicesUrl + '/property-update',
+            data: JSON.stringify({
+                repositoryName: getRepoParameter(),
+                branchName: getBranchParameter(),
+                path: getPathParameter(),
+                property: propertyParameter,
+                value: newValue,
+                type: type
+            }),
+            contentType: 'application/json; charset=utf-8'
+        }).done((result) => handleResultError(result) && displaySnackbar('Property updated')).fail(handleAjaxError).always(() => {
+            infoDialog.close();
+            RcdHistoryRouter.refresh();
+        });
+    }
+
+    createProperty() {
+        new PropertyDialog({
+            action: 'Create',
+            callback: (name, type, value) => this.doCreateProperty(name, type, value)
+        }).init().open();
+    }
+
+    doCreateProperty(name, type, value) {
+        const infoDialog = showShortInfoDialog('Creating property...');
+        return $.ajax({
+            method: 'POST',
+            url: config.servicesUrl + '/property-create',
+            data: JSON.stringify({
+                repositoryName: getRepoParameter(),
+                branchName: getBranchParameter(),
+                path: getPathParameter(),
+                parentPath: getPropertyParameter(),
+                name: name,
+                type: type,
+                value: value
+            }),
+            contentType: 'application/json; charset=utf-8'
+        }).done((result) => handleResultError(result) && displaySnackbar('Property created')).fail(handleAjaxError).always(() => {
+            infoDialog.close();
+            RcdHistoryRouter.refresh();
+        });
+    }
+
+    deleteProperties() {
+        showConfirmationDialog('Delete selected properties?', 'DELETE', () => this.doDeleteProperties());
+    }
+
+    doDeleteProperties() {
+        const infoDialog = showLongInfoDialog('Deleting properties...');
+        let properties = {};
+        const selectedRows = this.tableCard.getSelectedRows();
+        selectedRows.forEach((row) =>{
+            if (!properties[row.attributes['name']]) {
+                properties[row.attributes['name']] = [];
+            }
+            properties[row.attributes['name']].push(row.attributes['index'])
+        });
+        $.ajax({
+            method: 'POST',
+            url: config.servicesUrl + '/property-delete',
+            data: JSON.stringify({
+                repositoryName: getRepoParameter(),
+                branchName: getBranchParameter(),
+                path: getPathParameter(),
+                parentPath: getPropertyParameter(),
+                properties: properties
+            }),
+            contentType: 'application/json; charset=utf-8'
+        })
+            .done((result) => handleResultError(result) &&  displaySnackbar('Property' + (selectedRows.length > 1 ?'s' : '') + ' deleted'))
+            .fail(handleAjaxError).always(() => {
+            infoDialog.close();
+            RcdHistoryRouter.refresh();
+        });
+    }
+
+    refreshBreadcrumbs() {
+        const repositoryName = getRepoParameter();
+        const branchName = getBranchParameter();
+        const path = getPathParameter();
+        const property = getPropertyParameter();
+
+        this.breadcrumbsLayout.setBreadcrumbs([new RcdMaterialBreadcrumb('Data Toolbox', () => setState()).init(),
+            new RcdMaterialBreadcrumb('Data Tree', () => setState('repositories')).init(),
+            new RcdMaterialBreadcrumb(repositoryName, () => setState('branches', {repo: repositoryName})).init(),
+            new RcdMaterialBreadcrumb(branchName, () => setState('nodes', {repo: repositoryName, branch: branchName})).init()]);
+
+        if (path === '/') {
+            this.breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb('root!properties',
+                property ? () => setState('properties', {repo: repositoryName, branch: branchName, path: path}) : undefined).init());
+        } else {
+            this.breadcrumbsLayout.addBreadcrumb(
+                new RcdMaterialBreadcrumb('root', () => setState('nodes', {repo: repositoryName, branch: branchName, path: '/'})).init());
+        }
+
+        if (path === '/') {
+            app.setTitle('Root node properties');
+        } else {
+            const pathElements = path.substring(1).split('/');
+            app.setTitle(pathElements[pathElements.length - 1] + ' properties');
+
+            let currentPath = '';
+            pathElements.forEach((subPathElement, index, array) => {
+                currentPath += '/' + subPathElement;
+                const constCurrentPath = currentPath;
+
+                if (index < array.length - 1) {
+                    this.breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb(subPathElement,
+                        () => setState('nodes', {repo: repositoryName, branch: branchName, path: constCurrentPath})).init());
+                } else {
+                    this.breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb(subPathElement + '!properties',
+                        property ? () => setState('properties', {repo: repositoryName, branch: branchName, path: path}) : undefined).init());
+                }
+            });
+        }
+
+        if (property) {
+            const propertyElements = property.split('.');
+            let currentProperty = '';
+            propertyElements.forEach((subPropertyElement, index, array) => {
+                currentProperty += currentProperty ? '.' + subPropertyElement : subPropertyElement;
+                const constCurrentProperty = currentProperty;
+                const simplifiedSubPropertyElement = subPropertyElement.endsWith('[0]')
+                    ? subPropertyElement.substring(0, subPropertyElement.length - 3)
+                    : subPropertyElement;
+
+                if (index < array.length - 1) {
+                    this.breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb(simplifiedSubPropertyElement,
+                        () => setState('properties', {repo: repositoryName, branch: branchName, path: path, property: constCurrentProperty})).init(),
+                        ' . ');
+                } else {
+                    this.breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb(simplifiedSubPropertyElement, undefined).init(), ' . ');
+                }
+            });
+        }
+
+    }
+
+    displayHelp() {
+        const viewDefinition = 'The view represents node properties in a tree structure. ' +
+                               'See <a class="rcd-material-link" href="http://xp.readthedocs.io/en/6.10/developer/node-domain/property.html">Property</a> and <a class="rcd-material-link" href="http://xp.readthedocs.io/en/6.10/developer/node-domain/value-types.html">Value Types</a> for more information. ';
+        new HelpDialog('Properties', [viewDefinition]).init()
+            .addActionDefinition({
+                iconName: 'add_circle',
+                definition: 'Create a property.'
+            })
+            .addActionDefinition({
+                iconName: 'delete',
+                definition: 'Delete the selected properties.'
+            })
+            .addActionDefinition({
+                iconName: 'edit',
+                definition: 'Edit property.'
+            })
+            .open();
+    }
+}

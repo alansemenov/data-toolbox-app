@@ -41,9 +41,12 @@ dependencies {
     include "com.enonic.xp:lib-io:${xpVersion}"
     include "com.enonic.xp:lib-repo:${xpVersion}"
     include "com.enonic.xp:lib-node:${xpVersion}"
+    include "com.enonic.xp:lib-task:${xpVersion}"
     include "systems.rcd.fwk.core:rcd-fwk-core:7.1.0"
-    rcdjsfwkcore "systems.rcd.js.fwk.core:rcd-jsfwk-core:2.0.1"
-    rcdjsfwkmaterial "systems.rcd.js.fwk.material:rcd-jsfwk-material:2.0.1"
+    rcdjsfwkcore "systems.rcd.js.fwk.core:rcd-jsfwk-core:3.0.0-alpha-5"
+    rcdjsfwkmaterial "systems.rcd.js.fwk.material:rcd-jsfwk-material:3.0.0-alpha-8"
+    compile "systems.rcd.js.fwk.core:rcd-jsfwk-core:3.0.0-alpha-5"
+    compile "systems.rcd.js.fwk.material:rcd-jsfwk-material:3.0.0-alpha-8"
 }
 
 repositories {

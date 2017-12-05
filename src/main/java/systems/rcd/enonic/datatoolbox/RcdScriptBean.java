@@ -13,13 +13,14 @@ import systems.rcd.fwk.core.format.json.data.RcdJsonObject;
 import systems.rcd.fwk.core.format.json.data.RcdJsonValue;
 
 import com.enonic.xp.export.NodeImportResult;
+import com.enonic.xp.lib.task.TaskProgressHandler;
 import com.enonic.xp.script.bean.BeanContext;
 import com.enonic.xp.script.bean.ScriptBean;
 
 public class RcdScriptBean
     implements ScriptBean
 {
-    protected final Logger LOGGER = LoggerFactory.getLogger( RcdScriptBean.class );
+    protected static final Logger LOGGER = LoggerFactory.getLogger( RcdScriptBean.class );
 
     protected static final long RESULT_DETAILS_COUNT = 100;
 
@@ -30,6 +31,11 @@ public class RcdScriptBean
 
     protected String runSafely( final Supplier<RcdJsonValue> supplier, final String errorMessage )
     {
+        return runSafely( supplier, errorMessage, null );
+    }
+
+    protected String runSafely( final Supplier<RcdJsonValue> supplier, final String errorMessage, final Runnable finallyCallback )
+    {
         try
         {
             return RcdJsonService.toString( supplier.get() );
@@ -38,6 +44,12 @@ public class RcdScriptBean
         {
             LOGGER.error( errorMessage, e );
             return RcdJsonService.toString( createErrorResult( errorMessage ) );
+        }
+        finally
+        {
+            if (finallyCallback != null) {
+                finallyCallback.run();
+            }
         }
     }
 
@@ -82,7 +94,7 @@ public class RcdScriptBean
             to.add( "..." );
         }
     }
-    
+
     protected RcdJsonValue convertNodeImportResultToJson( final NodeImportResult nodeImportResult )
     {
         final RcdJsonObject result = RcdJsonService.createJsonObject();
@@ -105,5 +117,14 @@ public class RcdScriptBean
                            ( (NodeImportResult.ImportError) error ).getException().toString() );
 
         return result;
+    }
+
+    protected void reportProgress( final String action, final int current, final int total )
+    {
+        final TaskProgressHandler taskProgressHandler = new TaskProgressHandler();
+        taskProgressHandler.setInfo( action + " (" + current + "/" + total + ")..." );
+        taskProgressHandler.setCurrent( (double) current );
+        taskProgressHandler.setTotal( (double) total );
+        taskProgressHandler.reportProgress();
     }
 }

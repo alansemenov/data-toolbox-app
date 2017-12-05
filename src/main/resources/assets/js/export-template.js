@@ -28,7 +28,7 @@
     }, 200);
 
     function retrieveExports() {
-        const infoDialog = showInfoDialog('Retrieving export list...');
+        const infoDialog = showShortInfoDialog('Retrieving export list...', exportWidgetContainer);
         return $.ajax({
             url: config.servicesUrl + '/export-list'
         }).done(function (result) {
@@ -59,7 +59,7 @@
     }
 
     function doCreateExport(exportName) {
-        const infoDialog = showInfoDialog("Exporting content...", exportWidgetContainer);
+        const infoDialog = showLongInfoDialog("Exporting content...");
         return $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/export-create',
@@ -68,19 +68,18 @@
                 exportName: exportName
             }),
             contentType: 'application/json; charset=utf-8'
-        }).done(function (result) {
-            if (handleResultError(result)) {
-                new ExportResultDialog(result.success, 'content').init().
-                    open();
-            }
-        }).fail(handleAjaxError).always(() => {
+        }).done((result) => handleTaskCreation(result, {
+            taskId: result.taskId,
+            message: 'Exporting content...',
+            doneCallback: (success) =>  new ExportResultDialog(success, 'content').init().open(),
+            alwaysCallback: () => retrieveExports()
+        })).fail(handleAjaxError).always(() => {
             infoDialog.close();
-            retrieveExports();
         });
     }
 
     function loadExports() {
-        const infoDialog = showInfoDialog("Loading selected exports...", exportWidgetContainer);
+        const infoDialog = showLongInfoDialog("Importing contents...");
         const exportNames = tableCard.getSelectedRows().
             map((row) => row.attributes['export']);
         return $.ajax({
@@ -91,14 +90,13 @@
                 exportNames: exportNames
             }),
             contentType: 'application/json; charset=utf-8'
-        }).done(function (result) {
-            if (handleResultError(result)) {
-                new ImportResultDialog(exportNames, result.success, 'content').init().
-                    open();
-            }
-        }).fail(handleAjaxError).always(() => {
+        }).done((result) => handleTaskCreation(result, {
+            taskId: result.taskId,
+            message: 'Importing contents...',
+            doneCallback: (success) =>  new ImportResultDialog(exportNames, success, 'content').init().open(),
+            alwaysCallback: () => retrieveExports()
+        })).fail(handleAjaxError).always(() => {
             infoDialog.close();
-            retrieveExports();
         });
     }
 
@@ -107,32 +105,55 @@
     }
 
     function doDeleteExports() {
-        const infoDialog = showInfoDialog("Deleting selected exports...");
+        const infoDialog = showLongInfoDialog("Deleting exports...",);
         const exportNames = tableCard.getSelectedRows().map((row) => row.attributes['export']);
         $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/export-delete',
             data: JSON.stringify({exportNames: exportNames}),
             contentType: 'application/json; charset=utf-8'
-        }).done(handleResultError).fail(handleAjaxError).always(() => {
+        }).done((result) => handleTaskCreation(result, {
+            taskId: result.taskId,
+            message: 'Deleting exports...',
+            doneCallback: () => displaySnackbar('Export' + (exportNames.length > 1 ? 's' : '') + ' deleted'),
+            alwaysCallback: () => retrieveExports()
+        })).fail(handleAjaxError).always(() => {
             infoDialog.close();
-            retrieveExports();
         });
     }
 
     function dowloadExports() {
         const exportNames = tableCard.getSelectedRows().map((row) => row.attributes['export']);
-        const exportNamesInput = new RcdInputElement().init().
-            setAttribute('type', 'hidden').
-            setAttribute('name', 'exportNames').
-            setAttribute('value', exportNames);
-        const downloadForm = new RcdFormElement().init().
-            setAttribute('action', config.servicesUrl + '/export-download').
-            setAttribute('method', 'post').
-            addChild(exportNamesInput);
-        document.body.appendChild(downloadForm.getDomElement());
-        downloadForm.submit();
-        document.body.removeChild(downloadForm.getDomElement());
+        const infoDialog = showLongInfoDialog("Archiving exports...");
+        $.ajax({
+            method: 'POST',
+            url: config.servicesUrl + '/export-archive',
+            data: JSON.stringify({exportNames: exportNames}),
+            contentType: 'application/json; charset=utf-8'
+        }).done((result) => handleTaskCreation(result, {
+            taskId: result.taskId,
+            message: 'Archiving exports...',
+            doneCallback: (success) => {
+                const archiveNameInput = new RcdInputElement().init().
+                setAttribute('type', 'hidden').
+                setAttribute('name', 'archiveName').
+                setAttribute('value', success);
+                const fileNameInput = new RcdInputElement().init().
+                setAttribute('type', 'hidden').
+                setAttribute('name', 'fileName').
+                setAttribute('value', (exportNames.length == 1 ? exportNames[0] : "export-download") + '.zip');
+                const downloadForm = new RcdFormElement().init().
+                setAttribute('action', config.servicesUrl + '/export-download').
+                setAttribute('method', 'post').
+                addChild(archiveNameInput).
+                addChild(fileNameInput);
+                document.body.appendChild(downloadForm.domElement);
+                downloadForm.submit();
+                document.body.removeChild(downloadForm.domElement);
+            }
+        })).fail(handleAjaxError).always(() => {
+            infoDialog.close();
+        });
     }
 
     var uploadForm;
@@ -148,17 +169,21 @@
     }
 
     function doUploadExports() {
-        const infoDialog = showInfoDialog("Uploading export archive...");
-        const formData = new FormData(uploadForm.getDomElement());
+        const infoDialog = showLongInfoDialog("Uploading exports...");
+        const formData = new FormData(uploadForm.domElement);
         $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/export-upload',
             data: formData,
             contentType: false,
             processData: false
-        }).done(handleResultError).fail(handleAjaxError).always(() => {
+        }).done((result) => handleTaskCreation(result, {
+            taskId: result.taskId,
+            message: 'Uploading exports...',
+            doneCallback: () => displaySnackbar('Export(s) uploaded'),
+            alwaysCallback: () => retrieveExports()
+        })).fail(handleAjaxError).always(() => {
             infoDialog.close();
-            retrieveExports();
         });
     }
 
@@ -210,10 +235,16 @@
             init().open(exportWidgetContainer);
     }
 
-    function showInfoDialog(text) {
-        return new RcdMaterialInfoDialog({text: text}).
+    function showLongInfoDialog(text) {
+        return new RcdMaterialInfoDialog({text: text, overlay: true}).
             init().
-            open(exportWidgetContainer);
+            open();
+    }
+
+    function showShortInfoDialog(text) {
+        return new RcdMaterialInfoDialog({text: text}).
+        init().
+        open(exportWidgetContainer);
     }
 
     function showConfirmationDialog(text, confirmationLabel, callback) {
@@ -238,6 +269,10 @@
         return new RcdMaterialDetailsDialog({title: title, text: text, callback: callback}).
             init().
             open();
+    }
+
+    function displaySnackbar(text) {
+        new RcdMaterialSnackbar(text).init().open(exportWidgetContainer);
     }
 }());
 

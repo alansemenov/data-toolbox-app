@@ -21,7 +21,7 @@ class BranchesRoute extends DtbRoute {
     }
     
     retrieveBranches() {
-        const infoDialog = showInfoDialog('Retrieving branch list...');
+        const infoDialog = showShortInfoDialog('Retrieving branch list...');
         return $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/repository-get',
@@ -64,7 +64,7 @@ class BranchesRoute extends DtbRoute {
     }
 
     doCreateBranch(branchName) {
-        const infoDialog = showInfoDialog('Creating branch...');
+        const infoDialog = showLongInfoDialog('Creating branch...');
         $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/branch-create',
@@ -73,7 +73,9 @@ class BranchesRoute extends DtbRoute {
                 branchName: branchName || ('branch-' + toLocalDateTimeFormat(new Date(), '-', '-')).toLowerCase()
             }),
             contentType: 'application/json; charset=utf-8'
-        }).done(handleResultError).fail(handleAjaxError).always(() => {
+        })
+            .done((result) => handleResultError(result) &&  displaySnackbar('Branch created'))
+            .fail(handleAjaxError).always(() => {
             infoDialog.close();
             this.retrieveBranches();
         });
@@ -84,7 +86,7 @@ class BranchesRoute extends DtbRoute {
     }
 
     doDeleteBranches() {
-        const infoDialog = showInfoDialog('Deleting selected branches...');
+        const infoDialog = showLongInfoDialog('Deleting branches...');
         const branchNames = this.tableCard.getSelectedRows().map((row) => row.attributes['branch']);
         $.ajax({
             method: 'POST',
@@ -94,7 +96,9 @@ class BranchesRoute extends DtbRoute {
                 branchNames: branchNames
             }),
             contentType: 'application/json; charset=utf-8'
-        }).done(handleResultError).fail(handleAjaxError).always(() => {
+        })
+            .done((result) => handleResultError(result) &&  displaySnackbar('Branch' + (branchNames.length > 1 ?'es' : '') + ' deleted'))
+            .fail(handleAjaxError).always(() => {
             infoDialog.close();
             this.retrieveBranches();
         });

@@ -32,7 +32,7 @@ class ExportsRoute extends DtbRoute {
     }
 
     retrieveExports() {
-        const infoDialog = showInfoDialog('Retrieving export list...');
+        const infoDialog = showShortInfoDialog('Retrieving export list...');
         return $.ajax({
             url: config.servicesUrl + '/export-list'
         }).done((result) => {
@@ -56,32 +56,55 @@ class ExportsRoute extends DtbRoute {
     }
 
     doDeleteExports() {
-        const infoDialog = showInfoDialog("Deleting selected exports...");
+        const infoDialog = showLongInfoDialog("Deleting exports...");
         const exportNames = this.tableCard.getSelectedRows().map((row) => row.attributes['export']);
         $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/export-delete',
             data: JSON.stringify({exportNames: exportNames}),
             contentType: 'application/json; charset=utf-8'
-        }).done(handleResultError).fail(handleAjaxError).always(() => {
+        }).done((result) => handleTaskCreation(result, {
+            taskId: result.taskId,
+            message: 'Deleting exports...',
+            doneCallback: () => displaySnackbar('Export' + (exportNames.length > 1 ? 's' : '') + ' deleted'),
+            alwaysCallback: () => this.retrieveExports()
+        })).fail(handleAjaxError).always(() => {
             infoDialog.close();
-            this.retrieveExports();
         });
     }
 
     dowloadExports() {
         const exportNames = this.tableCard.getSelectedRows().map((row) => row.attributes['export']);
-        const exportNamesInput = new RcdInputElement().init().
-            setAttribute('type', 'hidden').
-            setAttribute('name', 'exportNames').
-            setAttribute('value', exportNames);
-        const downloadForm = new RcdFormElement().init().
-            setAttribute('action', config.servicesUrl + '/export-download').
-            setAttribute('method', 'post').
-            addChild(exportNamesInput);
-        document.body.appendChild(downloadForm.getDomElement());
-        downloadForm.submit();
-        document.body.removeChild(downloadForm.getDomElement());
+        const infoDialog = showLongInfoDialog("Archiving exports...");
+        $.ajax({
+            method: 'POST',
+            url: config.servicesUrl + '/export-archive',
+            data: JSON.stringify({exportNames: exportNames}),
+            contentType: 'application/json; charset=utf-8'
+        }).done((result) => handleTaskCreation(result, {
+            taskId: result.taskId,
+            message: 'Archiving exports...',
+            doneCallback: (success) => {
+                const archiveNameInput = new RcdInputElement().init().
+                setAttribute('type', 'hidden').
+                setAttribute('name', 'archiveName').
+                setAttribute('value', success);
+                const fileNameInput = new RcdInputElement().init().
+                setAttribute('type', 'hidden').
+                setAttribute('name', 'fileName').
+                setAttribute('value', (exportNames.length == 1 ? exportNames[0] : "export-download") + '.zip');
+                const downloadForm = new RcdFormElement().init().
+                setAttribute('action', config.servicesUrl + '/export-download').
+                setAttribute('method', 'post').
+                addChild(archiveNameInput).
+                addChild(fileNameInput);
+                document.body.appendChild(downloadForm.domElement);
+                downloadForm.submit();
+                document.body.removeChild(downloadForm.domElement);
+            }
+        })).fail(handleAjaxError).always(() => {
+            infoDialog.close();
+        });
     }
 
     uploadExports() {
@@ -95,17 +118,21 @@ class ExportsRoute extends DtbRoute {
     }
 
     doUploadExports() {
-        const infoDialog = showInfoDialog("Uploading export archive...");
-        const formData = new FormData(this.uploadForm.getDomElement());
+        const infoDialog = showLongInfoDialog("Uploading exports...");
+        const formData = new FormData(this.uploadForm.domElement);
         $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/export-upload',
             data: formData,
             contentType: false,
             processData: false
-        }).done(handleResultError).fail(handleAjaxError).always(() => {
+        }).done((result) => handleTaskCreation(result, {
+            taskId: result.taskId,
+            message: 'Uploading exports...',
+            doneCallback: () => displaySnackbar('Export(s) uploaded'),
+            alwaysCallback: () => this.retrieveExports()
+        })).fail(handleAjaxError).always(() => {
             infoDialog.close();
-            this.retrieveExports();
         });
     }
 
