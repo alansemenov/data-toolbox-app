@@ -357,7 +357,12 @@ function handleTaskCreation(result, params) {
             taskId: params.taskId,
             doneCallback: (task) => {
                 if (task) {
-                    const result = JSON.parse(task.progress.info);
+                    let result;
+                    try {
+                        result = JSON.parse(task.progress.info);
+                    } catch (e) {
+                        result = {error: "Error while parsing task result: " + e.message};
+                    }
                     if (handleResultError(result)) {
                         if(params.doneCallback) {
                             params.doneCallback(result.success);
