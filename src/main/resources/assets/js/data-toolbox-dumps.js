@@ -13,7 +13,10 @@ class DtbDumpInputDialog extends RcdMaterialInputDialog {
 
         this.includeVersionsCheckbox = new RcdMaterialCheckbox().init()
             .select(true)
-            .addClickListener(() => this.includeVersionsCheckbox.select(!this.includeVersionsCheckbox.isSelected()))
+            .addClickListener(() => {
+                this.includeVersionsCheckbox.select(!this.includeVersionsCheckbox.isSelected());
+                this.checkValidity();
+            });
         this.includeVersionsLabel = new RcdTextDivElement('Include versions').init();
         this.includeVersionsField = new RcdDivElement()
             .init()
@@ -25,22 +28,35 @@ class DtbDumpInputDialog extends RcdMaterialInputDialog {
             .init()
             .setPattern('[0-9]*')
             .addInputListener(() => this.checkValidity());
+
+        this.maxAgeVersionsField = new RcdMaterialTextField('', 'Max. age of versions (days) (opt.)')
+            .init()
+            .setPattern('[0-9]*')
+            .addInputListener(() => this.checkValidity());
     }
 
     init() {
         return super.init()
             .addItem(this.includeVersionsField)
-            .addItem(this.maxVersionsField);
+            .addItem(this.maxVersionsField)
+            .addItem(this.maxAgeVersionsField);
     }
-    
+
     checkValidity() {
-        if (!this.maxVersionsField.input.domElement.checkValidity()) {
-            this.enable(false);
-        } else {
-            this.enable(true);
-        }
-        
+        this.enable(this.isValid());
         return this;
+    }
+
+    isValid() {
+        if (this.includeVersionsCheckbox.isSelected()) {
+            if (!this.maxVersionsField.checkValidity()) {
+                return false;
+            }
+            if (!this.maxAgeVersionsField.checkValidity()) {
+                return false;
+            }
+        }
+        return true;
     }
 }
 
