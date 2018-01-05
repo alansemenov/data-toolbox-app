@@ -7,17 +7,29 @@ class DtbDumpInputDialog extends RcdMaterialInputDialog {
             value: params.defaultValue,
             confirmationLabel: 'CREATE',
             callback: (value) => {
-                params.callback(value || params.defaultValue);
+                params.callback({
+                    name: value || params.defaultValue,
+                    includeVersions: this.includeVersionsCheckbox.isSelected(),
+                    maxVersions: this.includeVersionsCheckbox.isSelected() && this.maxVersionsField.getValue() ? Number(
+                        this.maxVersionsField.getValue()) : undefined,
+                    maxVersionsAge: this.includeVersionsCheckbox.isSelected() && this.maxVersionsAgeField.getValue() ? Number(
+                        this.maxVersionsAgeField.getValue()) : undefined
+                });
             }
         });
 
         this.includeVersionsCheckbox = new RcdMaterialCheckbox().init()
             .select(true)
             .addClickListener(() => {
-                this.includeVersionsCheckbox.select(!this.includeVersionsCheckbox.isSelected());
+                const includeVersion = !this.includeVersionsCheckbox.isSelected();
+                this.includeVersionsCheckbox.select(includeVersion);
+                this.maxVersionsField.show(includeVersion);
+                this.maxVersionsAgeField.show(includeVersion);
                 this.checkValidity();
             });
-        this.includeVersionsLabel = new RcdTextDivElement('Include versions').init();
+        this.includeVersionsLabel = new RcdTextDivElement('Include version history')
+            .init()
+            .addClass('dtb-include-versions-label');
         this.includeVersionsField = new RcdDivElement()
             .init()
             .addClass('dtb-include-versions-field')
@@ -29,7 +41,7 @@ class DtbDumpInputDialog extends RcdMaterialInputDialog {
             .setPattern('[0-9]*')
             .addInputListener(() => this.checkValidity());
 
-        this.maxAgeVersionsField = new RcdMaterialTextField('', 'Max. age of versions (days) (opt.)')
+        this.maxVersionsAgeField = new RcdMaterialTextField('', 'Max. age of versions (days) (opt.)')
             .init()
             .setPattern('[0-9]*')
             .addInputListener(() => this.checkValidity());
@@ -39,7 +51,7 @@ class DtbDumpInputDialog extends RcdMaterialInputDialog {
         return super.init()
             .addItem(this.includeVersionsField)
             .addItem(this.maxVersionsField)
-            .addItem(this.maxAgeVersionsField);
+            .addItem(this.maxVersionsAgeField);
     }
 
     checkValidity() {
@@ -52,7 +64,7 @@ class DtbDumpInputDialog extends RcdMaterialInputDialog {
             if (!this.maxVersionsField.checkValidity()) {
                 return false;
             }
-            if (!this.maxAgeVersionsField.checkValidity()) {
+            if (!this.maxVersionsAgeField.checkValidity()) {
                 return false;
             }
         }
@@ -121,13 +133,16 @@ class DumpsRoute extends DtbRoute {
         }).init().open();
     }
 
-    doCreateDump(dumpName) {
+    doCreateDump(params) {
         const infoDialog = showLongInfoDialog('Creating dump...');
         $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/dump-create',
             data: JSON.stringify({
-                dumpName: dumpName || ('dump-' + toLocalDateTimeFormat(new Date(), '-', '-'))
+                dumpName: params.name || ('dump-' + toLocalDateTimeFormat(new Date(), '-', '-')),
+                includeVersions: params.includeVersions,
+                maxVersions: params.maxVersions,
+                maxVersionsAge: params.maxVersionsAge,
             }),
             contentType: 'application/json; charset=utf-8'
         }).done((result) => handleTaskCreation(result, {

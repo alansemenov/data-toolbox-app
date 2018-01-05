@@ -166,15 +166,15 @@ public class RcdDumpScriptBean
         return "";
     }
 
-    public String create( final String dumpName )
+    public String create( final String dumpName, final boolean includeVersion, final Integer maxVersions,  final Integer maxVersionsAge)
     {
         return runSafely( () -> {
             final SystemDumpParams params = SystemDumpParams.create().
                 dumpName( dumpName ).
                 includeBinaries( true ).
-                includeVersions( true ).
-                maxAge( null ).
-                maxVersions( null ).
+                includeVersions( includeVersion ).
+                maxAge( maxVersionsAge ).
+                maxVersions( maxVersions ).
                 build();
 
             final SystemDumpResult systemDumpResult = dumpServiceSupplier.get().dump( params );
