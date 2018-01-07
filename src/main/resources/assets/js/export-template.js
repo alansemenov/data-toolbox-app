@@ -79,6 +79,17 @@
     }
 
     function loadExports() {
+        showInputDialog({
+            title: "Importing content under",
+            confirmationLabel: "Import",
+            label: "Content path",
+            placeholder: 'Parent content path',
+            value: config.contentPath,
+            callback: (value) => doLoadExports(value || '/')
+        });
+    }
+
+    function doLoadExports(contentPath) {
         const infoDialog = showLongInfoDialog("Importing contents...");
         const exportNames = tableCard.getSelectedRows().
             map((row) => row.attributes['export']);
@@ -86,7 +97,7 @@
             method: 'POST',
             url: config.servicesUrl + '/export-load',
             data: JSON.stringify({
-                contentPath: config.contentPath,
+                contentPath: contentPath,
                 exportNames: exportNames
             }),
             contentType: 'application/json; charset=utf-8'
