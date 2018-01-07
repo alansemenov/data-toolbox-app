@@ -14,6 +14,7 @@
     display: none;
   }
 }
+
 .mobile-cell {
   @media (min-width: @rcd-material-min-tablet-width) {
     display: none;
@@ -153,7 +154,7 @@
     @media (min-width: @rcd-material-min-tablet-width) {
       width: 140px;
     }
-    
+
   }
 }
 
@@ -164,5 +165,17 @@
   .type {
     width: 130px;
   }
+}
+
+.dtb-include-versions-field :extend(.rcd-flex-hbox) {
+  
+  .rcd-material-icon-area {
+    height: 36px;
+    padding: 6px;
+    padding-left: 0;
+  }
+}
+.dtb-include-versions-label {
+  font-size: 16px;
 }
 
