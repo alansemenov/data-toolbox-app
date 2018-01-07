@@ -79,6 +79,17 @@
     }
 
     function loadExports() {
+        showInputDialog({
+            title: "Import contents under",
+            confirmationLabel: "Import",
+            label: "Content path",
+            placeholder: 'Target parent content path',
+            value: config.contentPath,
+            callback: (value) => doLoadExports(value || '/')
+        });
+    }
+
+    function doLoadExports(contentPath) {
         const infoDialog = showLongInfoDialog("Importing contents...");
         const exportNames = tableCard.getSelectedRows().
             map((row) => row.attributes['export']);
@@ -86,7 +97,7 @@
             method: 'POST',
             url: config.servicesUrl + '/export-load',
             data: JSON.stringify({
-                contentPath: config.contentPath,
+                contentPath: contentPath,
                 exportNames: exportNames
             }),
             contentType: 'application/json; charset=utf-8'
@@ -207,7 +218,8 @@
             addActionDefinition({iconName: 'file_upload', definition: 'Upload archived exports and unzip them into $XP_HOME/data/export'}).
             addActionDefinition({
                 iconSrc: config.assetsUrl + '/icons/import-icon.svg',
-                definition: 'Import the selected exports. Their contents will be imported as children under the current content.'
+                definition: 'Import the selected exports. Their contents will be imported as children under the specified content path ' +
+                            '(at the root if no value is specified).'
             }).
             addActionDefinition({iconName: 'file_download', definition: 'Zip the selected exports and download the archive'}).
             addActionDefinition({iconName: 'delete', definition: 'Delete the selected exports.'}).
