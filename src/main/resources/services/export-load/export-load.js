@@ -10,7 +10,7 @@ exports.post = function (req) {
         description: 'Content import',
         task: function () {
             taskLib.progress({info: 'Importing contents...'});
-            taskLib.progress({info: bean.load(exportNames, 'cms-repo', 'draft', '/content' + contentPath)});
+            taskLib.progress({info: bean.load(exportNames, 'cms-repo', 'draft', '/content' + (contentPath == '/' ? '' : contentPath))});
         }
     });
 
