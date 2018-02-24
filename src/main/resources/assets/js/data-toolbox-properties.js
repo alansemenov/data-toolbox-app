@@ -266,13 +266,14 @@ class PropertiesRoute extends DtbRoute {
                         .setTooltip('Edit property');
                 }
 
+                const encodedValue = encodeReservedCharacters(property.value);
                 const row = this.tableCard.createRow()
                     .addCell(property.name, {classes: ['non-mobile-cell']})
                     .addCell(property.index, {classes: ['non-mobile-cell']})
                     .addCell(property.name + '[' + property.index + ']', {classes: ['mobile-cell']})
-                    .addCell(property.value, {classes: ['non-mobile-cell']})
+                    .addCell(encodedValue, {classes: ['non-mobile-cell']})
                     .addCell(property.type, {classes: ['non-mobile-cell']})
-                    .addCell(property.type + ': ' + property.value, {classes: ['mobile-cell']})
+                    .addCell(property.type + ': ' + encodedValue, {classes: ['mobile-cell']})
                     .addCell(editPropertyIconArea, {icon: true})
                     .setAttribute('name', property.name)
                     .setAttribute('index', property.index);
