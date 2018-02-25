@@ -23,15 +23,19 @@ class PropertyDialog extends RcdMaterialModalDialog {
         let options = ['BinaryReference', 'Boolean', 'DateTime', 'Double', 'GeoPoint', 'LocalDate', 'LocalDateTime', 'LocalTime',
             'Long', 'PropertySet', 'Reference', 'String', 'Xml']; //TODO Removed Link type for now
         this.nameField = params.action == 'Create' && new RcdMaterialTextField('Name', 'Name').init();
+        const type =  params.property && params.property.type || 'String';
         this.typeDropdown = new RcdMaterialDropdown('Type', options)
             .init()
-            .selectOption(params.property && params.property.type || 'String');
+            .selectOption(type);
         
         
-        if (params.property.type === 'String') {
+        switch(type) {
+        case 'String':
+        case 'Xml':
             this.valueField = new RcdMaterialTextArea('Value', 'Value').init()
                 .setValue(params.property && params.property.value || '');
-        } else {
+            break;
+        default:
             this.valueField = new RcdMaterialTextField('Value', 'Value').init()
                 .setValue(params.property && params.property.value || '');
         }
