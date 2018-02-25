@@ -26,8 +26,15 @@ class PropertyDialog extends RcdMaterialModalDialog {
         this.typeDropdown = new RcdMaterialDropdown('Type', options)
             .init()
             .selectOption(params.property && params.property.type || 'String');
-        this.valueField = new RcdMaterialTextField('Value', 'Value').init()
-            .setValue(params.property && params.property.value || '');
+        
+        
+        if (params.property.type === 'String') {
+            this.valueField = new RcdMaterialTextArea('Value', 'Value').init()
+                .setValue(params.property && params.property.value || '');
+        } else {
+            this.valueField = new RcdMaterialTextField('Value', 'Value').init()
+                .setValue(params.property && params.property.value || '');
+        }
     }
 
     init() {
