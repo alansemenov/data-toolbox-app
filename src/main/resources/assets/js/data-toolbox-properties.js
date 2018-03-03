@@ -1,11 +1,10 @@
 //Permissives Regexps. Stricter validation is done server-side
 const Formats = {
     BINARY_REFERENCE_REGEXP: /.+/i,
-    BOOLEAN_REGEXP: /^(?:true|false)$/i,
     DATE_TIME_REGEXP: /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/i,
-    DOUBLE_REGEXP: /.+/, 
+    DOUBLE_REGEXP: /.+/,
     GEO_POINT_REGEXP: /^[^,]+,[^,]+$/,
-    LOCAL_DATE_REGEXP: /^\d{4}-\d{2}-\d{2}$/, 
+    LOCAL_DATE_REGEXP: /^\d{4}-\d{2}-\d{2}$/,
     LOCAL_DATE_TIME_REGEXP: /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/i,
     LOCAL_TIME_REGEXP: /^\d{1,2}:\d{2}:\d{2}/,
     LONG_REGEXP: /.+/,
@@ -13,7 +12,7 @@ const Formats = {
 }
 
 class PropertyDialog extends RcdMaterialModalDialog {
-    
+
     constructor(params) {
         super(params.action + ' property', params.text, true, true);
         this.enabled = true;
@@ -23,21 +22,26 @@ class PropertyDialog extends RcdMaterialModalDialog {
         let options = ['BinaryReference', 'Boolean', 'DateTime', 'Double', 'GeoPoint', 'LocalDate', 'LocalDateTime', 'LocalTime',
             'Long', 'PropertySet', 'Reference', 'String', 'Xml']; //TODO Removed Link type for now
         this.nameField = params.action == 'Create' && new RcdMaterialTextField('Name', 'Name').init();
-        const type =  params.property && params.property.type || 'String';
+        const type = params.property && params.property.type || 'String';
         this.typeDropdown = new RcdMaterialDropdown('Type', options)
             .init()
             .selectOption(type);
-        
-        
-        switch(type) {
+
+
+        this.valueTextArea = new RcdMaterialTextArea('Value', 'Value').init();
+        this.valueField = new RcdMaterialTextField('Value', 'Value').init();
+        this.valueDropdown = new RcdMaterialDropdown('Value', ['true', 'false']).init();
+
+        switch (type) {
         case 'String':
         case 'Xml':
-            this.valueField = new RcdMaterialTextArea('Value', 'Value').init()
-                .setValue(params.property && params.property.value || '');
+            this.valueTextArea.setValue(params.property && params.property.value || '');
+            break;
+        case 'Boolean':
+            this.valueDropdown.selectOption((params.property && params.property.value == 'true') ? 'true' : 'false');
             break;
         default:
-            this.valueField = new RcdMaterialTextField('Value', 'Value').init()
-                .setValue(params.property && params.property.value || '');
+            this.valueField.setValue(params.property && params.property.value || '');
         }
     }
 
@@ -47,14 +51,14 @@ class PropertyDialog extends RcdMaterialModalDialog {
             if (this.enabled) {
                 this.close();
                 if (this.action == 'Create') {
-                    this.callback(this.nameField.getValue(), this.typeDropdown.getSelectedValue(), this.valueField.getValue());
+                    this.callback(this.nameField.getValue(), this.getType(), this.getValue());
                 } else {
-                    this.callback(this.typeDropdown.getSelectedValue(), this.valueField.getValue());
+                    this.callback(this.getType(), this.getValue());
                 }
             }
             event.stopPropagation();
         };
-        
+
         super.init()
             .addAction('CANCEL', closeCallback)
             .addAction(this.action == 'Create' ? 'Create' : 'Update', confirmationCallback)
@@ -62,53 +66,114 @@ class PropertyDialog extends RcdMaterialModalDialog {
             .addKeyUpListener('Escape', closeCallback)
             .addItem(this.nameField)
             .addItem(this.typeDropdown)
-            .addItem(this.valueField);
-        
-        
+            .addItem(this.valueField)
+            .addItem(this.valueTextArea)
+            .addItem(this.valueDropdown)
+            .displayValueField();
+
+
         if (this.nameField) {
             this.enable(false);
             this.nameField.addInputListener(() => this.onInput());
         }
-        
-        this.typeDropdown.addChangeListener((source) => {
-            this.valueField.show(source.getSelectedValue() !== 'PropertySet');
+
+        this.typeDropdown.addChangeListener(() => {
+            this.displayValueField();
             if (this.action === 'Create' && !this.valueInputReceived) {
-                this.valueField.setValue(this.generateValue());
-                this.valueField.focus().select();
+                this.generateValue();
+                this.focusValueField();
+            } else {
+
             }
             this.onInput();
         });
-        this.valueField.addInputListener(() => {
+
+        const onValueModification = () => {
             this.valueInputReceived = true;
             this.onInput();
-        });
-        
+        };
+        this.valueField.addInputListener(onValueModification);
+        this.valueTextArea.addInputListener(onValueModification);
+        this.valueDropdown.addChangeListener(onValueModification);
+
         return this;
     }
-    
+
+    displayValueField() {
+        switch (this.getType()) {
+        case 'String':
+        case 'Xml':
+            this.valueTextArea.show();
+            this.valueField.hide();
+            this.valueDropdown.hide();
+            break;
+        case 'Boolean':
+            this.valueTextArea.hide();
+            this.valueField.hide();
+            this.valueDropdown.show();
+            break;
+        case 'PropertySet':
+            this.valueTextArea.hide();
+            this.valueField.hide();
+            this.valueDropdown.hide();
+            break;
+        default:
+            this.valueTextArea.hide();
+            this.valueField.show();
+            this.valueDropdown.hide();
+        }
+    }
+
+    focusValueField() {
+        switch (this.getType()) {
+        case 'String':
+        case 'Xml':
+            this.valueTextArea.focus().select();
+            break;
+        case 'Boolean':
+            this.valueDropdown.focus();
+            break;
+        case 'PropertySet':
+            break;
+        default:
+            this.valueField.focus().select();
+        }
+    }
+
+    getType() {
+        return this.typeDropdown.getSelectedValue();
+    }
+
+    getValue() {
+        switch (this.getType()) {
+        case 'String':
+        case 'Xml':
+            return this.valueTextArea.getValue();
+        case 'Boolean':
+            return this.valueDropdown.getSelectedValue();
+        default:
+            return this.valueField.getValue();
+        }
+    }
+
     onInput() {
         this.enable(this.shouldEnable());
     }
-    
+
     shouldEnable() {
-        if (this.nameField && this.nameField.getValue() === '') {
+        if (this.getValue() === '' && this.getType() !== 'PropertySet') {
             return false;
         }
-        
+
         return this.isValidValue();
     }
-    
+
     isValidValue() {
-        const type = this.typeDropdown.getSelectedValue();
+        const type = this.getType();
         const value = this.valueField.getValue();
         switch (type) {
         case 'BinaryReference':
             if (!Formats.BINARY_REFERENCE_REGEXP.test(value)) {
-                return false;
-            }
-            break;
-        case 'Boolean':
-            if (!Formats.BOOLEAN_REGEXP.test(value)) {
                 return false;
             }
             break;
@@ -155,27 +220,48 @@ class PropertyDialog extends RcdMaterialModalDialog {
         }
         return true;
     }
-    
+
     generateValue() {
-        switch (this.typeDropdown.getSelectedValue()) {
+        let generatedValue;
+        switch (this.getType()) {
         case 'Boolean':
-            return 'false';
+            generatedValue = 'false';
+            break;
         case 'DateTime':
-            return new Date().toISOString();
+            generatedValue = new Date().toISOString();
+            break;
         case 'Double':
-            return '0.0';
+            generatedValue = '0.0';
+            break;
         case 'GeoPoint':
-            return '59.9090313,10.7421944';
+            generatedValue = '59.9090313,10.7421944';
+            break;
         case 'LocalDate':
-            return toLocalDateFormat();
+            generatedValue = toLocalDateFormat();
+            break;
         case 'LocalDateTime':
-            return toLocalDateTimeFormat();
+            generatedValue = toLocalDateTimeFormat();
+            break;
         case 'LocalTime':
-            return toLocalTimeFormat();
+            generatedValue = toLocalTimeFormat();
+            break;
         case 'Long':
-            return '0';
+            generatedValue = '0';
+            break;
+        default:
+            generatedValue = '';
         }
-        return '';
+
+        switch (this.getType()) {
+        case 'String':
+        case 'Xml':
+            this.valueTextArea.setValue(generatedValue);
+            break;
+        case 'Boolean':
+            this.valueDropdown.selectOption(generatedValue);
+        default:
+            this.valueField.setValue(generatedValue);
+        }
     }
 
     open(parent) {
@@ -183,7 +269,7 @@ class PropertyDialog extends RcdMaterialModalDialog {
         if (this.nameField) {
             this.nameField.focus().select();
         } else {
-            this.valueField.focus().select();
+            this.focusValueField();
         }
         return this;
     }
@@ -221,8 +307,8 @@ class PropertiesRoute extends DtbRoute {
             .addColumn('Type', {classes: ['non-mobile-cell', 'type']})
             .addColumn('Type: Value', {classes: ['mobile-cell']})
             .addColumn(null, {icon: true})
-            .addIconArea(createPropertyIconArea, {max:0})
-            .addIconArea(deletePropertyIconArea, {min:1});
+            .addIconArea(createPropertyIconArea, {max: 0})
+            .addIconArea(deletePropertyIconArea, {min: 1});
 
         return new RcdMaterialLayout().init().addChild(this.tableCard);
     }
@@ -294,7 +380,8 @@ class PropertiesRoute extends DtbRoute {
                         repo: getRepoParameter(),
                         branch: getBranchParameter(),
                         path: getPathParameter(),
-                        property: (getPropertyParameter() ? getPropertyParameter() + '.' + property.name : property.name) + '[' + property.index + ']'
+                        property: (getPropertyParameter() ? getPropertyParameter() + '.' + property.name : property.name) + '[' +
+                                  property.index + ']'
                     }))
                 }
             });
@@ -338,7 +425,7 @@ class PropertiesRoute extends DtbRoute {
     doEditProperty(property, type, newValue) {
         const infoDialog = showShortInfoDialog('Updating property...');
         const propertyParameter = (getPropertyParameter() ? getPropertyParameter() + '.' : '') + property.name +
-                               (property.index ? '[' + property.index + ']' : '');
+                                  (property.index ? '[' + property.index + ']' : '');
         return $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/property-update',
@@ -393,7 +480,7 @@ class PropertiesRoute extends DtbRoute {
         const infoDialog = showLongInfoDialog('Deleting properties...');
         let properties = {};
         const selectedRows = this.tableCard.getSelectedRows();
-        selectedRows.forEach((row) =>{
+        selectedRows.forEach((row) => {
             if (!properties[row.attributes['name']]) {
                 properties[row.attributes['name']] = [];
             }
@@ -411,7 +498,7 @@ class PropertiesRoute extends DtbRoute {
             }),
             contentType: 'application/json; charset=utf-8'
         })
-            .done((result) => handleResultError(result) &&  displaySnackbar('Property' + (selectedRows.length > 1 ?'s' : '') + ' deleted'))
+            .done((result) => handleResultError(result) && displaySnackbar('Property' + (selectedRows.length > 1 ? 's' : '') + ' deleted'))
             .fail(handleAjaxError).always(() => {
             infoDialog.close();
             RcdHistoryRouter.refresh();
@@ -453,7 +540,9 @@ class PropertiesRoute extends DtbRoute {
                         () => setState('nodes', {repo: repositoryName, branch: branchName, path: constCurrentPath})).init());
                 } else {
                     this.breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb(subPathElement + '!properties',
-                        property ? () => setState('properties', {repo: repositoryName, branch: branchName, path: path}) : undefined).init());
+                        property
+                            ? () => setState('properties', {repo: repositoryName, branch: branchName, path: path})
+                            : undefined).init());
                 }
             });
         }
@@ -470,7 +559,8 @@ class PropertiesRoute extends DtbRoute {
 
                 if (index < array.length - 1) {
                     this.breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb(simplifiedSubPropertyElement,
-                        () => setState('properties', {repo: repositoryName, branch: branchName, path: path, property: constCurrentProperty})).init(),
+                        () => setState('properties',
+                            {repo: repositoryName, branch: branchName, path: path, property: constCurrentProperty})).init(),
                         ' . ');
                 } else {
                     this.breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb(simplifiedSubPropertyElement, undefined).init(), ' . ');
