@@ -6,7 +6,7 @@ const Formats = {
     GEO_POINT_REGEXP: /^[^,]+,[^,]+$/,
     LOCAL_DATE_REGEXP: /^\d{4}-\d{2}-\d{2}$/,
     LOCAL_DATE_TIME_REGEXP: /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/i,
-    LOCAL_TIME_REGEXP: /^\d{1,2}:\d{2}:\d{2}/,
+    LOCAL_TIME_REGEXP: /^\d{1,2}:\d{2}(?::\d{2})?$/,
     LONG_REGEXP: /.+/,
     REFERENCE_REGEXP: /^[a-z0-9A-Z_\-\.:]+$/
 }
@@ -28,7 +28,7 @@ class PropertyDialog extends RcdMaterialModalDialog {
             .selectOption(type);
 
 
-        this.valueTextArea = new RcdMaterialTextArea('Value', 'Value').init();
+        this.valueTextArea = new RcdMaterialTextArea('Value', 'Value').init().setRows(5);
         this.valueField = new RcdMaterialTextField('Value', 'Value').init();
         this.valueDropdown = new RcdMaterialDropdown('Value', ['true', 'false']).init();
 
@@ -60,6 +60,7 @@ class PropertyDialog extends RcdMaterialModalDialog {
         };
 
         super.init()
+            .addClass('dtb-property-dialog')
             .addAction('CANCEL', closeCallback)
             .addAction(this.action == 'Create' ? 'Create' : 'Update', confirmationCallback)
             .addKeyUpListener('Enter', confirmationCallback)
