@@ -69,7 +69,7 @@ public class RcdPropertyScriptBean
                     result.put( "total", propertyList.size() );
                     propertyList.stream().skip( start ).limit( count ).forEach( property -> {
                         String value = "PropertySet".equals( property.getType().getName() ) ? "" : property.getValue().toString();
-                        value = StringEscapeUtils.escapeHtml( value );
+                        //value = StringEscapeUtils.escapeHtml( value );
                         propertyJsonArray.createObject().
                             put( "name", property.getName() ).
                             put( "index", property.getIndex() ).
