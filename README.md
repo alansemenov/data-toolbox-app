@@ -35,4 +35,5 @@ Starting from version 2.0.0, help dialogs are present to give you more informati
 | 2.1.3 | 6.11.0 - 6.Y.Z | [Download](https://dl.bintray.com/rcd-systems/rcd-repo/systems/rcd/enonic/datatoolbox/2.1.3/datatoolbox-2.1.3.jar) |
 | 2.1.4 | 6.11.0 - 6.Y.Z | [Download](https://dl.bintray.com/rcd-systems/rcd-repo/systems/rcd/enonic/datatoolbox/2.1.4/datatoolbox-2.1.4.jar) |
 | 2.1.5 | 6.11.0 - 6.Y.Z | [Download](https://dl.bintray.com/rcd-systems/rcd-repo/systems/rcd/enonic/datatoolbox/2.1.5/datatoolbox-2.1.5.jar) |
+| 2.1.6 | 6.11.0 - 6.Y.Z | [Download](https://dl.bintray.com/rcd-systems/rcd-repo/systems/rcd/enonic/datatoolbox/2.1.6/datatoolbox-2.1.6.jar) |
 
