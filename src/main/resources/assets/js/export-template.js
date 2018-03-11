@@ -5,7 +5,8 @@
     let exportWidgetContainer;
     const interval = setInterval(() => {
         exportWidgetContainer = document.getElementById('exportWidgetContainer');
-        if (exportWidgetContainer) {
+        if (exportWidgetContainer && exportWidgetContainer.childNodes.length === 0) {
+            clearInterval(interval);
             tableCard = new RcdMaterialTableCard('Exports').init().
                 addColumn('Export name').
                 addIconArea(new RcdImageIconArea(config.assetsUrl + '/icons/export-icon.svg',
@@ -23,7 +24,6 @@
 
             retrieveExports();
             tableCard.setParent(exportWidgetContainer);
-            clearInterval(interval);
         }
     }, 200);
 
