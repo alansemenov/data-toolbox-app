@@ -377,7 +377,7 @@ function handleTaskCreation(result, params) {
                 infoDialog.setInfoText(task.progress.info);
                 if (task.progress.total > 0) {
                     if (!progressIndicator) {
-                        progressIndicator = new RcdLinearProgressIndicator({width: 200, height: 8}).init();
+                        progressIndicator = new RcdLinearProgressIndicator({width: 240, height: 8}).init();
                         infoDialog.addItem(progressIndicator);
                     }
                     progressIndicator.setProgress(task.progress.current / task.progress.total);

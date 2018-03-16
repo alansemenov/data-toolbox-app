@@ -21,6 +21,7 @@ import com.enonic.xp.export.ExportService;
 import com.enonic.xp.export.ImportNodesParams;
 import com.enonic.xp.export.NodeExportListener;
 import com.enonic.xp.export.NodeExportResult;
+import com.enonic.xp.export.NodeImportListener;
 import com.enonic.xp.export.NodeImportResult;
 import com.enonic.xp.home.HomeDir;
 import com.enonic.xp.node.NodePath;
@@ -158,7 +159,30 @@ public class RcdExportScriptBean
             createContext( repositoryName, branchName ).runWith( () -> {
                 for ( String exportName : exportNames )
                 {
-                    final NodeImportResult nodeImportResult = load( nodePath, exportName );
+                    final NodeImportListener nodeImportListener = new NodeImportListener()
+                    {
+                        private String action = (exportNames.length > 1 ? "Export: " + exportName +"<br/>" : "") +  "Importing nodes";
+
+                        private int currentProgress = 0;
+
+                        private int totalProgress = 0;
+
+                        @Override
+                        public void nodeImported( final long count )
+                        {
+                            currentProgress += count;
+                            reportProgress( action, currentProgress, totalProgress );
+                        }
+
+                        @Override
+                        public void nodeResolved( final long count )
+                        {
+                            totalProgress = (int) count;
+                            reportProgress( action, currentProgress, totalProgress );
+                        }
+                    };
+                    
+                    final NodeImportResult nodeImportResult = load( nodePath, exportName, nodeImportListener );
                     final RcdJsonValue result = convertNodeImportResultToJson( nodeImportResult );
                     results.put( exportName, result );
 
@@ -188,7 +212,7 @@ public class RcdExportScriptBean
         }, "Error while deleting export" );
     }
 
-    private NodeImportResult load( NodePath nodePath, String exportName )
+    private NodeImportResult load( final NodePath nodePath, final String exportName, final NodeImportListener nodeImportListener )
     {
         final ImportNodesParams importNodesParams = ImportNodesParams.create().
             targetNodePath( nodePath ).
@@ -196,6 +220,7 @@ public class RcdExportScriptBean
             dryRun( false ).
             includeNodeIds( true ).
             includePermissions( true ).
+            nodeImportListener( nodeImportListener ).
             build();
 
         return exportServiceSupplier.get().
