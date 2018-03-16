@@ -354,7 +354,8 @@ class DtbRoute extends RcdMaterialRoute {
 
 function handleTaskCreation(result, params) {
     if (handleResultError(result)) {
-        const infoDialog = showLongInfoDialog(params.message);
+        const infoDialog = showLongInfoDialog(params.message).addClass('dt-progress-info-dialog');
+        let progressIndicator;
         retrieveTask({
             taskId: params.taskId,
             doneCallback: (task) => {
@@ -372,7 +373,16 @@ function handleTaskCreation(result, params) {
                     }
                 }
             },
-            progressCallback: (task) => infoDialog.setInfoText(task.progress.info),
+            progressCallback: (task) => {
+                infoDialog.setInfoText(task.progress.info);
+                if (task.progress.total > 0) {
+                    if (!progressIndicator) {
+                        progressIndicator = new RcdLinearProgressIndicator({width: 200, height: 8}).init();
+                        infoDialog.addItem(progressIndicator);
+                    }
+                    progressIndicator.setProgress(task.progress.current / task.progress.total);
+                }
+            },
             alwaysCallback: () => {
                 infoDialog.close();
                 if (params.alwaysCallback) {

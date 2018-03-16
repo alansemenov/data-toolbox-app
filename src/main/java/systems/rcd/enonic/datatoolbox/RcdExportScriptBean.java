@@ -1,24 +1,16 @@
 package systems.rcd.enonic.datatoolbox;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.zip.ZipEntry;
-
-import com.google.common.io.ByteSource;
 
 import systems.rcd.fwk.core.exc.RcdException;
 import systems.rcd.fwk.core.format.json.RcdJsonService;
 import systems.rcd.fwk.core.format.json.data.RcdJsonArray;
 import systems.rcd.fwk.core.format.json.data.RcdJsonObject;
-import systems.rcd.fwk.core.format.json.data.RcdJsonString;
 import systems.rcd.fwk.core.format.json.data.RcdJsonValue;
 import systems.rcd.fwk.core.io.file.RcdFileService;
-import systems.rcd.fwk.core.util.zip.RcdZipService;
 
 import com.enonic.xp.branch.Branch;
 import com.enonic.xp.context.Context;
@@ -27,6 +19,7 @@ import com.enonic.xp.context.ContextBuilder;
 import com.enonic.xp.export.ExportNodesParams;
 import com.enonic.xp.export.ExportService;
 import com.enonic.xp.export.ImportNodesParams;
+import com.enonic.xp.export.NodeExportListener;
 import com.enonic.xp.export.NodeExportResult;
 import com.enonic.xp.export.NodeImportResult;
 import com.enonic.xp.home.HomeDir;
@@ -97,12 +90,38 @@ public class RcdExportScriptBean
 
     public String create( final String repositoryName, final String branchName, final String nodePath, final String exportName )
     {
+
         return runSafely( () -> {
+
+            final NodeExportListener nodeExportListener = new NodeExportListener()
+            {
+                private String action = "Exporting nodes";
+
+                private int currentProgress = 0;
+
+                private int totalProgress = 0;
+
+                @Override
+                public void nodeExported( final long count )
+                {
+                    currentProgress += count;
+                    reportProgress( action, currentProgress, totalProgress );
+                }
+
+                @Override
+                public void nodeResolved( final long count )
+                {
+                    totalProgress = (int) count;
+                    reportProgress( action, currentProgress, totalProgress );
+                }
+            };
+
             final ExportNodesParams exportNodesParams = ExportNodesParams.create().
                 sourceNodePath( NodePath.create( nodePath ).build() ).
                 targetDirectory( getDirectoryPath().resolve( exportName ).toString() ).
                 dryRun( false ).
                 includeNodeIds( true ).
+                nodeExportListener( nodeExportListener ).
                 build();
 
             final NodeExportResult nodeExportResult = createContext( repositoryName, branchName ).
