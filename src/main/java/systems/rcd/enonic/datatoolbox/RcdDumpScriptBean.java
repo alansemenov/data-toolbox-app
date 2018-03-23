@@ -1,30 +1,21 @@
 package systems.rcd.enonic.datatoolbox;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.zip.ZipEntry;
-
-import com.google.common.io.ByteSource;
 
 import systems.rcd.fwk.core.exc.RcdException;
 import systems.rcd.fwk.core.format.json.RcdJsonService;
 import systems.rcd.fwk.core.format.json.data.RcdJsonArray;
 import systems.rcd.fwk.core.format.json.data.RcdJsonObject;
-import systems.rcd.fwk.core.format.json.data.RcdJsonString;
 import systems.rcd.fwk.core.format.json.data.RcdJsonValue;
 import systems.rcd.fwk.core.format.properties.RcdPropertiesService;
 import systems.rcd.fwk.core.io.file.RcdFileService;
 import systems.rcd.fwk.core.io.file.RcdTextFileService;
 import systems.rcd.fwk.core.script.js.RcdJavascriptService;
-import systems.rcd.fwk.core.util.zip.RcdZipService;
 
 import com.enonic.xp.branch.Branch;
 import com.enonic.xp.context.Context;
@@ -37,6 +28,7 @@ import com.enonic.xp.dump.DumpService;
 import com.enonic.xp.dump.LoadError;
 import com.enonic.xp.dump.RepoDumpResult;
 import com.enonic.xp.dump.RepoLoadResult;
+import com.enonic.xp.dump.SystemDumpListener;
 import com.enonic.xp.dump.SystemDumpParams;
 import com.enonic.xp.dump.SystemDumpResult;
 import com.enonic.xp.dump.SystemLoadParams;
@@ -45,7 +37,6 @@ import com.enonic.xp.export.ExportService;
 import com.enonic.xp.export.ImportNodesParams;
 import com.enonic.xp.export.NodeImportResult;
 import com.enonic.xp.home.HomeDir;
-import com.enonic.xp.lib.task.TaskProgressHandler;
 import com.enonic.xp.node.NodePath;
 import com.enonic.xp.repository.CreateRepositoryParams;
 import com.enonic.xp.repository.NodeRepositoryService;
@@ -166,21 +157,52 @@ public class RcdDumpScriptBean
         return "";
     }
 
-    public String create( final String dumpName, final boolean includeVersion, final Integer maxVersions,  final Integer maxVersionsAge)
+    public String create( final String dumpName, final boolean includeVersion, final Integer maxVersions, final Integer maxVersionsAge )
     {
         return runSafely( () -> {
+            final SystemDumpListener systemDumpListener = createSystemDumpListener();
             final SystemDumpParams params = SystemDumpParams.create().
                 dumpName( dumpName ).
                 includeBinaries( true ).
                 includeVersions( includeVersion ).
                 maxAge( maxVersionsAge ).
                 maxVersions( maxVersions ).
+                listener( systemDumpListener ).
                 build();
 
             final SystemDumpResult systemDumpResult = dumpServiceSupplier.get().dump( params );
             final RcdJsonValue result = convertSystemDumpResultToJson( systemDumpResult );
             return createSuccessResult( result );
         }, "Error while creating dump" );
+    }
+
+
+    private SystemDumpListener createSystemDumpListener()
+    {
+        return new SystemDumpListener()
+        {
+            private String action = "Creating dump";
+
+            private int currentProgress = 0;
+
+            private int totalProgress = 0;
+
+            @Override
+            public void dumpingBranch( final RepositoryId repositoryId, final Branch branch, final long total )
+            {
+                action = "Branch: " + repositoryId.toString() + ":" + branch.toString() + "</br>Dumping nodes";
+                currentProgress = 0;
+                totalProgress = (int) total;
+                reportProgress( action, currentProgress, totalProgress );
+            }
+
+            @Override
+            public void nodeDumped()
+            {
+                currentProgress++;
+                reportProgress( action, currentProgress, totalProgress );
+            }
+        };
     }
 
     private RcdJsonValue convertSystemDumpResultToJson( final SystemDumpResult systemDumpResult )

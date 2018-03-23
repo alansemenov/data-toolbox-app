@@ -91,32 +91,8 @@ public class RcdExportScriptBean
 
     public String create( final String repositoryName, final String branchName, final String nodePath, final String exportName )
     {
-
         return runSafely( () -> {
-
-            final NodeExportListener nodeExportListener = new NodeExportListener()
-            {
-                private String action = "Exporting nodes";
-
-                private int currentProgress = 0;
-
-                private int totalProgress = 0;
-
-                @Override
-                public void nodeExported( final long count )
-                {
-                    currentProgress += count;
-                    reportProgress( action, currentProgress, totalProgress );
-                }
-
-                @Override
-                public void nodeResolved( final long count )
-                {
-                    totalProgress = (int) count;
-                    reportProgress( action, currentProgress, totalProgress );
-                }
-            };
-
+            final NodeExportListener nodeExportListener = createNodeExportListener();
             final ExportNodesParams exportNodesParams = ExportNodesParams.create().
                 sourceNodePath( NodePath.create( nodePath ).build() ).
                 targetDirectory( getDirectoryPath().resolve( exportName ).toString() ).
@@ -130,6 +106,32 @@ public class RcdExportScriptBean
             final RcdJsonValue result = convertNodeExportResultToJson( nodeExportResult );
             return createSuccessResult( result );
         }, "Error while creating export" );
+    }
+
+    private NodeExportListener createNodeExportListener()
+    {
+        return new NodeExportListener()
+        {
+            private String action = "Exporting nodes";
+
+            private int currentProgress = 0;
+
+            private int totalProgress = 0;
+
+            @Override
+            public void nodeExported( final long count )
+            {
+                currentProgress += count;
+                reportProgress( action, currentProgress, totalProgress );
+            }
+
+            @Override
+            public void nodeResolved( final long count )
+            {
+                totalProgress = (int) count;
+                reportProgress( action, currentProgress, totalProgress );
+            }
+        };
     }
 
     private RcdJsonValue convertNodeExportResultToJson( final NodeExportResult nodeExportResult )
@@ -159,29 +161,8 @@ public class RcdExportScriptBean
             createContext( repositoryName, branchName ).runWith( () -> {
                 for ( String exportName : exportNames )
                 {
-                    final NodeImportListener nodeImportListener = new NodeImportListener()
-                    {
-                        private String action = (exportNames.length > 1 ? "Export: " + exportName +"<br/>" : "") +  "Importing nodes";
-
-                        private int currentProgress = 0;
-
-                        private int totalProgress = 0;
-
-                        @Override
-                        public void nodeImported( final long count )
-                        {
-                            currentProgress += count;
-                            reportProgress( action, currentProgress, totalProgress );
-                        }
-
-                        @Override
-                        public void nodeResolved( final long count )
-                        {
-                            totalProgress = (int) count;
-                            reportProgress( action, currentProgress, totalProgress );
-                        }
-                    };
-                    
+                    final NodeImportListener nodeImportListener =
+                        createNodeImportListener( ( exportNames.length > 1 ? "Export: " + exportName + "<br/>" : "" ) + "Importing nodes" );
                     final NodeImportResult nodeImportResult = load( nodePath, exportName, nodeImportListener );
                     final RcdJsonValue result = convertNodeImportResultToJson( nodeImportResult );
                     results.put( exportName, result );
@@ -196,6 +177,32 @@ public class RcdExportScriptBean
 
             return createSuccessResult( results );
         }, "Error while loading export" );
+    }
+
+    private NodeImportListener createNodeImportListener( final String actionString )
+    {
+        return new NodeImportListener()
+        {
+            private String action = actionString;
+
+            private int currentProgress = 0;
+
+            private int totalProgress = 0;
+
+            @Override
+            public void nodeImported( final long count )
+            {
+                currentProgress += count;
+                reportProgress( action, currentProgress, totalProgress );
+            }
+
+            @Override
+            public void nodeResolved( final long count )
+            {
+                totalProgress = (int) count;
+                reportProgress( action, currentProgress, totalProgress );
+            }
+        };
     }
 
     public String delete( final String... exportNames )
