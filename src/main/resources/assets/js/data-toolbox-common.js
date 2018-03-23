@@ -375,11 +375,11 @@ function handleTaskCreation(result, params) {
             },
             progressCallback: (task) => {
                 infoDialog.setInfoText(task.progress.info);
-                if (task.progress.total > 0) {
-                    if (!progressIndicator) {
-                        progressIndicator = new RcdLinearProgressIndicator({width: 240, height: 8}).init();
-                        infoDialog.addItem(progressIndicator);
-                    }
+                if (!progressIndicator && task.progress.total > 0) {
+                    progressIndicator = new RcdLinearProgressIndicator({width: 240, height: 8}).init();
+                    infoDialog.addItem(progressIndicator);
+                }
+                if (progressIndicator) {
                     progressIndicator.setProgress(task.progress.current / task.progress.total);
                 }
             },
