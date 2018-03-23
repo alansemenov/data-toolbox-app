@@ -380,6 +380,7 @@ function handleTaskCreation(result, params) {
                     infoDialog.addItem(progressIndicator);
                 }
                 if (progressIndicator) {
+                    progressIndicator.show(task.progress.total !== 0);
                     progressIndicator.setProgress(task.progress.current / task.progress.total);
                 }
             },

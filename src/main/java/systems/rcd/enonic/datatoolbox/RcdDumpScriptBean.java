@@ -183,6 +183,8 @@ public class RcdDumpScriptBean
         {
             private String action = "Creating dump";
 
+            private String repository = "";
+            
             private int currentProgress = 0;
 
             private int totalProgress = 0;
@@ -190,7 +192,10 @@ public class RcdDumpScriptBean
             @Override
             public void dumpingBranch( final RepositoryId repositoryId, final Branch branch, final long total )
             {
-                action = "Branch: " + repositoryId.toString() + ":" + branch.toString() + "</br>Dumping nodes";
+                repository = repositoryId.toString();
+                action = "Repository: " + repository + "<br/>" +
+                    "Branch: " + branch.toString() + "</br>" +
+                    "Dumping nodes";
                 currentProgress = 0;
                 totalProgress = (int) total;
                 reportProgress( action, currentProgress, totalProgress );
@@ -200,6 +205,12 @@ public class RcdDumpScriptBean
             public void nodeDumped()
             {
                 currentProgress++;
+                if (currentProgress == totalProgress) {
+                    action = "Repository: " + repository + "<br/>" +
+                        "Dumping versions";
+                    currentProgress = 0;
+                    totalProgress = 0;
+                }
                 reportProgress( action, currentProgress, totalProgress );
             }
         };
