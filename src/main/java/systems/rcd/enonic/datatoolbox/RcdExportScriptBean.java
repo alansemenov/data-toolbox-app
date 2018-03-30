@@ -199,6 +199,7 @@ public class RcdExportScriptBean
             @Override
             public void nodeResolved( final long count )
             {
+                currentProgress = 0;
                 totalProgress = (int) count;
                 reportProgress( action, currentProgress, totalProgress );
             }
