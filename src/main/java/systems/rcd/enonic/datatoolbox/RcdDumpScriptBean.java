@@ -31,6 +31,7 @@ import com.enonic.xp.dump.RepoLoadResult;
 import com.enonic.xp.dump.SystemDumpListener;
 import com.enonic.xp.dump.SystemDumpParams;
 import com.enonic.xp.dump.SystemDumpResult;
+import com.enonic.xp.dump.SystemLoadListener;
 import com.enonic.xp.dump.SystemLoadParams;
 import com.enonic.xp.dump.SystemLoadResult;
 import com.enonic.xp.export.ExportService;
@@ -160,14 +161,13 @@ public class RcdDumpScriptBean
     public String create( final String dumpName, final boolean includeVersion, final Integer maxVersions, final Integer maxVersionsAge )
     {
         return runSafely( () -> {
-            final SystemDumpListener systemDumpListener = createSystemDumpListener();
             final SystemDumpParams params = SystemDumpParams.create().
                 dumpName( dumpName ).
                 includeBinaries( true ).
                 includeVersions( includeVersion ).
                 maxAge( maxVersionsAge ).
                 maxVersions( maxVersions ).
-                listener( systemDumpListener ).
+                listener( createSystemDumpListener() ).
                 build();
 
             final SystemDumpResult systemDumpResult = dumpServiceSupplier.get().dump( params );
@@ -176,7 +176,6 @@ public class RcdDumpScriptBean
         }, "Error while creating dump" );
     }
 
-
     private SystemDumpListener createSystemDumpListener()
     {
         return new SystemDumpListener()
@@ -184,7 +183,7 @@ public class RcdDumpScriptBean
             private String action = "Creating dump";
 
             private String repository = "";
-            
+
             private int currentProgress = 0;
 
             private int totalProgress = 0;
@@ -193,9 +192,7 @@ public class RcdDumpScriptBean
             public void dumpingBranch( final RepositoryId repositoryId, final Branch branch, final long total )
             {
                 repository = repositoryId.toString();
-                action = "Repository: " + repository + "<br/>" +
-                    "Branch: " + branch.toString() + "</br>" +
-                    "Dumping nodes";
+                action = "Repository: " + repository + "<br/>" + "Branch: " + branch.toString() + "</br>" + "Dumping nodes";
                 currentProgress = 0;
                 totalProgress = (int) total;
                 reportProgress( action, currentProgress, totalProgress );
@@ -205,12 +202,53 @@ public class RcdDumpScriptBean
             public void nodeDumped()
             {
                 currentProgress++;
-                if (currentProgress == totalProgress) {
-                    action = "Repository: " + repository + "<br/>" +
-                        "Dumping versions";
+                if ( currentProgress == totalProgress )
+                {
+                    action = "Repository: " + repository + "<br/>" + "Dumping versions";
                     currentProgress = 0;
                     totalProgress = 0;
                 }
+                reportProgress( action, currentProgress, totalProgress );
+            }
+        };
+    }
+
+
+    private SystemLoadListener createSystemLoadListener()
+    {
+        return new SystemLoadListener()
+        {
+            private String action = "Loading dump";
+
+            private String repository = "";
+
+            private int currentProgress = 0;
+
+            private int totalProgress = 0;
+
+            @Override
+            public void loadingBranch( final RepositoryId repositoryId, final Branch branch, final Long total )
+            {
+                repository = repositoryId.toString();
+                action = "Repository: " + repository + "<br/>" + "Branch: " + branch.toString() + "</br>" + "Loading nodes";
+                currentProgress = 0;
+                totalProgress = total.intValue();
+                reportProgress( action, currentProgress, totalProgress );
+            }
+
+            @Override
+            public void loadingVersions( final RepositoryId repositoryId )
+            {
+                action = "Repository: " + repository + "<br/>" + "Loading versions";
+                currentProgress = 0;
+                totalProgress = 0;
+                reportProgress( action, currentProgress, totalProgress );
+            }
+
+            @Override
+            public void entryLoaded()
+            {
+                currentProgress++;
                 reportProgress( action, currentProgress, totalProgress );
             }
         };
@@ -311,6 +349,7 @@ public class RcdDumpScriptBean
         final SystemLoadParams systemLoadParams = SystemLoadParams.create().
             dumpName( dumpName ).
             includeVersions( true ).
+            listener( createSystemLoadListener() ).
             build();
         return dumpServiceSupplier.get().load( systemLoadParams );
     }
