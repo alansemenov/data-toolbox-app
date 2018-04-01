@@ -48,9 +48,9 @@ dependencies {
     include "com.enonic.xp:lib-task:${xpVersion}"
     include "systems.rcd.fwk.core:rcd-fwk-core:7.1.1"
     rcdjsfwkcore "systems.rcd.js.fwk.core:rcd-jsfwk-core:3.0.3"
-    rcdjsfwkmaterial "systems.rcd.js.fwk.material:rcd-jsfwk-material:3.0.2-SNAPSHOT"
+    rcdjsfwkmaterial "systems.rcd.js.fwk.material:rcd-jsfwk-material:3.0.2"
     compile "systems.rcd.js.fwk.core:rcd-jsfwk-core:3.0.3"
-    compile "systems.rcd.js.fwk.material:rcd-jsfwk-material:3.0.2-SNAPSHOT"
+    compile "systems.rcd.js.fwk.material:rcd-jsfwk-material:3.0.2"
 }
 
 repositories {
