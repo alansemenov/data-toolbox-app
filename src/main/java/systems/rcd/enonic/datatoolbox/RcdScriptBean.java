@@ -47,7 +47,8 @@ public class RcdScriptBean
         }
         finally
         {
-            if (finallyCallback != null) {
+            if ( finallyCallback != null )
+            {
                 finallyCallback.run();
             }
         }
@@ -122,7 +123,7 @@ public class RcdScriptBean
     protected void reportProgress( final String action, final int current, final int total )
     {
         final TaskProgressHandler taskProgressHandler = new TaskProgressHandler();
-        taskProgressHandler.setInfo( action + " (" + current + "/" + total + ")..." );
+        taskProgressHandler.setInfo( action + ( total > 0 ? " (" + current + "/" + total + ")" : "" ) + "..." );
         taskProgressHandler.setCurrent( (double) current );
         taskProgressHandler.setTotal( (double) total );
         taskProgressHandler.reportProgress();

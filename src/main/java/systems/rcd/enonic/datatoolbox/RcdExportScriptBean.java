@@ -1,24 +1,16 @@
 package systems.rcd.enonic.datatoolbox;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.zip.ZipEntry;
-
-import com.google.common.io.ByteSource;
 
 import systems.rcd.fwk.core.exc.RcdException;
 import systems.rcd.fwk.core.format.json.RcdJsonService;
 import systems.rcd.fwk.core.format.json.data.RcdJsonArray;
 import systems.rcd.fwk.core.format.json.data.RcdJsonObject;
-import systems.rcd.fwk.core.format.json.data.RcdJsonString;
 import systems.rcd.fwk.core.format.json.data.RcdJsonValue;
 import systems.rcd.fwk.core.io.file.RcdFileService;
-import systems.rcd.fwk.core.util.zip.RcdZipService;
 
 import com.enonic.xp.branch.Branch;
 import com.enonic.xp.context.Context;
@@ -27,7 +19,9 @@ import com.enonic.xp.context.ContextBuilder;
 import com.enonic.xp.export.ExportNodesParams;
 import com.enonic.xp.export.ExportService;
 import com.enonic.xp.export.ImportNodesParams;
+import com.enonic.xp.export.NodeExportListener;
 import com.enonic.xp.export.NodeExportResult;
+import com.enonic.xp.export.NodeImportListener;
 import com.enonic.xp.export.NodeImportResult;
 import com.enonic.xp.home.HomeDir;
 import com.enonic.xp.node.NodePath;
@@ -98,11 +92,13 @@ public class RcdExportScriptBean
     public String create( final String repositoryName, final String branchName, final String nodePath, final String exportName )
     {
         return runSafely( () -> {
+            final NodeExportListener nodeExportListener = createNodeExportListener();
             final ExportNodesParams exportNodesParams = ExportNodesParams.create().
                 sourceNodePath( NodePath.create( nodePath ).build() ).
                 targetDirectory( getDirectoryPath().resolve( exportName ).toString() ).
                 dryRun( false ).
                 includeNodeIds( true ).
+                nodeExportListener( nodeExportListener ).
                 build();
 
             final NodeExportResult nodeExportResult = createContext( repositoryName, branchName ).
@@ -110,6 +106,32 @@ public class RcdExportScriptBean
             final RcdJsonValue result = convertNodeExportResultToJson( nodeExportResult );
             return createSuccessResult( result );
         }, "Error while creating export" );
+    }
+
+    private NodeExportListener createNodeExportListener()
+    {
+        return new NodeExportListener()
+        {
+            private String action = "Exporting nodes";
+
+            private int currentProgress = 0;
+
+            private int totalProgress = 0;
+
+            @Override
+            public void nodeExported( final long count )
+            {
+                currentProgress += count;
+                reportProgress( action, currentProgress, totalProgress );
+            }
+
+            @Override
+            public void nodeResolved( final long count )
+            {
+                totalProgress = (int) count;
+                reportProgress( action, currentProgress, totalProgress );
+            }
+        };
     }
 
     private RcdJsonValue convertNodeExportResultToJson( final NodeExportResult nodeExportResult )
@@ -139,7 +161,9 @@ public class RcdExportScriptBean
             createContext( repositoryName, branchName ).runWith( () -> {
                 for ( String exportName : exportNames )
                 {
-                    final NodeImportResult nodeImportResult = load( nodePath, exportName );
+                    final NodeImportListener nodeImportListener =
+                        createNodeImportListener( ( exportNames.length > 1 ? "Export: " + exportName + "<br/>" : "" ) + "Importing nodes" );
+                    final NodeImportResult nodeImportResult = load( nodePath, exportName, nodeImportListener );
                     final RcdJsonValue result = convertNodeImportResultToJson( nodeImportResult );
                     results.put( exportName, result );
 
@@ -153,6 +177,33 @@ public class RcdExportScriptBean
 
             return createSuccessResult( results );
         }, "Error while loading export" );
+    }
+
+    private NodeImportListener createNodeImportListener( final String actionString )
+    {
+        return new NodeImportListener()
+        {
+            private String action = actionString;
+
+            private int currentProgress = 0;
+
+            private int totalProgress = 0;
+
+            @Override
+            public void nodeImported( final long count )
+            {
+                currentProgress += count;
+                reportProgress( action, currentProgress, totalProgress );
+            }
+
+            @Override
+            public void nodeResolved( final long count )
+            {
+                currentProgress = 0;
+                totalProgress = (int) count;
+                reportProgress( action, currentProgress, totalProgress );
+            }
+        };
     }
 
     public String delete( final String... exportNames )
@@ -169,7 +220,7 @@ public class RcdExportScriptBean
         }, "Error while deleting export" );
     }
 
-    private NodeImportResult load( NodePath nodePath, String exportName )
+    private NodeImportResult load( final NodePath nodePath, final String exportName, final NodeImportListener nodeImportListener )
     {
         final ImportNodesParams importNodesParams = ImportNodesParams.create().
             targetNodePath( nodePath ).
@@ -177,6 +228,7 @@ public class RcdExportScriptBean
             dryRun( false ).
             includeNodeIds( true ).
             includePermissions( true ).
+            nodeImportListener( nodeImportListener ).
             build();
 
         return exportServiceSupplier.get().
