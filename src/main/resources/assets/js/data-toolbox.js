@@ -10,7 +10,8 @@ function createApp() {
     addRoute(new PermissionsRoute().init()).
     addRoute(new SnapshotsRoute().init()).
     addRoute(new ExportsRoute().init()).
-    addRoute(new DumpsRoute().init());
+    addRoute(new DumpsRoute().init()).
+    addRoute(new AboutRoute().init());
 }
 
 function handleResultError(result) {
