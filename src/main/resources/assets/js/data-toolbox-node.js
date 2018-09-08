@@ -17,7 +17,7 @@ class NodeDetailsCard extends RcdDivElement {
                             'Timestamp: ' + meta._timestamp + '<br/>' +
                             'State: ' + meta._state + '<br/>' +
                             'Child order: ' + meta._childOrder + '<br/>' +
-                            'Manual order value: ' + meta._manualOrderValue;
+                            'Manual order value: ' + (meta._manualOrderValue || '');
         const detailsElement = new RcdTextElement(detailsText).init();
         this.addChild(primaryElement).addChild(detailsElement);
     }
@@ -81,7 +81,6 @@ class NodeRoute extends DtbRoute {
             const meta = result.success;
             this.nodeDetails.setMeta(meta);
 
-
             const displayChildrenCallback = () => setState('nodes',
                 {repo: getRepoParameter(), branch: getBranchParameter(), path: meta._path});
             const displayPropertiesCallback = () => setState('properties',
@@ -91,6 +90,8 @@ class NodeRoute extends DtbRoute {
             const displayJsonCallback = () => this.displayNodeAsJson(meta._id);
 
             this.displayCard
+                .addRow('Display siblings ', null,
+                    {callback: displayChildrenCallback, icon: new RcdImageIcon(config.assetsUrl + '/icons/datatree.svg').init()})
                 .addRow('Display children ', null,
                     {callback: displayChildrenCallback, icon: new RcdImageIcon(config.assetsUrl + '/icons/datatree.svg').init()})
                 .addRow('Display properties ', null,

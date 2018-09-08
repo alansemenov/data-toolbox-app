@@ -26,11 +26,8 @@ class NodesRoute extends DtbRoute {
         this.tableCard = new RcdMaterialTableCard('Nodes').init().
             addColumn('Node name').
             addColumn('Node ID', {classes: ['non-mobile-cell']}).
-            addColumn('', {icon: true, classes: ['non-mobile-cell']}).
-            addColumn('', {icon: true, classes: ['non-mobile-cell']}).
-            addColumn('', {icon: true, classes: ['non-mobile-cell']}).
-            addColumn('', {icon: true, classes: ['non-mobile-cell']}).
-            addColumn('', {icon: true, classes: ['mobile-cell']}).
+            addColumn('', {icon: true}).
+            addColumn('', {icon: true}).
             addIconArea(exportIconArea, {min: 1, max: 1}).
             addIconArea(importIconArea, {max: 0}).
             addIconArea(moveIconArea, {min: 1}).
@@ -68,11 +65,8 @@ class NodesRoute extends DtbRoute {
         this.tableCard.createRow({selectable:false}).
             addCell('..').
             addCell('', {classes: ['non-mobile-cell']}).
-            addCell(null, {icon: true, classes: ['non-mobile-cell']}).
-            addCell(null, {icon: true, classes: ['non-mobile-cell']}).
-            addCell(null, {icon: true, classes: ['non-mobile-cell']}).
-            addCell(null, {icon: true, classes: ['non-mobile-cell']}).
-            addCell(null, {icon: true, classes: ['mobile-cell']}).
+            addCell(null, {icon: true}).
+            addCell(null, {icon: true}).
             addClass('rcd-clickable').
             addClickListener(() => {
                 if (getPathParameter()) {
@@ -85,33 +79,20 @@ class NodesRoute extends DtbRoute {
         if (handleResultError(result)) {
             result.success.hits.forEach((node) => {
                 
-                const displaNodeCallback = () => setState('node',{repo: getRepoParameter(), branch: getBranchParameter(), id: node._id});
-                const displayPropertiesCallback = () => setState('properties',{repo: getRepoParameter(), branch: getBranchParameter(), path: node._path});
-                const displayPermissionsCallback = () => setState('permissions',{repo: getRepoParameter(), branch: getBranchParameter(), path: node._path});
+                const displayInfoCallback = () => setState('node',{repo: getRepoParameter(), branch: getBranchParameter(), id: node._id});
                 const displayJsonCallback = () => this.displayNodeAsJson(node._id);
                 
-                const displayNodeIconArea = new RcdGoogleMaterialIconArea('info', (source, event) => {displaNodeCallback();event.stopPropagation();}).init().setTooltip('Display info');
-                const displayPropertiesIconArea = new RcdImageIconArea(config.assetsUrl + '/icons/properties.svg', (source, event) => {displayPropertiesCallback();event.stopPropagation();}).init().setTooltip('Display properties');
-                const displayPermissionsIconArea = new RcdGoogleMaterialIconArea('lock', (source, event) => {displayPermissionsCallback();event.stopPropagation();}).init().setTooltip('Display permissions');
+                const displayNodeIconArea = new RcdGoogleMaterialIconArea('info', (source, event) => {displayInfoCallback();event.stopPropagation();}).init().setTooltip('Display info');
                 const displayJsonIconArea = new RcdImageIconArea(config.assetsUrl + '/icons/json.svg', (source, event) => {displayJsonCallback();event.stopPropagation();}).init().setTooltip('Display as JSON');
                 
-                const moreIconAreaItems =  [{text:'Display info', callback: displaNodeCallback}, 
-                    {text:'Display properties', callback: displayPropertiesCallback}, 
-                    {text:'Display permissions', callback: displayPermissionsCallback}, 
+                const moreIconAreaItems =  [{text:'Display info', callback: displayInfoCallback},
                     {text:'Display as JSON', callback: displayJsonCallback}];
-                const moreIconArea = new RcdGoogleMaterialIconArea('more_vert', (source, event) => {
-                    RcdMaterialMenuHelper.displayMenu(source, moreIconAreaItems, 200)
-                    event.stopPropagation();
-                }).init().setTooltip('Display...');
 
                 const row = this.tableCard.createRow().
                     addCell(node._name).
                     addCell(node._id, {classes: ['non-mobile-cell']}).
-                    addCell(displayNodeIconArea, {icon: true, classes: ['non-mobile-cell']}).
-                    addCell(displayPropertiesIconArea, {icon: true, classes: ['non-mobile-cell']}).
-                    addCell(displayPermissionsIconArea, {icon: true, classes: ['non-mobile-cell']}).
-                    addCell(displayJsonIconArea, {icon: true, classes: ['non-mobile-cell']}).
-                    addCell(moreIconArea, {icon: true, classes: ['mobile-cell']}).
+                    addCell(displayNodeIconArea, {icon: true}).
+                    addCell(displayJsonIconArea, {icon: true}).
                     setAttribute('id', node._id).
                     setAttribute('path', node._path).
                     setAttribute('name', node._name).

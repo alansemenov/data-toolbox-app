@@ -336,16 +336,23 @@ class PropertiesRoute extends DtbRoute {
     onPropertiesRetrieval(result) {
         this.tableCard.deleteRows();
 
-        const headerRow = this.tableCard.createRow({selectable: false}).addCell('..', {classes: ['non-mobile-cell']}).addCell('',
-            {classes: ['non-mobile-cell']}).addCell('..', {classes: ['mobile-cell']}).addCell('', {classes: ['non-mobile-cell']}).addCell(
-            '', {classes: ['non-mobile-cell']}).addCell('', {classes: ['mobile-cell']}).addCell('', {icon: true}).addClass('rcd-clickable');
+        const headerRow = this.tableCard
+            .createRow({selectable: false})
+            .addCell('..', {classes: ['non-mobile-cell']})
+            .addCell('', {classes: ['non-mobile-cell']})
+            .addCell('..', {classes: ['mobile-cell']})
+            .addCell('', {classes: ['non-mobile-cell']})
+            .addCell('', {classes: ['non-mobile-cell']})
+            .addCell('', {classes: ['mobile-cell']})
+            .addCell('', {icon: true})
+            .addClass('rcd-clickable');
 
         if (getPropertyParameter()) {
             headerRow.addClickListener(() => setState('properties',
                 {repo: getRepoParameter(), branch: getBranchParameter(), path: getPathParameter(), property: this.getParentProperty()}));
         } else {
             headerRow.addClickListener(
-                () => setState('nodes', {repo: getRepoParameter(), branch: getBranchParameter(), path: this.getParentPath()}));
+                () => setState('node', {repo: getRepoParameter(), branch: getBranchParameter(), path: getPathParameter()}));
         }
 
         if (handleResultError(result)) {
