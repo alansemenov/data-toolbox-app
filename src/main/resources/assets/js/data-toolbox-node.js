@@ -81,6 +81,8 @@ class NodeRoute extends DtbRoute {
             const meta = result.success;
             this.nodeDetails.setMeta(meta);
 
+            const displaySiblingsCallback = () => setState('nodes',
+                {repo: getRepoParameter(), branch: getBranchParameter(), path: this.getParentPath(meta._path)});
             const displayChildrenCallback = () => setState('nodes',
                 {repo: getRepoParameter(), branch: getBranchParameter(), path: meta._path});
             const displayPropertiesCallback = () => setState('properties',
@@ -91,7 +93,7 @@ class NodeRoute extends DtbRoute {
 
             this.displayCard
                 .addRow('Display siblings ', null,
-                    {callback: displayChildrenCallback, icon: new RcdImageIcon(config.assetsUrl + '/icons/datatree.svg').init()})
+                    {callback: displaySiblingsCallback, icon: new RcdImageIcon(config.assetsUrl + '/icons/datatree.svg').init()})
                 .addRow('Display children ', null,
                     {callback: displayChildrenCallback, icon: new RcdImageIcon(config.assetsUrl + '/icons/datatree.svg').init()})
                 .addRow('Display properties ', null,
