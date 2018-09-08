@@ -40,7 +40,8 @@ class NodeRoute extends DtbRoute {
         this.nodeDetails = new NodeDetailsCard()
             .init();
 
-        this.actionsCard = new RcdMaterialListCard().init()
+        this.displayCard = new RcdMaterialListCard().init()
+            .addClass('dtb-node-display-card')
             .addRow('Display children ', null,
                 {callback: () => alert('a'), icon: new RcdImageIcon(config.assetsUrl + '/icons/datatree.svg').init()})
             .addRow('Display children ', null,
@@ -48,8 +49,9 @@ class NodeRoute extends DtbRoute {
 
         return new RcdMaterialLayout()
             .init()
+            .addClass('dtb-node-layout')
             .addChild(this.nodeDetails)
-            .addChild(this.actionsCard);
+            .addChild(this.displayCard);
     }
 
     retrieveMeta() {
@@ -73,7 +75,7 @@ class NodeRoute extends DtbRoute {
 
     onMetaRetrieval(result) {
         this.nodeDetails.clear();
-        this.actionsCard.deleteRows();
+        this.displayCard.deleteRows();
         if (handleResultError(result)) {
             const meta = result.success;
             this.nodeDetails.setMeta(meta);
@@ -87,7 +89,7 @@ class NodeRoute extends DtbRoute {
                 {repo: getRepoParameter(), branch: getBranchParameter(), path: meta._path});
             const displayJsonCallback = () => this.displayNodeAsJson(meta._id);
 
-            this.actionsCard
+            this.displayCard
                 .addRow('Display children ', null,
                     {callback: displayChildrenCallback, icon: new RcdImageIcon(config.assetsUrl + '/icons/datatree.svg').init()})
                 .addRow('Display properties ', null,

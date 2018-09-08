@@ -1,5 +1,15 @@
+.dtb-node-layout {
+  @media (min-width: @rcd-material-min-tablet-width) {
+    flex-direction: row;
+  }
+}
+
 .dtb-node-details :extend(.rcd-flex-vbox, .rcd-material-shadow) {
   background-color: #fff;
+  @media (min-width: @rcd-material-min-tablet-width) {
+    flex-grow: 2;
+    margin-right: 12px;
+  }
 
   span:first-child {
     color: @rcd-primary-text-dark-color;
@@ -12,5 +22,12 @@
     overflow: hidden;
     text-overflow: ellipsis;
     padding: 0 16px 16px 16px;
+  }
+}
+
+.dtb-node-display-card {
+  @media (min-width: @rcd-material-min-tablet-width) {
+    width: auto;
+    flex-grow: 1;
   }
 }
