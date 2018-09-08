@@ -85,17 +85,17 @@ class NodesRoute extends DtbRoute {
         if (handleResultError(result)) {
             result.success.hits.forEach((node) => {
                 
-                const displayMetaDataCallback = () => setState('system-properties',{repo: getRepoParameter(), branch: getBranchParameter(), path: node._path});
+                const displaNodeCallback = () => setState('node',{repo: getRepoParameter(), branch: getBranchParameter(), id: node._id});
                 const displayPropertiesCallback = () => setState('properties',{repo: getRepoParameter(), branch: getBranchParameter(), path: node._path});
                 const displayPermissionsCallback = () => setState('permissions',{repo: getRepoParameter(), branch: getBranchParameter(), path: node._path});
                 const displayJsonCallback = () => this.displayNodeAsJson(node._id);
                 
-                const displayMetaDataIconArea = new RcdImageIconArea(config.assetsUrl + '/icons/meta.svg', (source, event) => {displayMetaDataCallback();event.stopPropagation();}).init().setTooltip('Display system properties');
+                const displayNodeIconArea = new RcdGoogleMaterialIconArea('info', (source, event) => {displaNodeCallback();event.stopPropagation();}).init().setTooltip('Display info');
                 const displayPropertiesIconArea = new RcdImageIconArea(config.assetsUrl + '/icons/properties.svg', (source, event) => {displayPropertiesCallback();event.stopPropagation();}).init().setTooltip('Display properties');
                 const displayPermissionsIconArea = new RcdGoogleMaterialIconArea('lock', (source, event) => {displayPermissionsCallback();event.stopPropagation();}).init().setTooltip('Display permissions');
                 const displayJsonIconArea = new RcdImageIconArea(config.assetsUrl + '/icons/json.svg', (source, event) => {displayJsonCallback();event.stopPropagation();}).init().setTooltip('Display as JSON');
                 
-                const moreIconAreaItems =  [{text:'Display system properties', callback: displayMetaDataCallback}, 
+                const moreIconAreaItems =  [{text:'Display info', callback: displaNodeCallback}, 
                     {text:'Display properties', callback: displayPropertiesCallback}, 
                     {text:'Display permissions', callback: displayPermissionsCallback}, 
                     {text:'Display as JSON', callback: displayJsonCallback}];
@@ -107,7 +107,7 @@ class NodesRoute extends DtbRoute {
                 const row = this.tableCard.createRow().
                     addCell(node._name).
                     addCell(node._id, {classes: ['non-mobile-cell']}).
-                    addCell(displayMetaDataIconArea, {icon: true, classes: ['non-mobile-cell']}).
+                    addCell(displayNodeIconArea, {icon: true, classes: ['non-mobile-cell']}).
                     addCell(displayPropertiesIconArea, {icon: true, classes: ['non-mobile-cell']}).
                     addCell(displayPermissionsIconArea, {icon: true, classes: ['non-mobile-cell']}).
                     addCell(displayJsonIconArea, {icon: true, classes: ['non-mobile-cell']}).

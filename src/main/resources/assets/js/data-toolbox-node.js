@@ -16,7 +16,8 @@ class NodeDetailsCard extends RcdDivElement {
                             'Type: ' + meta._nodeType + '<br/>' +
                             'Timestamp: ' + meta._timestamp + '<br/>' +
                             'State: ' + meta._state + '<br/>' +
-                            'Child order: ' + meta._childOrder;
+                            'Child order: ' + meta._childOrder + '<br/>' +
+                            'Manual order value: ' + meta._manualOrderValue;
         const detailsElement = new RcdTextElement(detailsText).init();
         this.addChild(primaryElement).addChild(detailsElement);
     }
