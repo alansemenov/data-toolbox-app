@@ -79,14 +79,11 @@ class NodesRoute extends DtbRoute {
         if (handleResultError(result)) {
             result.success.hits.forEach((node) => {
                 
-                const displayInfoCallback = () => setState('node',{repo: getRepoParameter(), branch: getBranchParameter(), id: node._id});
+                const displayInfoCallback = () => setState('node',{repo: getRepoParameter(), branch: getBranchParameter(), path: node._path});
                 const displayJsonCallback = () => this.displayNodeAsJson(node._id);
                 
                 const displayNodeIconArea = new RcdGoogleMaterialIconArea('info', (source, event) => {displayInfoCallback();event.stopPropagation();}).init().setTooltip('Display info');
                 const displayJsonIconArea = new RcdImageIconArea(config.assetsUrl + '/icons/json.svg', (source, event) => {displayJsonCallback();event.stopPropagation();}).init().setTooltip('Display as JSON');
-                
-                const moreIconAreaItems =  [{text:'Display info', callback: displayInfoCallback},
-                    {text:'Display as JSON', callback: displayJsonCallback}];
 
                 const row = this.tableCard.createRow().
                     addCell(node._name).

@@ -42,11 +42,7 @@ class NodeRoute extends DtbRoute {
             .init();
 
         this.displayCard = new RcdMaterialListCard().init()
-            .addClass('dtb-node-display-card')
-            .addRow('Display children ', null,
-                {callback: () => alert('a'), icon: new RcdImageIcon(config.assetsUrl + '/icons/datatree.svg').init()})
-            .addRow('Display children ', null,
-                {callback: () => alert('a'), icon: new RcdImageIcon(config.assetsUrl + '/icons/datatree.svg').init()});
+            .addClass('dtb-node-display-card');
 
         return new RcdMaterialLayout()
             .init()
@@ -157,14 +153,53 @@ class NodeRoute extends DtbRoute {
     }
 
     refreshBreadcrumbs() {
-        const key = getKeyParameter();
-        const fullId = getRepoParameter() + ':' + getBranchParameter() + ':' + key;
+        const id = getIdParameter();
+        if (id) {
+            this.refreshBreadcrumbsFromId(id);
+        } else {
+            this.refreshBreadcrumbsFromPath(getPathParameter());
+        }
 
+    }
+
+    refreshBreadcrumbsFromId(id) {
+        const fullId = getRepoParameter() + ':' + getBranchParameter() + ':' + id;
         this.breadcrumbsLayout.setBreadcrumbs([
             new RcdMaterialBreadcrumb('Data Toolbox', () => setState()).init(),
             new RcdMaterialBreadcrumb('Node Search', () => setState('search')).init(),
             new RcdMaterialBreadcrumb('Node ' + fullId).init()
         ]);
+        app.setTitle(fullId);
+    }
+
+    refreshBreadcrumbsFromPath(path) {
+        const repositoryName = getRepoParameter();
+        const branchName = getBranchParameter();
+        const fullId = repositoryName + ':' + branchName + ':' + path;
+
+
+        this.breadcrumbsLayout.setBreadcrumbs([new RcdMaterialBreadcrumb('Data Toolbox', () => setState()).init(),
+            new RcdMaterialBreadcrumb('Data Tree', () => setState('repositories')).init(),
+            new RcdMaterialBreadcrumb(repositoryName, () => setState('branches', {repo: repositoryName})).init(),
+            new RcdMaterialBreadcrumb(branchName, () => setState('nodes', {repo: repositoryName, branch: branchName})).init()]);
+
+        this.breadcrumbsLayout.addBreadcrumb(new RcdMaterialBreadcrumb(path === '/' ? 'root!info' : 'root',
+            path === '/' ? undefined : () => setState('nodes', {repo: repositoryName, branch: branchName, path: '/'})).init());
+
+        if (path !== '/') {
+            const pathElements = path.substring(1).split('/')
+            let currentPath = '';
+            pathElements.forEach((subPathElement, index, array) => {
+                currentPath += '/' + subPathElement;
+                const constCurrentPath = currentPath;
+                this.breadcrumbsLayout.addBreadcrumb(
+                    new RcdMaterialBreadcrumb(index < array.length - 1 ? subPathElement : subPathElement + '!info',
+                        index < array.length - 1
+                            ? (() => setState('nodes', {repo: repositoryName, branch: branchName, path: constCurrentPath}))
+                            : undefined).init());
+            });
+        }
+
         app.setTitle(fullId);
     }
 
