@@ -139,7 +139,9 @@ class SearchRoute extends DtbRoute {
             result.success.hits.forEach(node => {
                 const primary = node._name;
                 const secondary = node.repositoryName + ':' + node.branchName + ':' + node._path;
-                this.resultCard.addRow(primary, secondary);
+                this.resultCard.addRow(primary, secondary, {
+                    callback: () => setState('node', {repo: node.repositoryName, branch: node.branchName, id: node._id})
+                });
             });
         }
     }
