@@ -106,8 +106,7 @@ class SearchRoute extends DtbRoute {
 
         return new RcdMaterialLayout()
             .init()
-            .addChild(this.paramsCard)
-            .addChild(this.resultCard);
+            .addChild(this.paramsCard);
     }
 
     retrieveRepositories() {
@@ -151,6 +150,7 @@ class SearchRoute extends DtbRoute {
                     callback: () => setState('node', {repo: node.repositoryName, branch: node.branchName, id: node._id})
                 });
             });
+            this.layout.addChild(this.resultCard);
         }
     }
 

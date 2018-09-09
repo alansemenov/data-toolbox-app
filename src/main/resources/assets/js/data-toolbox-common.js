@@ -307,9 +307,9 @@ class DtbRoute extends RcdMaterialRoute {
 
     init() {
         const breadcrumbsLayout = this.createBreadcrumbsLayout();
-        const layout = this.createLayout();
+        this.layout = this.createLayout();
         this.callback = (main) => {
-            main.addChild(breadcrumbsLayout).addChild(layout);
+            main.addChild(breadcrumbsLayout).addChild(this.layout);
             this.onDisplay();
         }
         return this;
