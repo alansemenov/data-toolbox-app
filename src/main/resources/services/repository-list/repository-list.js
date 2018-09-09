@@ -13,7 +13,8 @@ function listRepositories() {
         success: repoLib.list().
             map(function (repo) {
                 return {
-                    name: repo.id
+                    name: repo.id,
+                    branches: repo.branches
                 };
             })
     };

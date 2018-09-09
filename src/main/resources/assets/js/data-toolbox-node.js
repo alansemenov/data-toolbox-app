@@ -21,8 +21,6 @@ class NodeDetailsCard extends RcdDivElement {
         const detailsElement = new RcdTextElement(detailsText).init();
         this.addChild(primaryElement).addChild(detailsElement);
     }
-
-
 }
 
 class NodeRoute extends DtbRoute {
