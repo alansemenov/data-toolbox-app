@@ -60,13 +60,13 @@ function doQuery(repositoryName, branchName, query, start, count, sort) {
         sort: sort
     });
 
-    
+
     var hits;
     if (repositoryName && branchName) {
         var ids = result.hits.map(function (hit) {
             return hit.ids;
         });
-        hits = utilLib.forceArray(repoConnection.get(ids)).map(function(node) {
+        hits = utilLib.forceArray(repoConnection.get(ids)).map(function (node) {
             return {
                 repositoryName: repositoryName,
                 branchName: branchName,
@@ -104,9 +104,9 @@ function runSafely(runnable, parameters) {
         return runnable.apply(null, parameters);
     } catch (e) {
         log.error(e);
-        throw e;
+        //throw e;
         return {
-            error: 'Error while getting children nodes: ' + (e.message || e)
+            error: 'Error while querying nodes: ' + (e.message || e)
         }
     }
 }
