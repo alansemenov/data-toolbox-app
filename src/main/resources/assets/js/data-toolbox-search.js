@@ -94,6 +94,7 @@ class SearchRoute extends DtbRoute {
     onDisplay() {
         this.refreshBreadcrumbs();
         this.retrieveRepositories();
+        this.layout.removeChild(this.resultCard);
     }
 
     createLayout() {
@@ -154,10 +155,11 @@ class SearchRoute extends DtbRoute {
                     });
                 });
             }
-            this.layout.addChild(this.resultCard);
         } else {
             this.resultCard.addRow('Search failure');
         }
+        console.debug('addresultcard');
+        this.layout.addChild(this.resultCard);
     }
 
     refreshBreadcrumbs() {

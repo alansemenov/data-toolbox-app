@@ -41,7 +41,7 @@ class AboutRoute extends DtbRoute {
                     .addRow('Version ' + result.success.app.version, 'Running on Enonic XP ' + result.success.app.xpVersion)
                     .addRow('Display market page ', null,
                         {callback: displayMarketCallback, icon: new RcdGoogleMaterialIcon('open_in_new').init()})
-                    .addRow('Github repository', 'Feel free to star ;)',
+                    .addRow('Github repository', 'Feel free to star :)',
                         {callback: githubRepoCallback, icon: new RcdImageIcon(config.assetsUrl + '/icons/github.svg').init()})
                     .addRow('Report an issue ', null,
                         {callback: reportIssueCallback, icon: new RcdImageIcon(config.assetsUrl + '/icons/github.svg').init()});
