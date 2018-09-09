@@ -9,15 +9,19 @@ class SearchParamsCard extends RcdDivElement {
             .addClass('dtb-responsive-row')
             .addChild(this.repositoryDropdown)
             .addChild(this.branchDropdown);
-        this.queryField = new RcdMaterialTextField('Query','').init()
+        this.queryField = new RcdMaterialTextField('Query', '').init()
             .addClass('dtb-search-query');
+        this.searchButtonArea = new RcdMaterialButtonArea('Search', () => {
+        }, RcdMaterialButtonType.FLAT).init()
+            .addClass('dtb-search-button');
     }
 
     init() {
         return super.init()
             .addClass('dtb-search-params')
             .addChild(this.contextRow)
-            .addChild(this.queryField);
+            .addChild(this.queryField)
+            .addChild(this.searchButtonArea);
     }
 
     setRepositories(repositories) {
@@ -45,7 +49,29 @@ class SearchParamsCard extends RcdDivElement {
                 }
             }
         }
+
+        this.queryField
+            .focus()
+            .select();
     }
+
+    addListener(listener) {
+        const onQueryAction = () => {
+            const repositoryName = this.repositoryDropdown.getSelectedValue();
+            const branchName = this.branchDropdown.getSelectedValue();
+            const params = {
+                repositoryName: repositoryName === 'All repositories' ? null : repositoryName,
+                branchName: branchName === 'All branches' ? null : branchName,
+                query: this.queryField.getValue()
+            };
+            listener(params);
+        };
+        this.addKeyUpListener('Enter', onQueryAction);
+        this.searchButtonArea.addClickListener(onQueryAction);
+        return this;
+    }
+
+
 }
 
 class SearchRoute extends DtbRoute {
@@ -64,11 +90,16 @@ class SearchRoute extends DtbRoute {
 
     createLayout() {
         this.paramsCard = new SearchParamsCard()
-            .init();
+            .init()
+            .addListener((params) => this.onSearchAction(params));
+        this.resultCard = new RcdMaterialList()
+            .init()
+            .addClass('dtb-search-result');
 
         return new RcdMaterialLayout()
             .init()
-            .addChild(this.paramsCard);
+            .addChild(this.paramsCard)
+            .addChild(this.resultCard);
     }
 
     retrieveRepositories() {
@@ -84,8 +115,32 @@ class SearchRoute extends DtbRoute {
 
     onRepositoriesRetrieval(result) {
         this.paramsCard.setRepositories([]);
+        this.resultCard.clear();
         if (handleResultError(result)) {
             this.paramsCard.setRepositories(result.success);
+        }
+    }
+
+    onSearchAction(params) {
+        const infoDialog = showShortInfoDialog('Querying nodes...');
+        return $.ajax({
+            method: 'POST',
+            url: config.servicesUrl + '/node-query',
+            data: JSON.stringify(params),
+            contentType: 'application/json; charset=utf-8'
+        }).done((result) => this.onNodesRetrieval(result)).fail(handleAjaxError).always(() => {
+            infoDialog.close();
+        });
+    }
+
+    onNodesRetrieval(result) {
+        this.resultCard.clear();
+        if (handleResultError(result)) {
+            result.success.hits.forEach(node => {
+                const primary = node._name;
+                const secondary = node.repositoryName + ':' + node.branchName + ':' + node._path;
+                this.resultCard.addRow(primary, secondary);
+            });
         }
     }
 
