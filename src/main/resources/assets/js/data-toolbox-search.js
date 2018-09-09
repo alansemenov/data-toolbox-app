@@ -5,15 +5,19 @@ class SearchParamsCard extends RcdDivElement {
         this.repositoryDropdown = new RcdMaterialDropdown('Repositories', []).init();
         this.branchDropdown = new RcdMaterialDropdown('Branches', []).init();
         this.contextRow = new RcdDivElement().init()
-            .addClass('dtb-node-row')
+            .addClass('dtb-search-params-row')
+            .addClass('dtb-responsive-row')
             .addChild(this.repositoryDropdown)
             .addChild(this.branchDropdown);
+        this.queryField = new RcdMaterialTextField('Query','').init()
+            .addClass('dtb-search-query');
     }
 
     init() {
         return super.init()
             .addClass('dtb-search-params')
-            .addChild(this.contextRow);
+            .addChild(this.contextRow)
+            .addChild(this.queryField);
     }
 
     setRepositories(repositories) {
@@ -31,7 +35,6 @@ class SearchParamsCard extends RcdDivElement {
             this.repositoryDropdown.addOptions(repositories.map(repository => repository.name));
 
             const repoParameter = getRepoParameter();
-            console.log(repoParameter);
             if (repoParameter) {
                 this.repositoryDropdown.selectOption(repoParameter);
                 this.branchDropdown.addOptions(this.repositoryMap[repoParameter]);
