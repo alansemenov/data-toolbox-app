@@ -143,14 +143,20 @@ class SearchRoute extends DtbRoute {
     onNodesRetrieval(result) {
         this.resultCard.clear();
         if (handleResultError(result)) {
-            result.success.hits.forEach(node => {
-                const primary = node._name;
-                const secondary = node.repositoryName + ':' + node.branchName + ':' + node._path;
-                this.resultCard.addRow(primary, secondary, {
-                    callback: () => setState('node', {repo: node.repositoryName, branch: node.branchName, id: node._id})
+            if (result.success.count === 0) {
+                this.resultCard.addRow('No node found');
+            } else {
+                result.success.hits.forEach(node => {
+                    const primary = node._name;
+                    const secondary = node.repositoryName + ':' + node.branchName + ':' + node._path;
+                    this.resultCard.addRow(primary, secondary, {
+                        callback: () => setState('node', {repo: node.repositoryName, branch: node.branchName, id: node._id})
+                    });
                 });
-            });
+            }
             this.layout.addChild(this.resultCard);
+        } else {
+            this.resultCard.addRow('Search failure');
         }
     }
 
