@@ -44,11 +44,27 @@ class NodeRoute extends DtbRoute {
         this.displayCard = new RcdMaterialListCard().init()
             .addClass('dtb-node-display-card');
 
+        this.actions1Card = new RcdMaterialListCard().init()
+            .addClass('dtb-node-actions1-card');
+
+        this.actions2Card = new RcdMaterialListCard().init()
+            .addClass('dtb-node-actions2-card');
+
+        const firstRow = new RcdDivElement().init()
+            .addClass('dtb-node-row')
+            .addChild(this.nodeDetails)
+            .addChild(this.displayCard);
+
+        const secondRow = new RcdDivElement().init()
+            .addClass('dtb-node-row')
+            .addChild(this.actions1Card)
+            .addChild(this.actions2Card);
+
         return new RcdMaterialLayout()
             .init()
             .addClass('dtb-node-layout')
-            .addChild(this.nodeDetails)
-            .addChild(this.displayCard);
+            .addChild(firstRow)
+            .addChild(secondRow);
     }
 
     retrieveMeta() {
@@ -73,6 +89,7 @@ class NodeRoute extends DtbRoute {
     onMetaRetrieval(result) {
         this.nodeDetails.clear();
         this.displayCard.deleteRows();
+        this.actions1Card.deleteRows();
         if (handleResultError(result)) {
             const meta = result.success;
             this.nodeDetails.setMeta(meta);
@@ -88,68 +105,34 @@ class NodeRoute extends DtbRoute {
             const displayJsonCallback = () => this.displayNodeAsJson(meta._id);
 
             this.displayCard
-                .addRow('Display siblings ', null,
+                .addRow('Display siblings', null,
                     {callback: displaySiblingsCallback, icon: new RcdImageIcon(config.assetsUrl + '/icons/datatree.svg').init()})
-                .addRow('Display children ', null,
+                .addRow('Display children', null,
                     {callback: displayChildrenCallback, icon: new RcdImageIcon(config.assetsUrl + '/icons/datatree.svg').init()})
-                .addRow('Display properties ', null,
+                .addRow('Display properties', null,
                     {callback: displayPropertiesCallback, icon: new RcdImageIcon(config.assetsUrl + '/icons/properties.svg').init()})
-                .addRow('Display permission ', null,
+                .addRow('Display permission', null,
                     {callback: displayPermissionsCallback, icon: new RcdGoogleMaterialIcon('lock').init()})
-                .addRow('Display as JSON ', null,
-                    {callback: displayJsonCallback, icon: new RcdImageIcon(config.assetsUrl + '/icons/json.svg').init()})
+                .addRow('Display as JSON', null,
+                    {callback: displayJsonCallback, icon: new RcdImageIcon(config.assetsUrl + '/icons/json.svg').init()});
+
+            this.actions1Card
+                .addRow('Export node', null,
+                    {callback: () => this.exportNode(meta), icon: new RcdImageIcon(config.assetsUrl + '/icons/export-icon.svg').init()});
         }
     }
 
-    displayNodeAsJson(nodeKey) {
-        const infoDialog = showShortInfoDialog("Retrieving node info...");
-        return $.ajax({
-            method: 'POST',
-            url: config.servicesUrl + '/node-get',
-            data: JSON.stringify({
-                repositoryName: getRepoParameter(),
-                branchName: getBranchParameter(),
-                key: nodeKey
-            }),
-            contentType: 'application/json; charset=utf-8'
-        }).done((result) => {
-            if (handleResultError(result)) {
-                const formattedJson = this.formatJson(result.success, '');
-                showDetailsDialog('Node [' + nodeKey + ']', formattedJson).addClass('node-details-dialog');
-            }
-        }).fail(handleAjaxError).always(() => {
-            infoDialog.close();
+    exportNode(meta) {
+        const baseExportName = meta._name + '-' + getBranchParameter();
+        const defaultExportName = baseExportName + '-' + toLocalDateTimeFormat(new Date(), '-', '-');
+        showInputDialog({
+            title: "Export node",
+            confirmationLabel: "EXPORT",
+            label: "Export name",
+            placeholder: defaultExportName,
+            value: defaultExportName,
+            callback: (value) => this.doExportNode(meta._path, value || defaultExportName)
         });
-    }
-
-    formatJson(value, tab) {
-        if (typeof value === 'string') {
-            return '<a class=json-string>"' + value + '"</a>';
-        } else if (typeof value === "number") {
-            return '<a class=json-number>' + value + '</a>';
-        } else if (typeof value === "boolean") {
-            return '<a class=json-boolean>' + value + '</a>';
-        } else if (Array.isArray(value)) {
-            let formattedArray = '[\n';
-            for (let i = 0; i < value.length; i++) {
-                const arrayElement = value[i];
-                formattedArray += tab + '  ' + this.formatJson(arrayElement, tab + '  ') + (i < (value.length - 1) ? ',' : '') + '\n';
-            }
-            formattedArray += tab + ']';
-            return formattedArray;
-        } else if (typeof value === "object") {
-            let formattedObject = '{\n';
-            const attributeNames = Object.keys(value);
-            for (let i = 0; i < attributeNames.length; i++) {
-                const attributeName = attributeNames[i];
-                formattedObject += tab + '  "' + attributeName + '": ' + this.formatJson(value[attributeName], tab + '  ') +
-                                   (i < (attributeNames.length - 1) ? ',' : '') + '\n';
-            }
-            formattedObject += tab + '}';
-            return formattedObject;
-        } else {
-            return value;
-        }
     }
 
     refreshBreadcrumbs() {

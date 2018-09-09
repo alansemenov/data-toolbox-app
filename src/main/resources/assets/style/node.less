@@ -1,17 +1,28 @@
 .dtb-node-layout {
+  & > .dtb-node-row:first-child {
+    margin-bottom: 12px;
+  }
+}
+
+.dtb-node-row :extend(.rcd-flex-box) {
+  @media (max-width: @rcd-material-max-mobile-width) {
+    flex-direction: column;
+    & > div:first-child {
+      margin-bottom: 12px;
+    }
+  }
   @media (min-width: @rcd-material-min-tablet-width) {
     flex-direction: row;
+    & > div:first-child {
+      margin-right: 12px;
+    }
   }
 }
 
 .dtb-node-details :extend(.rcd-flex-vbox, .rcd-material-shadow) {
   background-color: #fff;
-  @media (max-width: @rcd-material-max-mobile-width) {
-    margin-bottom: 12px;
-  }
   @media (min-width: @rcd-material-min-tablet-width) {
     flex-grow: 2;
-    margin-right: 12px;
     line-height: 1.3rem;
   }
 

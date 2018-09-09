@@ -152,62 +152,6 @@ class NodesRoute extends DtbRoute {
         });
     }
 
-    displayNodeAsJson(nodeKey) {
-        if (!nodeKey) {
-            nodeKey = this.tableCard.getSelectedRows().map((row) => row.attributes['id'])[0];
-        }
-
-        const infoDialog = showShortInfoDialog("Retrieving node info...");
-        return $.ajax({
-            method: 'POST',
-            url: config.servicesUrl + '/node-get',
-            data: JSON.stringify({
-                repositoryName: getRepoParameter(),
-                branchName: getBranchParameter(),
-                key: nodeKey
-            }),
-            contentType: 'application/json; charset=utf-8'
-        }).done((result) => {
-            if (handleResultError(result)) {
-                const formattedJson = this.formatJson(result.success, '');
-                showDetailsDialog('Node [' + nodeKey + ']', formattedJson).
-                    addClass('node-details-dialog');
-            }
-        }).fail(handleAjaxError).always(() => {
-            infoDialog.close();
-        });
-    }
-
-    formatJson(value, tab) {
-        if (typeof value === 'string') {
-            return '<a class=json-string>"' + value + '"</a>';
-        } else if (typeof value === "number") {
-            return '<a class=json-number>' + value + '</a>';
-        } else if (typeof value === "boolean") {
-            return '<a class=json-boolean>' + value + '</a>';
-        } else if (Array.isArray(value)) {
-            let formattedArray = '[\n';
-            for (let i = 0; i < value.length; i++) {
-                const arrayElement = value[i];
-                formattedArray += tab + '  ' + this.formatJson(arrayElement, tab + '  ') + (i < (value.length - 1) ? ',' : '') + '\n';
-            }
-            formattedArray += tab + ']';
-            return formattedArray;
-        } else if (typeof value === "object") {
-            let formattedObject = '{\n';
-            const attributeNames = Object.keys(value);
-            for (let i = 0; i < attributeNames.length; i++) {
-                const attributeName = attributeNames[i];
-                formattedObject += tab + '  "' + attributeName + '": ' + this.formatJson(value[attributeName], tab + '  ') +
-                                   (i < (attributeNames.length - 1) ? ',' : '') + '\n';
-            }
-            formattedObject += tab + '}';
-            return formattedObject;
-        } else {
-            return value;
-        }
-    }
-
     moveNode() {
         const nodeCount = this.tableCard.getSelectedRows().map((row) => row.attributes['path']).length;
         const pathPrefix = this.getPathPrefix();
@@ -316,6 +260,7 @@ class NodesRoute extends DtbRoute {
     }
 
     exportNode() {
+        const nodePath = this.tableCard.getSelectedRows().map((row) => row.attributes['path'])[0];
         const baseExportName = getPathParameter()
             ? (this.tableCard.getSelectedRows().map((row) => row.attributes['name'])[0] || 'export') + '-' + getBranchParameter()
             : getRepoParameter() + '-' + getBranchParameter();
@@ -326,29 +271,7 @@ class NodesRoute extends DtbRoute {
             label: "Export name",
             placeholder: defaultExportName,
             value: defaultExportName,
-            callback: (value) => this.doExportNode(value || defaultExportName)
-        });
-    }
-
-    doExportNode(exportName) {
-        const infoDialog = showLongInfoDialog("Exporting nodes...");
-        return $.ajax({
-            method: 'POST',
-            url: config.servicesUrl + '/node-export',
-            data: JSON.stringify({
-                repositoryName: getRepoParameter(),
-                branchName: getBranchParameter(),
-                nodePath: this.tableCard.getSelectedRows().map((row) => row.attributes['path'])[0],
-                exportName: exportName
-            }),
-            contentType: 'application/json; charset=utf-8'
-        }).done((result) => handleTaskCreation(result, {
-            taskId: result.taskId,
-            message: 'Exporting nodes...',
-            doneCallback: (success) =>  new ExportResultDialog(success).init().open(),
-            alwaysCallback: () => setState('exports')
-        })).fail(handleAjaxError).always(() => {
-            infoDialog.close();
+            callback: (value) => this.doExportNode(nodePath, value || defaultExportName)
         });
     }
 
