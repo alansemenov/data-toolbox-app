@@ -151,76 +151,15 @@ class NodesRoute extends DtbRoute {
             infoDialog.close();
         });
     }
-
-    moveNode() {
-        const nodeCount = this.tableCard.getSelectedRows().map((row) => row.attributes['path']).length;
-        const pathPrefix = this.getPathPrefix();
-        const title = nodeCount == 1 ? 'Move/rename node' : 'Move nodes';
-        const currentValue = nodeCount == 1 ? this.tableCard.getSelectedRows().map((row) => row.attributes['path'])[0] : pathPrefix;
-        const currentActionLabel = nodeCount == 1 ? 'RENAME' : 'MOVE';
-        const currentLabel = nodeCount == 1 ? 'New name/path/parent path' : 'New parent path';
-        const inputDialog = new RcdMaterialInputDialog({
-            title: title,
-            confirmationLabel: currentActionLabel,
-            label: currentLabel,
-            placeholder: '',
-            value: currentValue,
-            callback: (value) => isValid(value) && this.doMoveNode(value)
-        }).init();
-        
-        //TODO Implement clean solution. Adapt Framework
-        inputDialog.addInputListener((source) => {
-            const newValue = source.getValue();
-            inputDialog.enable(isValid(newValue));
-            if (nodeCount == 1) {
-                const newActionLabel = isRename(newValue) ? 'RENAME' : 'MOVE';
-                inputDialog.setConfirmationLabel(newActionLabel);
-            }
-        });
-        
-        function isValid(value) {
-            if (!value) {
-                return false;
-            }
-            if (nodeCount > 1 && value.slice(-1) !== '/') {
-                return false;
-            }
-            return true;
-        }
-        
-        function isRename(value) {
-            if (!value) {
-                return false;
-            }
-            if (value.startsWith(pathPrefix)){
-                const subValue = value.substr(pathPrefix.length);
-                return subValue.length > 0 && subValue.indexOf('/') === -1;
-            }
-            return false;
-        }
-        inputDialog.open();
-    }
     
-    doMoveNode(newNodePath) {
-        const infoDialog = showLongInfoDialog("Moving nodes...");
-        return $.ajax({
-            method: 'POST',
-            url: config.servicesUrl + '/node-move',
-            data: JSON.stringify({
-                repositoryName: getRepoParameter(),
-                branchName: getBranchParameter(),
-                sources: this.tableCard.getSelectedRows().map((row) => row.attributes['id']),
-                target: newNodePath
-            }),
-            contentType: 'application/json; charset=utf-8'
-        }).done((result) => handleTaskCreation(result, {
-            taskId: result.taskId,
-            message: 'Moving nodes...',
-            doneCallback: (success) =>  displaySnackbar('Node(s) moved'),
-            alwaysCallback: () => RcdHistoryRouter.refresh()
-        })).fail(handleAjaxError).always(() => {
-            infoDialog.close();
+    moveNode() {
+        const sources = this.tableCard.getSelectedRows().map((row) => {
+            return {
+                id: row.attributes['id'],
+                path: row.attributes['path']
+            };
         });
+        return super.moveNode(sources);
     }
 
     filterNodes() {

@@ -423,6 +423,77 @@ class DtbRoute extends RcdMaterialRoute {
             infoDialog.close();
         });
     }
+
+    moveNode(sources) {
+        const nodeCount = sources.length;
+        const pathPrefix = this.getPathPrefix();
+        const title = nodeCount == 1 ? 'Move/rename node' : 'Move nodes';
+        const currentValue = nodeCount == 1 ? sources[0].path : pathPrefix;
+        const currentActionLabel = nodeCount == 1 ? 'RENAME' : 'MOVE';
+        const currentLabel = nodeCount == 1 ? 'New name/path/parent path' : 'New parent path';
+        const inputDialog = new RcdMaterialInputDialog({
+            title: title,
+            confirmationLabel: currentActionLabel,
+            label: currentLabel,
+            placeholder: '',
+            value: currentValue,
+            callback: (value) => isValid(value) && this.doMoveNode(sources, value)
+        }).init();
+
+        //TODO Implement clean solution. Adapt Framework
+        inputDialog.addInputListener((source) => {
+            const newValue = source.getValue();
+            inputDialog.enable(isValid(newValue));
+            if (nodeCount == 1) {
+                const newActionLabel = isRename(newValue) ? 'RENAME' : 'MOVE';
+                inputDialog.setConfirmationLabel(newActionLabel);
+            }
+        });
+
+        function isValid(value) {
+            if (!value) {
+                return false;
+            }
+            if (nodeCount > 1 && value.slice(-1) !== '/') {
+                return false;
+            }
+            return true;
+        }
+
+        function isRename(value) {
+            if (!value) {
+                return false;
+            }
+            if (value.startsWith(pathPrefix)){
+                const subValue = value.substr(pathPrefix.length);
+                return subValue.length > 0 && subValue.indexOf('/') === -1;
+            }
+            return false;
+        }
+        inputDialog.open();
+    }
+
+    doMoveNode(sources, newNodePath) {
+        const infoDialog = showLongInfoDialog("Moving nodes...");
+        return $.ajax({
+            method: 'POST',
+            url: config.servicesUrl + '/node-move',
+            data: JSON.stringify({
+                repositoryName: getRepoParameter(),
+                branchName: getBranchParameter(),
+                sources: sources.map((source) => source.id),
+                target: newNodePath
+            }),
+            contentType: 'application/json; charset=utf-8'
+        }).done((result) => handleTaskCreation(result, {
+            taskId: result.taskId,
+            message: 'Moving nodes...',
+            doneCallback: (success) =>  displaySnackbar('Node(s) moved'),
+            alwaysCallback: sources[0].callback ? sources[0].callback() : () => RcdHistoryRouter.refresh()
+        })).fail(handleAjaxError).always(() => {
+            infoDialog.close();
+        });
+    }
 }
 
 function handleTaskCreation(result, params) {

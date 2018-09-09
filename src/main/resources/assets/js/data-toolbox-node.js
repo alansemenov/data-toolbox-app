@@ -90,6 +90,7 @@ class NodeRoute extends DtbRoute {
         this.nodeDetails.clear();
         this.displayCard.deleteRows();
         this.actions1Card.deleteRows();
+        this.actions2Card.deleteRows();
         if (handleResultError(result)) {
             const meta = result.success;
             this.nodeDetails.setMeta(meta);
@@ -119,6 +120,15 @@ class NodeRoute extends DtbRoute {
             this.actions1Card
                 .addRow('Export node', null,
                     {callback: () => this.exportNode(meta), icon: new RcdImageIcon(config.assetsUrl + '/icons/export-icon.svg').init()});
+            this.actions2Card
+                .addRow('Move/rename node', null, {
+                    callback: () => this.moveNode([{
+                        id: meta._id,
+                        path: meta._path,
+                        callback: () => setState('node', {repo: getRepoParameter(), branch: getBranchParameter(), id: meta._id})
+                    }]),
+                    icon: new RcdImageIcon(config.assetsUrl + '/icons/rename.svg').init()
+                });
         }
     }
 
