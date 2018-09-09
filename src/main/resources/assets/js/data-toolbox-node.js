@@ -98,6 +98,11 @@ class NodeRoute extends DtbRoute {
         this.actions3Card.deleteRows();
         if (handleResultError(result)) {
             const meta = result.success;
+
+            if (getIdParameter()) {
+                this.refreshBreadcrumbsFromPath(meta._path);
+            }
+
             this.nodeDetails.setMeta(meta);
 
             const displaySiblingsCallback = () => setState('nodes',
@@ -139,7 +144,8 @@ class NodeRoute extends DtbRoute {
                     {
                         callback: () => this.deleteNodes({
                             nodeKeys: [meta._id],
-                            callback: () => setState('nodes', {repo: getRepoParameter(), branch: getBranchParameter(), path: this.getParentPath(meta._path)})
+                            callback: () => setState('nodes',
+                                {repo: getRepoParameter(), branch: getBranchParameter(), path: this.getParentPath(meta._path)})
                         }),
                         icon: new RcdGoogleMaterialIcon('delete').init()
                     });
