@@ -1,5 +1,14 @@
 function createApp() {
-    return new RcdMaterialSinglePageApplication({title: 'Data toolbox'})
+    return new RcdMaterialSinglePageApplication({
+        title: 'Data toolbox',
+        search: (value) => {
+            const query = 'id = "' + value + '" OR ' +
+                          '_versionkey = "' + value + '" OR ' +
+                          '_path LIKE "' + value + '*" OR ' +
+                          'ngram("_alltext", "' + value + '", "AND")';
+            setState('search', {query: query});
+        }
+    })
         .init()
         .setDefaultRoute(createPresentationRoute())
         .addRoute(new RepositoriesRoute().init())
@@ -124,6 +133,10 @@ function getCountParameter() {
 
 function getFilterParameter() {
     return RcdHistoryRouter.getParameters().filter || '';
+}
+
+function getQueryParameter() {
+    return RcdHistoryRouter.getParameters().query || '';
 }
 
 function getSortParameter() {

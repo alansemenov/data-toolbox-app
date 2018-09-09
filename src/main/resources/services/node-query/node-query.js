@@ -31,7 +31,7 @@ function doQuery(repositoryName, branchName, query, start, count, sort) {
             sources.push({
                 repoId: repositoryName,
                 branch: branch,
-                principals: []
+                principals: ["role:system.admin"] //Why is this mandatory
             });
         });
         repoConnection = nodeLib.multiRepoConnect({
@@ -44,10 +44,10 @@ function doQuery(repositoryName, branchName, query, start, count, sort) {
                 sources.push({
                     repoId: repository.id,
                     branch: branch,
-                    principals: []
+                    principals: ["role:system.admin"] //Why is this mandatory
                 });
             });
-        })
+        });
         repoConnection = nodeLib.multiRepoConnect({
             sources: sources
         });
