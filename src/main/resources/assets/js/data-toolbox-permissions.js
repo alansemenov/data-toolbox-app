@@ -61,7 +61,7 @@ class PermissionsRoute extends DtbRoute {
             addCell('', {classes: ['non-mobile-cell']}).
             addCell('', {classes: ['non-mobile-cell']}).
             addClass('rcd-clickable').
-            addClickListener(() => setState('nodes', {repo:getRepoParameter(), branch: getBranchParameter(), path: this.getParentPath()}));
+            addClickListener(() => setState('node', {repo:getRepoParameter(), branch: getBranchParameter(), path: getPathParameter()}));
         
         if (handleResultError(result)) {
             this.setInheritPermission(result.success._inheritsPermissions);

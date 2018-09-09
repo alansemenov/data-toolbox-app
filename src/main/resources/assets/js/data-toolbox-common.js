@@ -333,8 +333,8 @@ class DtbRoute extends RcdMaterialRoute {
         
     }
 
-    getParentPath() {
-        const path = getPathParameter();
+    getParentPath(path) {
+        path = path || getPathParameter();
         if (!path || path === '/') {
             return null;
         }
@@ -349,6 +349,175 @@ class DtbRoute extends RcdMaterialRoute {
     getParentProperty() {
         const property = getPropertyParameter();
         return property && property.substring(0, property.lastIndexOf('.'));
+    }
+    
+    displayNodeAsJson(nodeKey) {
+        const infoDialog = showShortInfoDialog("Retrieving node info...");
+        return $.ajax({
+            method: 'POST',
+            url: config.servicesUrl + '/node-get',
+            data: JSON.stringify({
+                repositoryName: getRepoParameter(),
+                branchName: getBranchParameter(),
+                key: nodeKey
+            }),
+            contentType: 'application/json; charset=utf-8'
+        }).done((result) => {
+            if (handleResultError(result)) {
+                const formattedJson = this.formatJson(result.success, '');
+                showDetailsDialog('Node [' + nodeKey + ']', formattedJson).addClass('node-details-dialog');
+            }
+        }).fail(handleAjaxError).always(() => {
+            infoDialog.close();
+        });
+    }
+
+    formatJson(value, tab) {
+        if (typeof value === 'string') {
+            return '<a class=json-string>"' + value + '"</a>';
+        } else if (typeof value === "number") {
+            return '<a class=json-number>' + value + '</a>';
+        } else if (typeof value === "boolean") {
+            return '<a class=json-boolean>' + value + '</a>';
+        } else if (Array.isArray(value)) {
+            let formattedArray = '[\n';
+            for (let i = 0; i < value.length; i++) {
+                const arrayElement = value[i];
+                formattedArray += tab + '  ' + this.formatJson(arrayElement, tab + '  ') + (i < (value.length - 1) ? ',' : '') + '\n';
+            }
+            formattedArray += tab + ']';
+            return formattedArray;
+        } else if (typeof value === "object") {
+            let formattedObject = '{\n';
+            const attributeNames = Object.keys(value);
+            for (let i = 0; i < attributeNames.length; i++) {
+                const attributeName = attributeNames[i];
+                formattedObject += tab + '  "' + attributeName + '": ' + this.formatJson(value[attributeName], tab + '  ') +
+                                   (i < (attributeNames.length - 1) ? ',' : '') + '\n';
+            }
+            formattedObject += tab + '}';
+            return formattedObject;
+        } else {
+            return value;
+        }
+    }
+
+    doExportNode(nodePath, exportName) {
+        const infoDialog = showLongInfoDialog("Exporting nodes...");
+        return $.ajax({
+            method: 'POST',
+            url: config.servicesUrl + '/node-export',
+            data: JSON.stringify({
+                repositoryName: getRepoParameter(),
+                branchName: getBranchParameter(),
+                nodePath: nodePath,
+                exportName: exportName
+            }),
+            contentType: 'application/json; charset=utf-8'
+        }).done((result) => handleTaskCreation(result, {
+            taskId: result.taskId,
+            message: 'Exporting nodes...',
+            doneCallback: (success) =>  new ExportResultDialog(success).init().open(),
+            alwaysCallback: () => setState('exports')
+        })).fail(handleAjaxError).always(() => {
+            infoDialog.close();
+        });
+    }
+
+    deleteNodes(params) {
+        showConfirmationDialog(params.nodeKeys.length > 1 ? 'Delete this node?' : 'Delete selected nodes?', 'DELETE', () => this.doDeleteNodes(params));
+    }
+
+    doDeleteNodes(params) {
+        const infoDialog = showLongInfoDialog("Deleting nodes...");
+        $.ajax({
+            method: 'POST',
+            url: config.servicesUrl + '/node-delete',
+            data: JSON.stringify({
+                repositoryName: getRepoParameter(),
+                branchName: getBranchParameter(),
+                keys: params.nodeKeys
+            }),
+            contentType: 'application/json; charset=utf-8'
+        }).done((result) => handleTaskCreation(result, {
+            taskId: result.taskId,
+            message: 'Deleting nodes...',
+            doneCallback: (success) => displaySnackbar(success + ' node' + (success > 1 ? 's': '') + ' deleted'),
+            alwaysCallback: params.callback ? params.callback : () => RcdHistoryRouter.refresh()
+        })).fail(handleAjaxError).always(() => {
+            infoDialog.close();
+        });
+    }
+
+    moveNode(sources) {
+        const nodeCount = sources.length;
+        const pathPrefix = this.getPathPrefix();
+        const title = nodeCount == 1 ? 'Move/rename node' : 'Move nodes';
+        const currentValue = nodeCount == 1 ? sources[0].path : pathPrefix;
+        const currentActionLabel = nodeCount == 1 ? 'RENAME' : 'MOVE';
+        const currentLabel = nodeCount == 1 ? 'New name/path/parent path' : 'New parent path';
+        const inputDialog = new RcdMaterialInputDialog({
+            title: title,
+            confirmationLabel: currentActionLabel,
+            label: currentLabel,
+            placeholder: '',
+            value: currentValue,
+            callback: (value) => isValid(value) && this.doMoveNode(sources, value)
+        }).init();
+
+        //TODO Implement clean solution. Adapt Framework
+        inputDialog.addInputListener((source) => {
+            const newValue = source.getValue();
+            inputDialog.enable(isValid(newValue));
+            if (nodeCount == 1) {
+                const newActionLabel = isRename(newValue) ? 'RENAME' : 'MOVE';
+                inputDialog.setConfirmationLabel(newActionLabel);
+            }
+        });
+
+        function isValid(value) {
+            if (!value) {
+                return false;
+            }
+            if (nodeCount > 1 && value.slice(-1) !== '/') {
+                return false;
+            }
+            return true;
+        }
+
+        function isRename(value) {
+            if (!value) {
+                return false;
+            }
+            if (value.startsWith(pathPrefix)){
+                const subValue = value.substr(pathPrefix.length);
+                return subValue.length > 0 && subValue.indexOf('/') === -1;
+            }
+            return false;
+        }
+        inputDialog.open();
+    }
+
+    doMoveNode(sources, newNodePath) {
+        const infoDialog = showLongInfoDialog("Moving nodes...");
+        return $.ajax({
+            method: 'POST',
+            url: config.servicesUrl + '/node-move',
+            data: JSON.stringify({
+                repositoryName: getRepoParameter(),
+                branchName: getBranchParameter(),
+                sources: sources.map((source) => source.id),
+                target: newNodePath
+            }),
+            contentType: 'application/json; charset=utf-8'
+        }).done((result) => handleTaskCreation(result, {
+            taskId: result.taskId,
+            message: 'Moving nodes...',
+            doneCallback: (success) =>  displaySnackbar('Node(s) moved'),
+            alwaysCallback: sources[0].callback ? sources[0].callback() : () => RcdHistoryRouter.refresh()
+        })).fail(handleAjaxError).always(() => {
+            infoDialog.close();
+        });
     }
 }
 

@@ -307,6 +307,7 @@ class PropertiesRoute extends DtbRoute {
             .addColumn('Value', {classes: ['non-mobile-cell']})
             .addColumn('Type', {classes: ['non-mobile-cell', 'type']})
             .addColumn('Type: Value', {classes: ['mobile-cell']})
+            .addColumn(null, {icon: true,classes: ['non-mobile-cell']})
             .addColumn(null, {icon: true})
             .addIconArea(createPropertyIconArea, {max: 0})
             .addIconArea(deletePropertyIconArea, {min: 1});
@@ -336,16 +337,24 @@ class PropertiesRoute extends DtbRoute {
     onPropertiesRetrieval(result) {
         this.tableCard.deleteRows();
 
-        const headerRow = this.tableCard.createRow({selectable: false}).addCell('..', {classes: ['non-mobile-cell']}).addCell('',
-            {classes: ['non-mobile-cell']}).addCell('..', {classes: ['mobile-cell']}).addCell('', {classes: ['non-mobile-cell']}).addCell(
-            '', {classes: ['non-mobile-cell']}).addCell('', {classes: ['mobile-cell']}).addCell('', {icon: true}).addClass('rcd-clickable');
+        const headerRow = this.tableCard
+            .createRow({selectable: false})
+            .addCell('..', {classes: ['non-mobile-cell']})
+            .addCell('', {classes: ['non-mobile-cell']})
+            .addCell('..', {classes: ['mobile-cell']})
+            .addCell('', {classes: ['non-mobile-cell']})
+            .addCell('', {classes: ['non-mobile-cell']})
+            .addCell('', {classes: ['mobile-cell']})
+            .addCell('', {icon: true,classes: ['non-mobile-cell']})
+            .addCell('', {icon: true})
+            .addClass('rcd-clickable');
 
         if (getPropertyParameter()) {
             headerRow.addClickListener(() => setState('properties',
                 {repo: getRepoParameter(), branch: getBranchParameter(), path: getPathParameter(), property: this.getParentProperty()}));
         } else {
             headerRow.addClickListener(
-                () => setState('nodes', {repo: getRepoParameter(), branch: getBranchParameter(), path: this.getParentPath()}));
+                () => setState('node', {repo: getRepoParameter(), branch: getBranchParameter(), path: getPathParameter()}));
         }
 
         if (handleResultError(result)) {
@@ -353,6 +362,16 @@ class PropertiesRoute extends DtbRoute {
 
             properties.forEach(property => {
 
+                let followReferenceIconArea = null;
+                if (property.type === 'Reference') {
+                    const followReferenceCallback = () => setState('node', {repo: getRepoParameter(), branch: getBranchParameter(), id: property.value});
+                    followReferenceIconArea = new RcdGoogleMaterialIconArea('arrow_forward', (source, event) => {
+                        followReferenceCallback();
+                        event.stopPropagation();
+                    })
+                        .init()
+                        .setTooltip('Follow reference');
+                }
                 let editPropertyIconArea = null;
                 if (property.type !== 'PropertySet' && property.type !== 'Link') {  //TODO Removed Link type for now
                     const editPropertyCallback = () => this.editProperty(property);
@@ -372,6 +391,7 @@ class PropertiesRoute extends DtbRoute {
                     .addCell(encodedValue, {classes: ['non-mobile-cell']})
                     .addCell(property.type, {classes: ['non-mobile-cell']})
                     .addCell(property.type + ': ' + encodedValue, {classes: ['mobile-cell']})
+                    .addCell(followReferenceIconArea, {icon: true,classes: ['non-mobile-cell']})
                     .addCell(editPropertyIconArea, {icon: true})
                     .setAttribute('name', property.name)
                     .setAttribute('index', property.index);
