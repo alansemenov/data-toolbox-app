@@ -2,7 +2,15 @@ class SearchParamsCard extends RcdDivElement {
     constructor() {
         super();
         this.repositoryMap = {};
-        this.repositoryDropdown = new RcdMaterialDropdown('Repositories', []).init();
+        this.repositoryDropdown = new RcdMaterialDropdown('Repositories', []).init()
+            .addChangeListener(() => {
+                this.branchDropdown.clear();
+                this.branchDropdown.addOption('All branches');
+                const selectedRepositoryName = this.repositoryDropdown.getSelectedValue();
+                if (selectedRepositoryName && selectedRepositoryName !== 'All repositories') {
+                    this.branchDropdown.addOptions(this.repositoryMap[selectedRepositoryName]);
+                }
+            });
         this.branchDropdown = new RcdMaterialDropdown('Branches', []).init();
         this.contextRow = new RcdDivElement().init()
             .addClass('dtb-search-params-row')

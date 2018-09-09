@@ -64,14 +64,15 @@ function doQuery(repositoryName, branchName, query, start, count, sort) {
     var hits;
     if (repositoryName && branchName) {
         var ids = result.hits.map(function (hit) {
-            return hit.ids;
+            return hit.id;
         });
         hits = utilLib.forceArray(repoConnection.get(ids)).map(function (node) {
             return {
                 repositoryName: repositoryName,
                 branchName: branchName,
                 _id: node._id,
-                _name: node._name
+                _name: node._name,
+                _path: node._path
             };
         })
     } else {
