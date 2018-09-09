@@ -21,8 +21,6 @@ class NodeDetailsCard extends RcdDivElement {
         const detailsElement = new RcdTextElement(detailsText).init();
         this.addChild(primaryElement).addChild(detailsElement);
     }
-
-
 }
 
 class NodeRoute extends DtbRoute {
@@ -55,11 +53,13 @@ class NodeRoute extends DtbRoute {
 
         const firstRow = new RcdDivElement().init()
             .addClass('dtb-node-row')
+            .addClass('dtb-responsive-row')
             .addChild(this.nodeDetails)
             .addChild(this.displayCard);
 
         const secondRow = new RcdDivElement().init()
             .addClass('dtb-node-row')
+            .addClass('dtb-responsive-row')
             .addChild(this.actions1Card)
             .addChild(this.actions2Card)
             .addChild(this.actions3Card);

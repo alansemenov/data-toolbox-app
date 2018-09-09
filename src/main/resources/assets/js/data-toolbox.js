@@ -12,6 +12,7 @@ function createApp() {
         .addRoute(new SnapshotsRoute().init())
         .addRoute(new ExportsRoute().init())
         .addRoute(new DumpsRoute().init())
+        .addRoute(new SearchRoute().init())
         .addRoute(new AboutRoute().init());
 }
 
