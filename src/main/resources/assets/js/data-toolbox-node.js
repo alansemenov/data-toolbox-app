@@ -50,6 +50,9 @@ class NodeRoute extends DtbRoute {
         this.actions2Card = new RcdMaterialListCard().init()
             .addClass('dtb-node-actions2-card');
 
+        this.actions3Card = new RcdMaterialListCard().init()
+            .addClass('dtb-node-actions2-card');
+
         const firstRow = new RcdDivElement().init()
             .addClass('dtb-node-row')
             .addChild(this.nodeDetails)
@@ -58,7 +61,8 @@ class NodeRoute extends DtbRoute {
         const secondRow = new RcdDivElement().init()
             .addClass('dtb-node-row')
             .addChild(this.actions1Card)
-            .addChild(this.actions2Card);
+            .addChild(this.actions2Card)
+            .addChild(this.actions3Card);
 
         return new RcdMaterialLayout()
             .init()
@@ -91,6 +95,7 @@ class NodeRoute extends DtbRoute {
         this.displayCard.deleteRows();
         this.actions1Card.deleteRows();
         this.actions2Card.deleteRows();
+        this.actions3Card.deleteRows();
         if (handleResultError(result)) {
             const meta = result.success;
             this.nodeDetails.setMeta(meta);
@@ -129,6 +134,16 @@ class NodeRoute extends DtbRoute {
                     }]),
                     icon: new RcdImageIcon(config.assetsUrl + '/icons/rename.svg').init()
                 });
+            this.actions3Card
+                .addRow('Delete node', null,
+                    {
+                        callback: () => this.deleteNodes({
+                            nodeKeys: [meta._id],
+                            callback: () => setState('nodes', {repo: getRepoParameter(), branch: getBranchParameter(), path: this.getParentPath(meta._path)})
+                        }),
+                        icon: new RcdGoogleMaterialIcon('delete').init()
+                    });
+
         }
     }
 

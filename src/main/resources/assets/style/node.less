@@ -1,5 +1,5 @@
 .dtb-node-layout {
-  & > .dtb-node-row:first-child {
+  & > .dtb-node-row:not(:last-child) {
     margin-bottom: 12px;
   }
 }
@@ -7,13 +7,13 @@
 .dtb-node-row :extend(.rcd-flex-box) {
   @media (max-width: @rcd-material-max-mobile-width) {
     flex-direction: column;
-    & > div:first-child {
+    & > div:not(:last-child) {
       margin-bottom: 12px;
     }
   }
   @media (min-width: @rcd-material-min-tablet-width) {
     flex-direction: row;
-    & > div:first-child {
+    & > div:not(:last-child) {
       margin-right: 12px;
     }
   }

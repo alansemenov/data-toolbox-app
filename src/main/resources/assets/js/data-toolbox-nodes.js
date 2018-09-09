@@ -127,29 +127,8 @@ class NodesRoute extends DtbRoute {
     }
     
     deleteNodes() {
-        showConfirmationDialog("Delete selected nodes?", 'DELETE', () => this.doDeleteNodes());
-    }
-
-    doDeleteNodes() {
-        const infoDialog = showLongInfoDialog("Deleting nodes...");
         const nodeKeys = this.tableCard.getSelectedRows().map((row) => row.attributes['id']);
-        $.ajax({
-            method: 'POST',
-            url: config.servicesUrl + '/node-delete',
-            data: JSON.stringify({
-                repositoryName: getRepoParameter(),
-                branchName: getBranchParameter(),
-                keys: nodeKeys
-            }),
-            contentType: 'application/json; charset=utf-8'
-        }).done((result) => handleTaskCreation(result, {
-            taskId: result.taskId,
-            message: 'Deleting nodes...',
-            doneCallback: (success) => displaySnackbar(success + ' node' + (success > 1 ? 's': '') + ' deleted'),
-            alwaysCallback: () => this.retrieveNodes()
-        })).fail(handleAjaxError).always(() => {
-            infoDialog.close();
-        });
+        return super.deleteNodes({nodeKeys: nodeKeys});
     }
     
     moveNode() {

@@ -424,6 +424,31 @@ class DtbRoute extends RcdMaterialRoute {
         });
     }
 
+    deleteNodes(params) {
+        showConfirmationDialog(params.nodeKeys.length > 1 ? 'Delete this node?' : 'Delete selected nodes?', 'DELETE', () => this.doDeleteNodes(params));
+    }
+
+    doDeleteNodes(params) {
+        const infoDialog = showLongInfoDialog("Deleting nodes...");
+        $.ajax({
+            method: 'POST',
+            url: config.servicesUrl + '/node-delete',
+            data: JSON.stringify({
+                repositoryName: getRepoParameter(),
+                branchName: getBranchParameter(),
+                keys: params.nodeKeys
+            }),
+            contentType: 'application/json; charset=utf-8'
+        }).done((result) => handleTaskCreation(result, {
+            taskId: result.taskId,
+            message: 'Deleting nodes...',
+            doneCallback: (success) => displaySnackbar(success + ' node' + (success > 1 ? 's': '') + ' deleted'),
+            alwaysCallback: params.callback ? params.callback : () => RcdHistoryRouter.refresh()
+        })).fail(handleAjaxError).always(() => {
+            infoDialog.close();
+        });
+    }
+
     moveNode(sources) {
         const nodeCount = sources.length;
         const pathPrefix = this.getPathPrefix();
