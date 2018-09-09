@@ -1,6 +1,7 @@
 class SearchParamsCard extends RcdDivElement {
     constructor() {
         super();
+        this.searchListeners = [];
         this.repositoryMap = {};
         this.repositoryDropdown = new RcdMaterialDropdown('Repositories', []).init()
             .addChangeListener(() => {
@@ -21,7 +22,8 @@ class SearchParamsCard extends RcdDivElement {
             .addClass('dtb-search-query');
         this.searchButtonArea = new RcdMaterialButtonArea('Search', () => {
         }, RcdMaterialButtonType.FLAT).init()
-            .addClass('dtb-search-button');
+            .addClass('dtb-search-button')
+            .addClickListener(() => this.notifySearchListeners());
     }
 
     init() {
@@ -29,7 +31,8 @@ class SearchParamsCard extends RcdDivElement {
             .addClass('dtb-search-params')
             .addChild(this.contextRow)
             .addChild(this.queryField)
-            .addChild(this.searchButtonArea);
+            .addChild(this.searchButtonArea)
+            .addKeyUpListener('Enter', () => this.notifySearchListeners());
     }
 
     setRepositories(repositories) {
@@ -63,23 +66,21 @@ class SearchParamsCard extends RcdDivElement {
             .select();
     }
 
-    addListener(listener) {
-        const onQueryAction = () => {
-            const repositoryName = this.repositoryDropdown.getSelectedValue();
-            const branchName = this.branchDropdown.getSelectedValue();
-            const params = {
-                repositoryName: repositoryName === 'All repositories' ? null : repositoryName,
-                branchName: branchName === 'All branches' ? null : branchName,
-                query: this.queryField.getValue()
-            };
-            listener(params);
-        };
-        this.addKeyUpListener('Enter', onQueryAction);
-        this.searchButtonArea.addClickListener(onQueryAction);
+    addSearchListener(listener) {
+        this.searchListeners.push(listener);
         return this;
     }
 
-
+    notifySearchListeners() {
+        const repositoryName = this.repositoryDropdown.getSelectedValue();
+        const branchName = this.branchDropdown.getSelectedValue();
+        const params = {
+            repositoryName: repositoryName === 'All repositories' ? null : repositoryName,
+            branchName: branchName === 'All branches' ? null : branchName,
+            query: this.queryField.getValue()
+        };
+        this.searchListeners.forEach((listener) => listener(params));
+    }
 }
 
 class SearchRoute extends DtbRoute {
@@ -93,14 +94,20 @@ class SearchRoute extends DtbRoute {
 
     onDisplay() {
         this.refreshBreadcrumbs();
-        this.retrieveRepositories();
         this.layout.removeChild(this.resultCard);
+        const queryParameter = getQueryParameter();
+
+        if (queryParameter) {
+            this.paramsCard.queryField.setValue(queryParameter);
+        }
+        
+        this.retrieveRepositories();
     }
 
     createLayout() {
         this.paramsCard = new SearchParamsCard()
             .init()
-            .addListener((params) => this.onSearchAction(params));
+            .addSearchListener((params) => this.onSearchAction(params));
         this.resultCard = new RcdMaterialList()
             .init()
             .addClass('dtb-search-result');
@@ -126,6 +133,10 @@ class SearchRoute extends DtbRoute {
         this.resultCard.clear();
         if (handleResultError(result)) {
             this.paramsCard.setRepositories(result.success);
+            
+            if (getQueryParameter()) {
+                this.paramsCard.notifySearchListeners();
+            }
         }
     }
 
@@ -158,7 +169,6 @@ class SearchRoute extends DtbRoute {
         } else {
             this.resultCard.addRow('Search failure');
         }
-        console.debug('addresultcard');
         this.layout.addChild(this.resultCard);
     }
 
