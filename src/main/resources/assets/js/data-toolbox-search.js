@@ -23,7 +23,7 @@ class SearchParamsCard extends RcdDivElement {
         this.searchButtonArea = new RcdMaterialButtonArea('Search', () => {
         }, RcdMaterialButtonType.FLAT).init()
             .addClass('dtb-search-button')
-            .addClickListener(() => this.notifySearchListeners());
+            .addClickListener(() => this.search());
     }
 
     init() {
@@ -32,10 +32,21 @@ class SearchParamsCard extends RcdDivElement {
             .addChild(this.contextRow)
             .addChild(this.queryField)
             .addChild(this.searchButtonArea)
-            .addKeyUpListener('Enter', () => this.notifySearchListeners());
+            .addKeyUpListener('Enter', () => this.search());
     }
 
-    setRepositories(repositories) {
+    search() {
+        const repo = this.repositoryDropdown.getSelectedValue();
+        const branch = this.branchDropdown.getSelectedValue();
+        const query = this.queryField.getValue();
+        RcdHistoryRouter.setState('search', {
+            repo: repo === 'All repositories' ? undefined : repo,
+            branch: branch === 'All branches' ? undefined : branch,
+            query: query
+        });
+    }
+
+    onDisplay(repositories) {
         this.repositoryMap = {};
         this.repositoryDropdown.clear();
         this.repositoryDropdown.addOption('All repositories');
@@ -61,9 +72,16 @@ class SearchParamsCard extends RcdDivElement {
             }
         }
 
+        const queryParameter = getQueryParameter();
+
         this.queryField
+            .setValue(queryParameter)
             .focus()
             .select();
+
+        if (queryParameter) {
+            this.notifySearchListeners();
+        }
     }
 
     addSearchListener(listener) {
@@ -95,12 +113,6 @@ class SearchRoute extends DtbRoute {
     onDisplay() {
         this.refreshBreadcrumbs();
         this.layout.removeChild(this.resultCard);
-        const queryParameter = getQueryParameter();
-
-        if (queryParameter) {
-            this.paramsCard.queryField.setValue(queryParameter);
-        }
-        
         this.retrieveRepositories();
     }
 
@@ -129,14 +141,11 @@ class SearchRoute extends DtbRoute {
     }
 
     onRepositoriesRetrieval(result) {
-        this.paramsCard.setRepositories([]);
         this.resultCard.clear();
         if (handleResultError(result)) {
-            this.paramsCard.setRepositories(result.success);
-            
-            if (getQueryParameter()) {
-                this.paramsCard.notifySearchListeners();
-            }
+            this.paramsCard.onDisplay(result.success);
+        } else {
+            this.paramsCard.onDisplay([]);
         }
     }
 
