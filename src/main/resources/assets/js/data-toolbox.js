@@ -2,7 +2,7 @@ function createApp() {
     return new RcdMaterialSinglePageApplication({
         title: 'Data toolbox',
         search: (value) => {
-            const query = 'id = "' + value + '" OR ' +
+            const query = '_id = "' + value + '" OR ' +
                           '_versionkey = "' + value + '" OR ' +
                           '_path LIKE "' + value + '*" OR ' +
                           'ngram("_alltext", "' + value + '", "AND")';
