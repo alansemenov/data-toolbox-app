@@ -95,7 +95,8 @@ class SearchParamsCard extends RcdDivElement {
         const params = {
             repositoryName: repositoryName === 'All repositories' ? null : repositoryName,
             branchName: branchName === 'All branches' ? null : branchName,
-            query: this.queryField.getValue()
+            query: this.queryField.getValue(),
+            count: 50
         };
         this.searchListeners.forEach((listener) => listener(params));
     }
