@@ -188,8 +188,8 @@ class SearchRoute extends DtbRoute {
     }
 
     displayHelp() {
-        const viewDefinition = 'The view lists in a table all the system properties of the current node\' +\n' +
-                               '                               \'See <a class="rcd-material-link" href="http://xp.readthedocs.io/en/6.10/developer/node-domain/system-properties.html">System properties</a> for more information. ';
-        new HelpDialog('System properties', [viewDefinition]).init().open();
+        const viewDefinition = 'Query nodes, from all your repositories or a specific context, using the Enonic XP query language. ' +
+                               'See <a class="rcd-material-link" href="http://xp.readthedocs.io/en/6.10/reference/query-language.html">Query Language</a> for more information. ';
+        new HelpDialog('Search', [viewDefinition]).init().open();
     }
 }

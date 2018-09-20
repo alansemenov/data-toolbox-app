@@ -52,7 +52,7 @@ class AboutRoute extends DtbRoute {
     }
 
     displayHelp() {
-        new HelpDialog('About', ['Information concerning Data Toolbox']).init().open();
+        new HelpDialog('About', ['Information about Data Toolbox']).init().open();
     }
 
 }
