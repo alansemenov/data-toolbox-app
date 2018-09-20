@@ -51,15 +51,29 @@ function createPresentationRoute() {
     const dumpsViewSummary = new ViewSummary({
         state: 'dumps',
         name: 'System dumps',
-            iconFileName: 'dumps.svg',
+        iconFileName: 'dumps.svg',
         text:'Generate and manage your system dumps.'
+    }).init();
+    const searchViewSummary = new ViewSummary({
+        state: 'search',
+        name: 'Search',
+        iconFileName: 'search.svg',
+        text:'Query nodes from all your repositories or a specific context.'
+    }).init();
+    const aboutViewSummary = new ViewSummary({
+        state: 'about',
+        name: 'About',
+        iconFileName: 'about.svg',
+        text:'Access information about this application.'
     }).init();
     const viewSummaries = new RcdDivElement().init().
         addClass('view-summaries').
         addChild(repositoriesViewSummary).
         addChild(snapshotsViewSummary).
         addChild(exportsViewSummary).
-        addChild(dumpsViewSummary);
+        addChild(dumpsViewSummary).
+        addChild(searchViewSummary).
+        addChild(aboutViewSummary);
 
     const layout = new RcdMaterialLayout().init().
         addClass('presentation-view').
