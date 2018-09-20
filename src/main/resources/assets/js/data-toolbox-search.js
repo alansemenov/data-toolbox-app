@@ -61,12 +61,12 @@ class SearchParamsCard extends RcdDivElement {
             this.repositoryDropdown.addOptions(repositories.map(repository => repository.name));
 
             const repoParameter = getRepoParameter();
-            if (repoParameter) {
+            if (repoParameter && this.repositoryMap[repoParameter]) {
                 this.repositoryDropdown.selectOption(repoParameter);
                 this.branchDropdown.addOptions(this.repositoryMap[repoParameter]);
 
                 const branchParameter = getBranchParameter();
-                if (branchParameter) {
+                if (branchParameter && this.repositoryMap[repoParameter].indexOf(branchParameter) !== -1) {
                     this.branchDropdown.selectOption(branchParameter);
                 }
             }
