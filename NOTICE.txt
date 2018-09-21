@@ -17,3 +17,8 @@ Artwork licenses used by this product:
     Octicons-mark-github.svg
     MIT License
     https://en.wikipedia.org/wiki/File:Octicons-mark-github.svg
+    
+    Elasticsearch - Mark - Black.svg
+    https://www.elastic.co/brand
+    
+    

@@ -61,8 +61,7 @@ class NodeRoute extends DtbRoute {
             .addClass('dtb-node-row')
             .addClass('dtb-responsive-row')
             .addChild(this.actions1Card)
-            .addChild(this.actions2Card)
-            .addChild(this.actions3Card);
+            .addChild(this.actions2Card);
 
         return new RcdMaterialLayout()
             .init()
@@ -128,9 +127,22 @@ class NodeRoute extends DtbRoute {
                     {callback: displayJsonCallback, icon: new RcdImageIcon(config.assetsUrl + '/icons/json.svg').init()});
 
             this.actions1Card
-                .addRow('Export node', null,
-                    {callback: () => this.exportNode(meta), icon: new RcdImageIcon(config.assetsUrl + '/icons/export-icon.svg').init()});
+                .addRow('Display Search Index Document', null, {
+                    callback: () => this.displayIndexDocument('Search', meta._id),
+                    icon: new RcdImageIcon(config.assetsUrl + '/icons/es.svg').init()
+                })
+                .addRow('Display Branch Index Document', null, {
+                    callback: () => this.displayIndexDocument('Branch', meta._id, meta._versionKey),
+                    icon: new RcdImageIcon(config.assetsUrl + '/icons/es.svg').init()
+                })
+                .addRow('Display Version Index Document', null, {
+                    callback: () => this.displayIndexDocument('Version', meta._id, meta._versionKey),
+                    icon: new RcdImageIcon(config.assetsUrl + '/icons/es.svg').init()
+                });
+
             this.actions2Card
+                .addRow('Export node', null,
+                    {callback: () => this.exportNode(meta), icon: new RcdImageIcon(config.assetsUrl + '/icons/export-icon.svg').init()})
                 .addRow('Move/rename node', null, {
                     callback: () => this.moveNode([{
                         id: meta._id,
@@ -138,8 +150,7 @@ class NodeRoute extends DtbRoute {
                         callback: () => setState('node', {repo: getRepoParameter(), branch: getBranchParameter(), id: meta._id})
                     }]),
                     icon: new RcdImageIcon(config.assetsUrl + '/icons/rename.svg').init()
-                });
-            this.actions3Card
+                })
                 .addRow('Delete node', null,
                     {
                         callback: () => this.deleteNodes({
@@ -151,6 +162,29 @@ class NodeRoute extends DtbRoute {
                     });
 
         }
+    }
+
+    displayIndexDocument(type, id, versionKey) {
+        const infoDialog = showShortInfoDialog("Retrieving index document...");
+        return $.ajax({
+            method: 'POST',
+            url: config.servicesUrl + '/document-get',
+            data: JSON.stringify({
+                repositoryName: getRepoParameter(),
+                branchName: getBranchParameter(),
+                type: type.toLowerCase(),
+                id: id,
+                versionKey: versionKey
+            }),
+            contentType: 'application/json; charset=utf-8'
+        }).done((result) => {
+            if (handleResultError(result)) {
+                const formattedJson = this.formatJson(result.success, '');
+                showDetailsDialog(type + ' Index Document [' + id + ']', formattedJson).addClass('node-details-dialog');
+            }
+        }).fail(handleAjaxError).always(() => {
+            infoDialog.close();
+        });
     }
 
     exportNode(meta) {
