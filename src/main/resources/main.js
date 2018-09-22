@@ -1,1 +1,1 @@
-log.info('Data Toolbox started!');
+log.info('Data Toolbox started.');

@@ -96,7 +96,8 @@ class SearchParamsCard extends RcdDivElement {
             repositoryName: repositoryName === 'All repositories' ? null : repositoryName,
             branchName: branchName === 'All branches' ? null : branchName,
             query: this.queryField.getValue(),
-            count: 50
+            start: getStartParameter(),
+            count: getCountParameter()
         };
         this.searchListeners.forEach((listener) => listener(params));
     }
@@ -176,10 +177,40 @@ class SearchRoute extends DtbRoute {
                     });
                 });
             }
+            this.resultCard.addChild(this.createResultCardFooter(result));
+
         } else {
             this.resultCard.addRow('Search failure');
         }
         this.layout.addChild(this.resultCard);
+    }
+
+    createResultCardFooter(result) {
+        const startInt = parseInt(getStartParameter());
+        const countInt = parseInt(getCountParameter());
+        const previousCallback = () => setState('search', {
+            repo: getRepoParameter(),
+            branch: getBranchParameter(),
+            query: getQueryParameter(),
+            start: Math.max(0, startInt - countInt),
+            count: getCountParameter(),
+            sort: getSortParameter()
+        });
+        const nextCallback = () => setState('search', {
+            repo: getRepoParameter(),
+            branch: getBranchParameter(),
+            query: getQueryParameter(),
+            start: startInt + countInt,
+            count: getCountParameter(),
+            sort: getSortParameter()
+        });
+        return new RcdMaterialTableCardFooter({
+            start: parseInt(getStartParameter()),
+            count: result.success.hits.length,
+            total: result.success.total,
+            previousCallback: previousCallback,
+            nextCallback: nextCallback
+        }).init();
     }
 
     refreshBreadcrumbs() {
