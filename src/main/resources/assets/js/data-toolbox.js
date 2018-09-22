@@ -127,8 +127,8 @@ function getStartParameter() {
     return RcdHistoryRouter.getParameters().start || '0';
 }
 
-function getCountParameter() {
-    return RcdHistoryRouter.getParameters().count || '50';
+function getCountParameter(defaultValue) {
+    return RcdHistoryRouter.getParameters().count || defaultValue || '50';
 }
 
 function getFilterParameter() {

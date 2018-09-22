@@ -97,7 +97,7 @@ class SearchParamsCard extends RcdDivElement {
             branchName: branchName === 'All branches' ? null : branchName,
             query: this.queryField.getValue(),
             start: getStartParameter(),
-            count: getCountParameter()
+            count: getCountParameter(20)
         };
         this.searchListeners.forEach((listener) => listener(params));
     }
@@ -187,13 +187,13 @@ class SearchRoute extends DtbRoute {
 
     createResultCardFooter(result) {
         const startInt = parseInt(getStartParameter());
-        const countInt = parseInt(getCountParameter());
+        const countInt = parseInt(getCountParameter(20));
         const previousCallback = () => setState('search', {
             repo: getRepoParameter(),
             branch: getBranchParameter(),
             query: getQueryParameter(),
             start: Math.max(0, startInt - countInt),
-            count: getCountParameter(),
+            count: getCountParameter(20),
             sort: getSortParameter()
         });
         const nextCallback = () => setState('search', {
@@ -201,7 +201,7 @@ class SearchRoute extends DtbRoute {
             branch: getBranchParameter(),
             query: getQueryParameter(),
             start: startInt + countInt,
-            count: getCountParameter(),
+            count: getCountParameter(20),
             sort: getSortParameter()
         });
         return new RcdMaterialTableCardFooter({
