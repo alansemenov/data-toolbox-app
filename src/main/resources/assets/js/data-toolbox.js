@@ -139,8 +139,8 @@ function getQueryParameter() {
     return RcdHistoryRouter.getParameters().query || '';
 }
 
-function getSortParameter() {
-    return RcdHistoryRouter.getParameters().sort || '';
+function getSortParameter(defaultValue) {
+    return RcdHistoryRouter.getParameters().sort || defaultValue || '';
 }
 
 function getPropertyParameter() {

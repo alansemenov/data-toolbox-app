@@ -20,6 +20,13 @@ class SearchParamsCard extends RcdDivElement {
             .addChild(this.branchDropdown);
         this.queryField = new RcdMaterialTextField('Query', '').init()
             .addClass('dtb-search-query');
+        this.sortField = new RcdMaterialTextField('Sort', '').init()
+            .addClass('dtb-search-sort');
+        this.queryRow = new RcdDivElement().init()
+            .addClass('dtb-search-params-row')
+            .addClass('dtb-responsive-row')
+            .addChild(this.queryField)
+            .addChild(this.sortField);
         this.searchButtonArea = new RcdMaterialButtonArea('Search', () => {
         }, RcdMaterialButtonType.FLAT).init()
             .addClass('dtb-search-button')
@@ -30,7 +37,7 @@ class SearchParamsCard extends RcdDivElement {
         return super.init()
             .addClass('dtb-search-params')
             .addChild(this.contextRow)
-            .addChild(this.queryField)
+            .addChild(this.queryRow)
             .addChild(this.searchButtonArea)
             .addKeyUpListener('Enter', () => this.search());
     }
@@ -39,10 +46,12 @@ class SearchParamsCard extends RcdDivElement {
         const repo = this.repositoryDropdown.getSelectedValue();
         const branch = this.branchDropdown.getSelectedValue();
         const query = this.queryField.getValue();
+        const sort = this.sortField.getValue();
         RcdHistoryRouter.setState('search', {
             repo: repo === 'All repositories' ? undefined : repo,
             branch: branch === 'All branches' ? undefined : branch,
-            query: query
+            query: query,
+            sort: sort
         });
     }
 
@@ -74,6 +83,8 @@ class SearchParamsCard extends RcdDivElement {
 
         const queryParameter = getQueryParameter();
 
+
+        this.sortField.setValue(getSortParameter('_score DESC'))
         this.queryField
             .setValue(queryParameter)
             .focus()
@@ -96,6 +107,7 @@ class SearchParamsCard extends RcdDivElement {
             repositoryName: repositoryName === 'All repositories' ? null : repositoryName,
             branchName: branchName === 'All branches' ? null : branchName,
             query: this.queryField.getValue(),
+            sort: this.sortField.getValue(),
             start: getStartParameter(),
             count: getCountParameter(20)
         };
@@ -194,7 +206,7 @@ class SearchRoute extends DtbRoute {
             query: getQueryParameter(),
             start: Math.max(0, startInt - countInt),
             count: getCountParameter(20),
-            sort: getSortParameter()
+            sort: getSortParameter('_score DESC')
         });
         const nextCallback = () => setState('search', {
             repo: getRepoParameter(),
@@ -202,7 +214,7 @@ class SearchRoute extends DtbRoute {
             query: getQueryParameter(),
             start: startInt + countInt,
             count: getCountParameter(20),
-            sort: getSortParameter()
+            sort: getSortParameter('_score DESC')
         });
         return new RcdMaterialTableCardFooter({
             start: parseInt(getStartParameter()),
