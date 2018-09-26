@@ -101,6 +101,9 @@
         width: calc(~"25%" - @rcd-material-layout-margin);
         margin: @rcd-material-layout-margin / 2;
       }
+      .rcd-image-icon {
+        opacity: 1;
+      }
     }
   }
 }
@@ -168,17 +171,17 @@
 }
 
 .dtb-include-versions-field :extend(.rcd-flex-hbox) {
-  
+
   .rcd-material-icon-area {
     height: 36px;
     padding: 6px;
     padding-left: 0;
   }
 }
+
 .dtb-include-versions-label {
   font-size: 16px;
 }
-
 
 @media (min-width: @rcd-material-min-tablet-width) {
   .dtb-property-dialog {
@@ -198,3 +201,8 @@
     align-self: center;
   }
 }
+
+@import "responsive-row";
+@import "node";
+@import "search";
+

@@ -26,11 +26,8 @@ class NodesRoute extends DtbRoute {
         this.tableCard = new RcdMaterialTableCard('Nodes').init().
             addColumn('Node name').
             addColumn('Node ID', {classes: ['non-mobile-cell']}).
-            addColumn('', {icon: true, classes: ['non-mobile-cell']}).
-            addColumn('', {icon: true, classes: ['non-mobile-cell']}).
-            addColumn('', {icon: true, classes: ['non-mobile-cell']}).
-            addColumn('', {icon: true, classes: ['non-mobile-cell']}).
-            addColumn('', {icon: true, classes: ['mobile-cell']}).
+            addColumn('', {icon: true}).
+            addColumn('', {icon: true}).
             addIconArea(exportIconArea, {min: 1, max: 1}).
             addIconArea(importIconArea, {max: 0}).
             addIconArea(moveIconArea, {min: 1}).
@@ -68,11 +65,8 @@ class NodesRoute extends DtbRoute {
         this.tableCard.createRow({selectable:false}).
             addCell('..').
             addCell('', {classes: ['non-mobile-cell']}).
-            addCell(null, {icon: true, classes: ['non-mobile-cell']}).
-            addCell(null, {icon: true, classes: ['non-mobile-cell']}).
-            addCell(null, {icon: true, classes: ['non-mobile-cell']}).
-            addCell(null, {icon: true, classes: ['non-mobile-cell']}).
-            addCell(null, {icon: true, classes: ['mobile-cell']}).
+            addCell(null, {icon: true}).
+            addCell(null, {icon: true}).
             addClass('rcd-clickable').
             addClickListener(() => {
                 if (getPathParameter()) {
@@ -85,33 +79,17 @@ class NodesRoute extends DtbRoute {
         if (handleResultError(result)) {
             result.success.hits.forEach((node) => {
                 
-                const displayMetaDataCallback = () => setState('system-properties',{repo: getRepoParameter(), branch: getBranchParameter(), path: node._path});
-                const displayPropertiesCallback = () => setState('properties',{repo: getRepoParameter(), branch: getBranchParameter(), path: node._path});
-                const displayPermissionsCallback = () => setState('permissions',{repo: getRepoParameter(), branch: getBranchParameter(), path: node._path});
+                const displayInfoCallback = () => setState('node',{repo: getRepoParameter(), branch: getBranchParameter(), path: node._path});
                 const displayJsonCallback = () => this.displayNodeAsJson(node._id);
                 
-                const displayMetaDataIconArea = new RcdImageIconArea(config.assetsUrl + '/icons/meta.svg', (source, event) => {displayMetaDataCallback();event.stopPropagation();}).init().setTooltip('Display system properties');
-                const displayPropertiesIconArea = new RcdImageIconArea(config.assetsUrl + '/icons/properties.svg', (source, event) => {displayPropertiesCallback();event.stopPropagation();}).init().setTooltip('Display properties');
-                const displayPermissionsIconArea = new RcdGoogleMaterialIconArea('lock', (source, event) => {displayPermissionsCallback();event.stopPropagation();}).init().setTooltip('Display permissions');
+                const displayNodeIconArea = new RcdGoogleMaterialIconArea('info', (source, event) => {displayInfoCallback();event.stopPropagation();}).init().setTooltip('Display info');
                 const displayJsonIconArea = new RcdImageIconArea(config.assetsUrl + '/icons/json.svg', (source, event) => {displayJsonCallback();event.stopPropagation();}).init().setTooltip('Display as JSON');
-                
-                const moreIconAreaItems =  [{text:'Display system properties', callback: displayMetaDataCallback}, 
-                    {text:'Display properties', callback: displayPropertiesCallback}, 
-                    {text:'Display permissions', callback: displayPermissionsCallback}, 
-                    {text:'Display as JSON', callback: displayJsonCallback}];
-                const moreIconArea = new RcdGoogleMaterialIconArea('more_vert', (source, event) => {
-                    RcdMaterialMenuHelper.displayMenu(source, moreIconAreaItems, 200)
-                    event.stopPropagation();
-                }).init().setTooltip('Display...');
 
                 const row = this.tableCard.createRow().
                     addCell(node._name).
                     addCell(node._id, {classes: ['non-mobile-cell']}).
-                    addCell(displayMetaDataIconArea, {icon: true, classes: ['non-mobile-cell']}).
-                    addCell(displayPropertiesIconArea, {icon: true, classes: ['non-mobile-cell']}).
-                    addCell(displayPermissionsIconArea, {icon: true, classes: ['non-mobile-cell']}).
-                    addCell(displayJsonIconArea, {icon: true, classes: ['non-mobile-cell']}).
-                    addCell(moreIconArea, {icon: true, classes: ['mobile-cell']}).
+                    addCell(displayNodeIconArea, {icon: true}).
+                    addCell(displayJsonIconArea, {icon: true}).
                     setAttribute('id', node._id).
                     setAttribute('path', node._path).
                     setAttribute('name', node._name).
@@ -149,156 +127,18 @@ class NodesRoute extends DtbRoute {
     }
     
     deleteNodes() {
-        showConfirmationDialog("Delete selected nodes?", 'DELETE', () => this.doDeleteNodes());
-    }
-
-    doDeleteNodes() {
-        const infoDialog = showLongInfoDialog("Deleting nodes...");
         const nodeKeys = this.tableCard.getSelectedRows().map((row) => row.attributes['id']);
-        $.ajax({
-            method: 'POST',
-            url: config.servicesUrl + '/node-delete',
-            data: JSON.stringify({
-                repositoryName: getRepoParameter(),
-                branchName: getBranchParameter(),
-                keys: nodeKeys
-            }),
-            contentType: 'application/json; charset=utf-8'
-        }).done((result) => handleTaskCreation(result, {
-            taskId: result.taskId,
-            message: 'Deleting nodes...',
-            doneCallback: (success) => displaySnackbar(success + ' node' + (success > 1 ? 's': '') + ' deleted'),
-            alwaysCallback: () => this.retrieveNodes()
-        })).fail(handleAjaxError).always(() => {
-            infoDialog.close();
-        });
-    }
-
-    displayNodeAsJson(nodeKey) {
-        if (!nodeKey) {
-            nodeKey = this.tableCard.getSelectedRows().map((row) => row.attributes['id'])[0];
-        }
-
-        const infoDialog = showShortInfoDialog("Retrieving node info...");
-        return $.ajax({
-            method: 'POST',
-            url: config.servicesUrl + '/node-get',
-            data: JSON.stringify({
-                repositoryName: getRepoParameter(),
-                branchName: getBranchParameter(),
-                key: nodeKey
-            }),
-            contentType: 'application/json; charset=utf-8'
-        }).done((result) => {
-            if (handleResultError(result)) {
-                const formattedJson = this.formatJson(result.success, '');
-                showDetailsDialog('Node [' + nodeKey + ']', formattedJson).
-                    addClass('node-details-dialog');
-            }
-        }).fail(handleAjaxError).always(() => {
-            infoDialog.close();
-        });
-    }
-
-    formatJson(value, tab) {
-        if (typeof value === 'string') {
-            return '<a class=json-string>"' + value + '"</a>';
-        } else if (typeof value === "number") {
-            return '<a class=json-number>' + value + '</a>';
-        } else if (typeof value === "boolean") {
-            return '<a class=json-boolean>' + value + '</a>';
-        } else if (Array.isArray(value)) {
-            let formattedArray = '[\n';
-            for (let i = 0; i < value.length; i++) {
-                const arrayElement = value[i];
-                formattedArray += tab + '  ' + this.formatJson(arrayElement, tab + '  ') + (i < (value.length - 1) ? ',' : '') + '\n';
-            }
-            formattedArray += tab + ']';
-            return formattedArray;
-        } else if (typeof value === "object") {
-            let formattedObject = '{\n';
-            const attributeNames = Object.keys(value);
-            for (let i = 0; i < attributeNames.length; i++) {
-                const attributeName = attributeNames[i];
-                formattedObject += tab + '  "' + attributeName + '": ' + this.formatJson(value[attributeName], tab + '  ') +
-                                   (i < (attributeNames.length - 1) ? ',' : '') + '\n';
-            }
-            formattedObject += tab + '}';
-            return formattedObject;
-        } else {
-            return value;
-        }
-    }
-
-    moveNode() {
-        const nodeCount = this.tableCard.getSelectedRows().map((row) => row.attributes['path']).length;
-        const pathPrefix = this.getPathPrefix();
-        const title = nodeCount == 1 ? 'Move/rename node' : 'Move nodes';
-        const currentValue = nodeCount == 1 ? this.tableCard.getSelectedRows().map((row) => row.attributes['path'])[0] : pathPrefix;
-        const currentActionLabel = nodeCount == 1 ? 'RENAME' : 'MOVE';
-        const currentLabel = nodeCount == 1 ? 'New name/path/parent path' : 'New parent path';
-        const inputDialog = new RcdMaterialInputDialog({
-            title: title,
-            confirmationLabel: currentActionLabel,
-            label: currentLabel,
-            placeholder: '',
-            value: currentValue,
-            callback: (value) => isValid(value) && this.doMoveNode(value)
-        }).init();
-        
-        //TODO Implement clean solution. Adapt Framework
-        inputDialog.addInputListener((source) => {
-            const newValue = source.getValue();
-            inputDialog.enable(isValid(newValue));
-            if (nodeCount == 1) {
-                const newActionLabel = isRename(newValue) ? 'RENAME' : 'MOVE';
-                inputDialog.setConfirmationLabel(newActionLabel);
-            }
-        });
-        
-        function isValid(value) {
-            if (!value) {
-                return false;
-            }
-            if (nodeCount > 1 && value.slice(-1) !== '/') {
-                return false;
-            }
-            return true;
-        }
-        
-        function isRename(value) {
-            if (!value) {
-                return false;
-            }
-            if (value.startsWith(pathPrefix)){
-                const subValue = value.substr(pathPrefix.length);
-                return subValue.length > 0 && subValue.indexOf('/') === -1;
-            }
-            return false;
-        }
-        inputDialog.open();
+        return super.deleteNodes({nodeKeys: nodeKeys});
     }
     
-    doMoveNode(newNodePath) {
-        const infoDialog = showLongInfoDialog("Moving nodes...");
-        return $.ajax({
-            method: 'POST',
-            url: config.servicesUrl + '/node-move',
-            data: JSON.stringify({
-                repositoryName: getRepoParameter(),
-                branchName: getBranchParameter(),
-                sources: this.tableCard.getSelectedRows().map((row) => row.attributes['id']),
-                target: newNodePath
-            }),
-            contentType: 'application/json; charset=utf-8'
-        }).done((result) => handleTaskCreation(result, {
-            taskId: result.taskId,
-            message: 'Moving nodes...',
-            doneCallback: (success) =>  displaySnackbar('Node(s) moved'),
-            alwaysCallback: () => RcdHistoryRouter.refresh()
-        })).fail(handleAjaxError).always(() => {
-            infoDialog.close();
+    moveNode() {
+        const sources = this.tableCard.getSelectedRows().map((row) => {
+            return {
+                id: row.attributes['id'],
+                path: row.attributes['path']
+            };
         });
+        return super.moveNode(sources);
     }
 
     filterNodes() {
@@ -338,6 +178,7 @@ class NodesRoute extends DtbRoute {
     }
 
     exportNode() {
+        const nodePath = this.tableCard.getSelectedRows().map((row) => row.attributes['path'])[0];
         const baseExportName = getPathParameter()
             ? (this.tableCard.getSelectedRows().map((row) => row.attributes['name'])[0] || 'export') + '-' + getBranchParameter()
             : getRepoParameter() + '-' + getBranchParameter();
@@ -348,29 +189,7 @@ class NodesRoute extends DtbRoute {
             label: "Export name",
             placeholder: defaultExportName,
             value: defaultExportName,
-            callback: (value) => this.doExportNode(value || defaultExportName)
-        });
-    }
-
-    doExportNode(exportName) {
-        const infoDialog = showLongInfoDialog("Exporting nodes...");
-        return $.ajax({
-            method: 'POST',
-            url: config.servicesUrl + '/node-export',
-            data: JSON.stringify({
-                repositoryName: getRepoParameter(),
-                branchName: getBranchParameter(),
-                nodePath: this.tableCard.getSelectedRows().map((row) => row.attributes['path'])[0],
-                exportName: exportName
-            }),
-            contentType: 'application/json; charset=utf-8'
-        }).done((result) => handleTaskCreation(result, {
-            taskId: result.taskId,
-            message: 'Exporting nodes...',
-            doneCallback: (success) =>  new ExportResultDialog(success).init().open(),
-            alwaysCallback: () => setState('exports')
-        })).fail(handleAjaxError).always(() => {
-            infoDialog.close();
+            callback: (value) => this.doExportNode(nodePath, value || defaultExportName)
         });
     }
 

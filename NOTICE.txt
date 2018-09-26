@@ -13,3 +13,12 @@ Artwork licenses used by this product:
     Material Icons
     Apache License 2.0
     https://design.google.com/icons/
+    
+    Octicons-mark-github.svg
+    MIT License
+    https://en.wikipedia.org/wiki/File:Octicons-mark-github.svg
+    
+    Elasticsearch - Mark - Black.svg
+    https://www.elastic.co/brand
+    
+    
