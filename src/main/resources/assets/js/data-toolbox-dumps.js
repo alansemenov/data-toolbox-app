@@ -47,13 +47,17 @@ class DtbDumpInputDialog extends RcdMaterialInputDialog {
             .addInputListener(() => this.checkValidity());
     }
 
-    //TODO Uncomment when fixed in Enonic XP
-    // init() {
-    //     return super.init()
-    //         .addItem(this.includeVersionsField)
-    //         .addItem(this.maxVersionsField)
-    //         .addItem(this.maxVersionsAgeField);
-    // }
+    init() {
+        super.init();
+
+        //TODO Remove after upgrade of min Enonic XP version
+        if (config.xpVersion.indexOf('6.13.') !== 0) {
+            this.addItem(this.includeVersionsField)
+            // .addItem(this.maxVersionsField)
+            // .addItem(this.maxVersionsAgeField);
+        }
+        return this;
+    }
 
     checkValidity() {
         this.enable(this.isValid());
