@@ -18,6 +18,7 @@ Starting from version 2.0.0, help dialogs are present to give you more informati
 
 | App version | Required XP version | Download |
 | ----------- | ------------------- | -------- |
+| 2.2.3 | 6.13.0 - 6.Y.Z | [Download](https://dl.bintray.com/rcd-systems/rcd-repo/systems/rcd/enonic/datatoolbox/2.2.3/datatoolbox-2.2.3.jar) |
 | 2.2.2 | 6.13.0 - 6.Y.Z | [Download](https://dl.bintray.com/rcd-systems/rcd-repo/systems/rcd/enonic/datatoolbox/2.2.2/datatoolbox-2.2.2.jar) |
 | 2.2.1 | 6.13.0 - 6.Y.Z | [Download](https://dl.bintray.com/rcd-systems/rcd-repo/systems/rcd/enonic/datatoolbox/2.2.1/datatoolbox-2.2.1.jar) |
 | 2.2.0 | 6.13.0 - 6.Y.Z | [Download](https://dl.bintray.com/rcd-systems/rcd-repo/systems/rcd/enonic/datatoolbox/2.2.0/datatoolbox-2.2.0.jar) |
