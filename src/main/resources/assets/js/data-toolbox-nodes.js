@@ -313,7 +313,7 @@ class NodesRoute extends DtbRoute {
             iconName: 'sort',
             definition: 'Sort the nodes based on an expression. ' +
                         'The sorting expression is composed of a node property to sort on and the direction: ascending or descending.' +
-                        'Examples: "_timestamp DESC", "_name ASC"'
+                        'Examples: "_ts DESC", "_name ASC"'
         }).
         addActionDefinition({iconName: 'delete', definition: 'Delete the selected nodes.'}).
         addActionDefinition({iconSrc: config.assetsUrl + '/icons/meta.svg',definition: 'Display the node system properties.'}).

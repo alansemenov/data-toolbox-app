@@ -14,7 +14,7 @@ class NodeDetailsCard extends RcdDivElement {
                             'Path: ' + meta._path + '<br/>' +
                             'Version key: ' + meta._versionKey + '<br/>' +
                             'Type: ' + meta._nodeType + '<br/>' +
-                            'Timestamp: ' + meta._timestamp + '<br/>' +
+                            'Timestamp: ' + meta._ts + '<br/>' +
                             'State: ' + meta._state + '<br/>' +
                             'Child order: ' + meta._childOrder + '<br/>' +
                             'Manual order value: ' + (meta._manualOrderValue || '');

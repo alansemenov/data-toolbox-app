@@ -33,7 +33,7 @@ function getMeta(repositoryName, branchName, key) {
             _nodeType: result._nodeType,
             _versionKey: result._versionKey,
             _manualOrderValue: result._manualOrderValue,
-            _timestamp: result._timestamp
+            _ts: result._ts
         }
     };
 }
