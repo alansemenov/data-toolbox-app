@@ -7,15 +7,10 @@ class HelpDialog extends RcdMaterialModalDialog {
 
     init() {
         const closeCallback = () => this.close();
-        super.init().
-            addAction('CLOSE', closeCallback).
-            addKeyUpListener('Enter', closeCallback).
-            addKeyUpListener('Escape', closeCallback);
+        super.init().addAction('CLOSE', closeCallback).addKeyUpListener('Enter', closeCallback).addKeyUpListener('Escape', closeCallback);
 
         this.definitions.forEach(definition => {
-            const definitionElement = new RcdPElement().init().
-                setText(definition).
-                addClass('help-definition');
+            const definitionElement = new RcdPElement().init().setText(definition).addClass('help-definition');
             this.addItem(definitionElement);
         });
         this.dialog.addClass('help-dialog');
@@ -23,8 +18,7 @@ class HelpDialog extends RcdMaterialModalDialog {
     }
 
     addActionDefinition(params) {
-        const actionDefinition = new RcdDivElement().init().
-            addClass('help-action-definition');
+        const actionDefinition = new RcdDivElement().init().addClass('help-action-definition');
         if (params.iconName) {
             actionDefinition.addChild(new RcdGoogleMaterialIcon(params.iconName).init());
         } else if (params.iconSrc) {
@@ -64,12 +58,8 @@ class ImportResultDialog extends RcdMaterialModalDialog {
                         'Errors: ' + errorCount;
         const resultItem = new RcdTextElement(summary).init();
 
-        super.init().
-            addItem(resultItem).
-            addAction('CLOSE', closeCallback).
-            addAction('DETAILS', detailsCallback).
-            addKeyUpListener('Enter', detailsCallback).
-            addKeyUpListener('Escape', closeCallback);
+        super.init().addItem(resultItem).addAction('CLOSE', closeCallback).addAction('DETAILS', detailsCallback).addKeyUpListener('Enter',
+            detailsCallback).addKeyUpListener('Escape', closeCallback);
         return this;
     }
 
@@ -139,12 +129,8 @@ class LoadExportDumpDialog extends RcdMaterialModalDialog {
                   + summary;
         const resultItem = new RcdTextElement(summary).init();
 
-        super.init().
-            addItem(resultItem).
-            addAction('CLOSE', closeCallback).
-            addAction('DETAILS', detailsCallback).
-            addKeyUpListener('Enter', detailsCallback).
-            addKeyUpListener('Escape', closeCallback);
+        super.init().addItem(resultItem).addAction('CLOSE', closeCallback).addAction('DETAILS', detailsCallback).addKeyUpListener('Enter',
+            detailsCallback).addKeyUpListener('Escape', closeCallback);
         return this;
     }
 
@@ -158,16 +144,16 @@ class LoadExportDumpDialog extends RcdMaterialModalDialog {
                 text += '<b>Branch [' + repositoryName + '/' + branchName + ']</b>\n';
                 const branchDumpResult = repositoryDumpResult[branchName];
                 text += '# added nodes: ' + branchDumpResult.addedNodeCount + '\n' +
-                           '# updated nodes: ' + branchDumpResult.updatedNodeCount + '\n' +
-                           '# imported binaries: ' + branchDumpResult.importedBinaryCount + '\n' +
-                           '# errors: ' + branchDumpResult.errorCount + '\n' +
-                           'Added nodes: ' + JSON.stringify(branchDumpResult.addedNodes, null, 2) + '\n' +
-                           'Updated nodes: ' + JSON.stringify(branchDumpResult.updatedNodes, null, 2) + '\n' +
-                           'Imported binaries: ' + JSON.stringify(branchDumpResult.importedBinaries, null, 2) + '\n' +
-                           'Errors: ' + JSON.stringify(branchDumpResult.errors, null, 2) + '\n\n';
+                        '# updated nodes: ' + branchDumpResult.updatedNodeCount + '\n' +
+                        '# imported binaries: ' + branchDumpResult.importedBinaryCount + '\n' +
+                        '# errors: ' + branchDumpResult.errorCount + '\n' +
+                        'Added nodes: ' + JSON.stringify(branchDumpResult.addedNodes, null, 2) + '\n' +
+                        'Updated nodes: ' + JSON.stringify(branchDumpResult.updatedNodes, null, 2) + '\n' +
+                        'Imported binaries: ' + JSON.stringify(branchDumpResult.importedBinaries, null, 2) + '\n' +
+                        'Errors: ' + JSON.stringify(branchDumpResult.errors, null, 2) + '\n\n';
             }
         }
-        
+
         showDetailsDialog('Load result details', text);
     }
 }
@@ -250,14 +236,10 @@ class DumpResultDialog extends RcdMaterialModalDialog {
                   + summary;
         const resultItem = new RcdTextElement(summary).init();
 
-        super.init().
-            addItem(resultItem).
-            addAction('CLOSE', closeCallback).
-            addKeyUpListener('Escape', closeCallback);
+        super.init().addItem(resultItem).addAction('CLOSE', closeCallback).addKeyUpListener('Escape', closeCallback);
 
         if (errorCount > 0) {
-            this.addAction('ERRORS', errorsCallback).
-                addKeyUpListener('Enter', errorsCallback);
+            this.addAction('ERRORS', errorsCallback).addKeyUpListener('Enter', errorsCallback);
         } else {
             this.addKeyUpListener('Enter', closeCallback);
         }
@@ -316,10 +298,8 @@ class DtbRoute extends RcdMaterialRoute {
     }
 
     createBreadcrumbsLayout() {
-        const helpIconArea = new RcdGoogleMaterialIconArea('help', () => this.displayHelp()).init().
-            setTooltip('Help');
-        this.breadcrumbsLayout = new RcdMaterialBreadcrumbsLayout().init().
-            addChild(helpIconArea);
+        const helpIconArea = new RcdGoogleMaterialIconArea('help', () => this.displayHelp()).init().setTooltip('Help');
+        this.breadcrumbsLayout = new RcdMaterialBreadcrumbsLayout().init().addChild(helpIconArea);
         return this.breadcrumbsLayout;
     }
 
@@ -328,9 +308,9 @@ class DtbRoute extends RcdMaterialRoute {
 
     onDisplay() {
     }
-    
+
     displayHelp() {
-        
+
     }
 
     getParentPath(path) {
@@ -345,12 +325,12 @@ class DtbRoute extends RcdMaterialRoute {
         const path = getPathParameter();
         return path && path !== '/' ? (path + '/') : '/';
     }
-    
+
     getParentProperty() {
         const property = getPropertyParameter();
         return property && property.substring(0, property.lastIndexOf('.'));
     }
-    
+
     displayNodeAsJson(nodeKey) {
         const infoDialog = showShortInfoDialog("Retrieving node info...");
         return $.ajax({
@@ -373,7 +353,11 @@ class DtbRoute extends RcdMaterialRoute {
     }
 
     formatJson(value, tab) {
-        if (typeof value === 'string') {
+        if (value === null) {
+            return '<a class=json-null>null</a>';
+        } else if (value === undefined) {
+            return '<a class=json-undefined>undefined</a>';
+        } else if (typeof value === 'string') {
             return '<a class=json-string>"' + value + '"</a>';
         } else if (typeof value === "number") {
             return '<a class=json-number>' + value + '</a>';
@@ -417,7 +401,7 @@ class DtbRoute extends RcdMaterialRoute {
         }).done((result) => handleTaskCreation(result, {
             taskId: result.taskId,
             message: 'Exporting nodes...',
-            doneCallback: (success) =>  new ExportResultDialog(success).init().open(),
+            doneCallback: (success) => new ExportResultDialog(success).init().open(),
             alwaysCallback: () => setState('exports')
         })).fail(handleAjaxError).always(() => {
             infoDialog.close();
@@ -425,7 +409,8 @@ class DtbRoute extends RcdMaterialRoute {
     }
 
     deleteNodes(params) {
-        showConfirmationDialog(params.nodeKeys.length > 1 ? 'Delete this node?' : 'Delete selected nodes?', 'DELETE', () => this.doDeleteNodes(params));
+        showConfirmationDialog(params.nodeKeys.length > 1 ? 'Delete this node?' : 'Delete selected nodes?', 'DELETE',
+            () => this.doDeleteNodes(params));
     }
 
     doDeleteNodes(params) {
@@ -442,7 +427,7 @@ class DtbRoute extends RcdMaterialRoute {
         }).done((result) => handleTaskCreation(result, {
             taskId: result.taskId,
             message: 'Deleting nodes...',
-            doneCallback: (success) => displaySnackbar(success + ' node' + (success > 1 ? 's': '') + ' deleted'),
+            doneCallback: (success) => displaySnackbar(success + ' node' + (success > 1 ? 's' : '') + ' deleted'),
             alwaysCallback: params.callback ? params.callback : () => RcdHistoryRouter.refresh()
         })).fail(handleAjaxError).always(() => {
             infoDialog.close();
@@ -489,12 +474,13 @@ class DtbRoute extends RcdMaterialRoute {
             if (!value) {
                 return false;
             }
-            if (value.startsWith(pathPrefix)){
+            if (value.startsWith(pathPrefix)) {
                 const subValue = value.substr(pathPrefix.length);
                 return subValue.length > 0 && subValue.indexOf('/') === -1;
             }
             return false;
         }
+
         inputDialog.open();
     }
 
@@ -513,7 +499,7 @@ class DtbRoute extends RcdMaterialRoute {
         }).done((result) => handleTaskCreation(result, {
             taskId: result.taskId,
             message: 'Moving nodes...',
-            doneCallback: (success) =>  displaySnackbar('Node(s) moved'),
+            doneCallback: (success) => displaySnackbar('Node(s) moved'),
             alwaysCallback: sources[0].callback ? sources[0].callback() : () => RcdHistoryRouter.refresh()
         })).fail(handleAjaxError).always(() => {
             infoDialog.close();
@@ -536,7 +522,7 @@ function handleTaskCreation(result, params) {
                         result = {error: "Error while parsing task result: " + e.message};
                     }
                     if (handleResultError(result)) {
-                        if(params.doneCallback) {
+                        if (params.doneCallback) {
                             params.doneCallback(result.success);
                         }
                     }
@@ -579,7 +565,7 @@ function retrieveTask(params) {
                     clearInterval(intervalId);
                     params.doneCallback(task);
                     params.alwaysCallback();
-                } else if (!task || task.state === 'RUNNING'){
+                } else if (!task || task.state === 'RUNNING') {
 
                     if (params.progressCallback) {
                         params.progressCallback(task);

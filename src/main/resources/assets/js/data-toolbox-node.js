@@ -61,7 +61,8 @@ class NodeRoute extends DtbRoute {
             .addClass('dtb-node-row')
             .addClass('dtb-responsive-row')
             .addChild(this.actions1Card)
-            .addChild(this.actions2Card);
+            .addChild(this.actions2Card)
+            .addChild(this.actions3Card);
 
         return new RcdMaterialLayout()
             .init()
@@ -141,6 +142,20 @@ class NodeRoute extends DtbRoute {
                 });
 
             this.actions2Card
+                .addRow('Display Node blob', null, {
+                    callback: () => this.displayBlob('Node', meta._id, meta._versionKey),
+                    icon: new RcdImageIcon(config.assetsUrl + '/icons/es.svg').init()
+                })
+                .addRow('Display Access Control blob', null, {
+                    callback: () => this.displayBlob('Access', meta._id, meta._versionKey),
+                    icon: new RcdImageIcon(config.assetsUrl + '/icons/es.svg').init()
+                })
+                .addRow('Display Index Config blob', null, {
+                    callback: () => this.displayBlob('Index', meta._id, meta._versionKey),
+                    icon: new RcdImageIcon(config.assetsUrl + '/icons/es.svg').init()
+                });
+
+            this.actions3Card
                 .addRow('Export node', null,
                     {callback: () => this.exportNode(meta), icon: new RcdImageIcon(config.assetsUrl + '/icons/export-icon.svg').init()})
                 .addRow('Move/rename node', null, {
@@ -181,6 +196,30 @@ class NodeRoute extends DtbRoute {
             if (handleResultError(result)) {
                 const formattedJson = this.formatJson(result.success, '');
                 showDetailsDialog(type + ' Index Document [' + id + ']', formattedJson).addClass('node-details-dialog');
+            }
+        }).fail(handleAjaxError).always(() => {
+            infoDialog.close();
+        });
+    }
+
+    displayBlob(type, id, versionKey) {
+        const infoDialog = showShortInfoDialog("Retrieving blob...");
+        return $.ajax({
+            method: 'POST',
+            url: config.servicesUrl + '/blob-get',
+            data: JSON.stringify({
+                repositoryName: getRepoParameter(),
+                branchName: getBranchParameter(),
+                type: type.toLowerCase(),
+                id: id,
+                versionKey: versionKey
+            }),
+            contentType: 'application/json; charset=utf-8'
+        }).done((result) => {
+            if (handleResultError(result)) {
+                const formattedJson = this.formatJson(result.success, '');
+                showDetailsDialog(type + ' Blob [' + id + ']', formattedJson)
+                    .addClass('node-details-dialog');
             }
         }).fail(handleAjaxError).always(() => {
             infoDialog.close();
