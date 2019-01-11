@@ -10,10 +10,10 @@ class DtbDumpInputDialog extends RcdMaterialInputDialog {
                 params.callback({
                     name: value || params.defaultValue,
                     includeVersions: this.includeVersionsCheckbox.isSelected(),
-                    maxVersions: this.includeVersionsCheckbox.isSelected() && this.maxVersionsField.getValue() ? Number(
-                        this.maxVersionsField.getValue()) : undefined,
-                    maxVersionsAge: this.includeVersionsCheckbox.isSelected() && this.maxVersionsAgeField.getValue() ? Number(
-                        this.maxVersionsAgeField.getValue()) : undefined
+                    maxVersions: this.includeVersionsCheckbox.isSelected() && this.maxVersionsField.getValue()
+                        ? Number(this.maxVersionsField.getValue()) : undefined,
+                    maxVersionsAge: this.includeVersionsCheckbox.isSelected() && this.maxVersionsAgeField.getValue()
+                        ? Number(this.maxVersionsAgeField.getValue()) : undefined
                 });
             }
         });
@@ -48,15 +48,8 @@ class DtbDumpInputDialog extends RcdMaterialInputDialog {
     }
 
     init() {
-        super.init();
-
-        //TODO Remove after upgrade of min Enonic XP version
-        if (config.xpVersion.indexOf('6.13.') !== 0) {
-            this.addItem(this.includeVersionsField)
-            // .addItem(this.maxVersionsField)
-            // .addItem(this.maxVersionsAgeField);
-        }
-        return this;
+        return super.init()
+            .addItem(this.includeVersionsField)
     }
 
     checkValidity() {
@@ -98,18 +91,30 @@ class DumpsRoute extends DtbRoute {
     }
 
     createLayout() {
-        this.tableCard = new RcdMaterialTableCard('System dumps').init().addColumn('Dump name').addColumn('Timestamp',
-            {classes: ['non-mobile-cell']}).addColumn('Version', {classes: ['non-mobile-cell', 'version-cell']}).addIconArea(
-            new RcdGoogleMaterialIconArea('add_circle', () => this.createDump()).init().setTooltip('Generate a system dump'),
-            {max: 0}).addIconArea(new RcdImageIconArea(config.assetsUrl + '/icons/load.svg', () => this.loadDump()).init().setTooltip(
-            'Load selected system dump'),
-            {min: 1, max: 1}).addIconArea(new RcdGoogleMaterialIconArea('file_download',
-            () => this.downloadDumps()).init().setTooltip('Archive and download selected system dumps'), {min: 1}).addIconArea(
-            new RcdGoogleMaterialIconArea('file_upload', () => this.uploadDumps()).init().setTooltip('Upload and unarchive system dumps',
-                RcdMaterialTooltipAlignment.RIGHT), {max: 0}).addIconArea(
-            new RcdGoogleMaterialIconArea('delete', () => this.deleteDumps()).init().setTooltip('Delete selected system dumps',
-                RcdMaterialTooltipAlignment.RIGHT), {min: 1});
-        return new RcdMaterialLayout().init().addChild(this.tableCard);
+        this.tableCard = new RcdMaterialTableCard('System dumps')
+            .init()
+            .addColumn('Dump name')
+            .addColumn('Timestamp', {classes: ['non-mobile-cell']})
+            .addColumn('XP Version<br/>Model Version', {classes: ['non-mobile-cell', 'version-cell']})
+            .addIconArea(new RcdGoogleMaterialIconArea('add_circle', () => this.createDump())
+                    .init()
+                    .setTooltip('Generate a system dump'),
+                {max: 0})
+            .addIconArea(new RcdImageIconArea(config.assetsUrl + '/icons/load.svg', () => this.loadDump())
+                    .init()
+                    .setTooltip('Load selected system dump'),
+                {min: 1, max: 1})
+            .addIconArea(new RcdGoogleMaterialIconArea('file_download', () => this.downloadDumps())
+                .init()
+                .setTooltip('Archive and download selected system dumps'), {min: 1})
+            .addIconArea(new RcdGoogleMaterialIconArea('file_upload', () => this.uploadDumps())
+                .init()
+                .setTooltip('Upload and unarchive system dumps', RcdMaterialTooltipAlignment.RIGHT), {max: 0})
+            .addIconArea(new RcdGoogleMaterialIconArea('delete', () => this.deleteDumps())
+                .init()
+                .setTooltip('Delete selected system dumps', RcdMaterialTooltipAlignment.RIGHT), {min: 1});
+        return new RcdMaterialLayout().init()
+            .addChild(this.tableCard);
     }
 
     retrieveDumps() {
@@ -119,11 +124,14 @@ class DumpsRoute extends DtbRoute {
         }).done((result) => {
             this.tableCard.deleteRows();
             if (handleResultError(result)) {
-                result.success.sort((dump1, dump2) => dump2.timestamp - dump1.timestamp).forEach((dump) => {
-                    this.tableCard.createRow().addCell(dump.name).addCell(toLocalDateTimeFormat(new Date(dump.timestamp)),
-                        {classes: ['non-mobile-cell']}).addCell(dump.version, {classes: ['non-mobile-cell', 'version-cell']}).setAttribute(
-                        'dump', dump.name).setAttribute('type', dump.type);
-                });
+                result.success.sort((dump1, dump2) => dump2.timestamp - dump1.timestamp)
+                    .forEach((dump) => {
+                        this.tableCard.createRow()
+                            .addCell(dump.name)
+                            .addCell(toLocalDateTimeFormat(new Date(dump.timestamp)), {classes: ['non-mobile-cell']})
+                            .addCell(dump.xpVersion + '<br/>' + dump.modelVersion, {classes: ['non-mobile-cell', 'version-cell']})
+                            .setAttribute('dump', dump.name).setAttribute('type', dump.type);
+                    });
             }
         }).fail(handleAjaxError).always(() => {
             infoDialog.close();

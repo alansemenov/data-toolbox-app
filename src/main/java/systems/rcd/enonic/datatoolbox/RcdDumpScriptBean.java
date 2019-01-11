@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.Supplier;
 
+import jdk.nashorn.api.scripting.JSObject;
 import systems.rcd.fwk.core.exc.RcdException;
 import systems.rcd.fwk.core.format.json.RcdJsonService;
 import systems.rcd.fwk.core.format.json.data.RcdJsonArray;
@@ -94,11 +95,13 @@ public class RcdDumpScriptBean
                 RcdFileService.listSubPaths( dumpDirectoryPath, dumpPath -> {
                     if ( dumpPath.toFile().isDirectory() )
                     {
+                        final DumpInfo dumpInfo = getDumpInfo( dumpPath );
                         final RcdJsonObject dump = RcdJsonService.createJsonObject().
                             put( "name", dumpPath.getFileName().toString() ).
                             put( "timestamp", dumpPath.toFile().lastModified() ).
                             put( "type", getDumpType( dumpPath ) ).
-                            put( "version", getDumpVersion( dumpPath ) );
+                            put( "xpVersion", dumpInfo.getXpVersion() ).
+                            put( "modelVersion", dumpInfo.getModelVersion() );
                         //put( "size", RcdFileService.getSize( dumpPath ) );
                         dumpsJsonArray.add( dump );
                     }
@@ -128,34 +131,33 @@ public class RcdDumpScriptBean
         return "";
     }
 
-    private String getDumpVersion( final Path dumpPath )
+    private DumpInfo getDumpInfo( final Path dumpPath )
     {
+        String xpVersion = null;
+        String modelVersion = null;
         try
         {
             if ( isExportDump( dumpPath ) )
             {
-                final String xpVersion = RcdPropertiesService.read( dumpPath.resolve( "export.properties" ) ).
+                RcdPropertiesService.read( dumpPath.resolve( "export.properties" ) ).
                     get( "xp.version" );
-                if ( xpVersion != null )
-                {
-                    return xpVersion;
-                }
             }
             else if ( isVersionedDump( dumpPath ) )
             {
                 final String dumpJsonContent = RcdTextFileService.readAsString( dumpPath.resolve( "dump.json" ) );
-                final Object xpVersion = RcdJavascriptService.eval( "JSON.parse('" + dumpJsonContent + "').xpVersion" );
-                if ( xpVersion instanceof String )
-                {
-                    return (String) xpVersion;
-                }
+                final JSObject dumpJson = (JSObject) RcdJavascriptService.eval( "JSON.parse('" + dumpJsonContent + "')" );
+                xpVersion = (String) dumpJson.getMember( "xpVersion" );
+                modelVersion = (String) dumpJson.getMember( "modelVersion" );
             }
         }
         catch ( Exception e )
         {
             LOGGER.error( "Error while reading dump version", e );
         }
-        return "";
+        return DumpInfo.create().
+            xpVersion( xpVersion ).
+            modelVersion( modelVersion ).
+            build();
     }
 
     public String create( final String dumpName, final boolean includeVersion, final Integer maxVersions, final Integer maxVersionsAge )
