@@ -189,6 +189,11 @@ public class RcdDumpScriptBean
             private int totalProgress = 0;
 
             @Override
+            public void totalBranches( final long total )
+            {
+            }
+
+            @Override
             public void dumpingBranch( final RepositoryId repositoryId, final Branch branch, final long total )
             {
                 repository = repositoryId.toString();
@@ -225,6 +230,11 @@ public class RcdDumpScriptBean
             private int currentProgress = 0;
 
             private int totalProgress = 0;
+
+            @Override
+            public void totalBranches( final long total )
+            {
+            }
 
             @Override
             public void loadingBranch( final RepositoryId repositoryId, final Branch branch, final Long total )
