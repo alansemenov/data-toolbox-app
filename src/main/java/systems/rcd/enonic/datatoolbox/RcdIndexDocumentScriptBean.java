@@ -33,7 +33,8 @@ public class RcdIndexDocumentScriptBean
             final String indexTypeName = generateIndexTypeName( type, branchName );
             final String indexDocumentId = generateIndexDocumentId( type, id, branchName, versionKey );
             final GetRequest getRequest = new GetRequest( indexName, indexTypeName, indexDocumentId );
-            if("branch".equals( type )) {
+            if ( "branch".equals( type ) )
+            {
                 getRequest.parent( generateIndexDocumentId( "version", id, branchName, versionKey ) );
             }
             final GetResponse getResponse = nodeSupplier.get().
@@ -106,7 +107,7 @@ public class RcdIndexDocumentScriptBean
             case "branch":
                 return id + "_" + branchName;
             case "version":
-                return id + "_" + versionKey;
+                return versionKey;
             default:
                 return null;
         }
