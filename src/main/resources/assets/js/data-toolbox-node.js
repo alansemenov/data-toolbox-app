@@ -39,40 +39,34 @@ class NodeRoute extends DtbRoute {
         this.nodeDetails = new NodeDetailsCard()
             .init();
 
-        this.displayCard = new RcdMaterialListCard().init()
+        this.mainDisplayCard = new RcdMaterialListCard().init()
             .addClass('dtb-node-display-card');
 
-        this.actions1Card = new RcdMaterialListCard().init()
-            .addClass('dtb-node-actions1-card');
+        this.actionsCard = new RcdMaterialListCard().init();
+        this.displayIndexDocumentCard = new RcdMaterialListCard().init();
+        this.displayBlobCard = new RcdMaterialListCard().init();
 
-        this.actions2Card = new RcdMaterialListCard().init()
-            .addClass('dtb-node-actions2-card');
-
-        this.actions3Card = new RcdMaterialListCard().init()
-            .addClass('dtb-node-actions2-card');
-
-        const firstRow = new RcdDivElement().init()
-            .addClass('dtb-node-row')
-            .addClass('dtb-responsive-row')
+        const firstColumn = new RcdDivElement().init()
+            .addClass('dtb-node-column')
             .addChild(this.nodeDetails)
-            .addChild(this.displayCard);
+            .addChild(this.mainDisplayCard);
 
-        const secondRow = new RcdDivElement().init()
-            .addClass('dtb-node-row')
-            .addClass('dtb-responsive-row')
-            .addChild(this.actions1Card)
-            .addChild(this.actions2Card)
-            .addChild(this.actions3Card);
+        const secondColumn = new RcdDivElement().init()
+            .addClass('dtb-node-column')
+            .addChild(this.actionsCard)
+            .addChild(this.displayIndexDocumentCard)
+            .addChild(this.displayBlobCard);
 
         return new RcdMaterialLayout()
             .init()
             .addClass('dtb-node-layout')
-            .addChild(firstRow)
-            .addChild(secondRow);
+            .addClass('dtb-responsive-row')
+            .addChild(firstColumn)
+            .addChild(secondColumn);
     }
 
     retrieveMeta() {
-        const infoDialog = showShortInfoDialog('Retrieving2 system properties...');
+        const infoDialog = showShortInfoDialog('Retrieving system properties...');
         return $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/meta-get',
@@ -92,10 +86,10 @@ class NodeRoute extends DtbRoute {
 
     onMetaRetrieval(result) {
         this.nodeDetails.clear();
-        this.displayCard.deleteRows();
-        this.actions1Card.deleteRows();
-        this.actions2Card.deleteRows();
-        this.actions3Card.deleteRows();
+        this.mainDisplayCard.deleteRows();
+        this.actionsCard.deleteRows();
+        this.displayIndexDocumentCard.deleteRows();
+        this.displayBlobCard.deleteRows();
         if (handleResultError(result)) {
             const meta = result.success;
 
@@ -115,7 +109,7 @@ class NodeRoute extends DtbRoute {
                 {repo: getRepoParameter(), branch: getBranchParameter(), path: meta._path});
             const displayJsonCallback = () => this.displayNodeAsJson(meta._id);
 
-            this.displayCard
+            this.mainDisplayCard
                 .addRow('Display siblings', null,
                     {callback: displaySiblingsCallback, icon: new RcdImageIcon(config.assetsUrl + '/icons/datatree.svg').init()})
                 .addRow('Display children', null,
@@ -126,36 +120,8 @@ class NodeRoute extends DtbRoute {
                     {callback: displayPermissionsCallback, icon: new RcdGoogleMaterialIcon('lock').init()})
                 .addRow('Display as JSON', null,
                     {callback: displayJsonCallback, icon: new RcdImageIcon(config.assetsUrl + '/icons/json.svg').init()});
-
-            this.actions1Card
-                .addRow('Display Search Index Document', null, {
-                    callback: () => this.displayIndexDocument('Search', meta._id),
-                    icon: new RcdImageIcon(config.assetsUrl + '/icons/es.svg').init()
-                })
-                .addRow('Display Branch Index Document', null, {
-                    callback: () => this.displayIndexDocument('Branch', meta._id, meta._versionKey),
-                    icon: new RcdImageIcon(config.assetsUrl + '/icons/es.svg').init()
-                })
-                .addRow('Display Version Index Document', null, {
-                    callback: () => this.displayIndexDocument('Version', meta._id, meta._versionKey),
-                    icon: new RcdImageIcon(config.assetsUrl + '/icons/es.svg').init()
-                });
-
-            this.actions2Card
-                .addRow('Display Node blob', null, {
-                    callback: () => this.displayBlob('Node', meta._id, meta._versionKey),
-                    icon: new RcdImageIcon(config.assetsUrl + '/icons/es.svg').init()
-                })
-                .addRow('Display Access Control blob', null, {
-                    callback: () => this.displayBlob('Access', meta._id, meta._versionKey),
-                    icon: new RcdImageIcon(config.assetsUrl + '/icons/es.svg').init()
-                })
-                .addRow('Display Index Config blob', null, {
-                    callback: () => this.displayBlob('Index', meta._id, meta._versionKey),
-                    icon: new RcdImageIcon(config.assetsUrl + '/icons/es.svg').init()
-                });
-
-            this.actions3Card
+            
+            this.actionsCard
                 .addRow('Export node', null,
                     {callback: () => this.exportNode(meta), icon: new RcdImageIcon(config.assetsUrl + '/icons/export-icon.svg').init()})
                 .addRow('Move/rename node', null, {
@@ -176,6 +142,34 @@ class NodeRoute extends DtbRoute {
                         icon: new RcdGoogleMaterialIcon('delete').init()
                     });
 
+
+            this.displayIndexDocumentCard
+                .addRow('Display Search Index Document', null, {
+                    callback: () => this.displayIndexDocument('Search', meta._id),
+                    icon: new RcdImageIcon(config.assetsUrl + '/icons/es.svg').init()
+                })
+                .addRow('Display Branch Index Document', null, {
+                    callback: () => this.displayIndexDocument('Branch', meta._id, meta._versionKey),
+                    icon: new RcdImageIcon(config.assetsUrl + '/icons/es.svg').init()
+                })
+                .addRow('Display Version Index Document', null, {
+                    callback: () => this.displayIndexDocument('Version', meta._id, meta._versionKey),
+                    icon: new RcdImageIcon(config.assetsUrl + '/icons/es.svg').init()
+                });
+
+            this.displayBlobCard
+                .addRow('Display Node blob', null, {
+                    callback: () => this.displayBlob('Node', meta._id, meta._versionKey),
+                    icon: new RcdImageIcon(config.assetsUrl + '/icons/es.svg').init()
+                })
+                .addRow('Display Access Control blob', null, {
+                    callback: () => this.displayBlob('Access', meta._id, meta._versionKey),
+                    icon: new RcdImageIcon(config.assetsUrl + '/icons/es.svg').init()
+                })
+                .addRow('Display Index Config blob', null, {
+                    callback: () => this.displayBlob('Index', meta._id, meta._versionKey),
+                    icon: new RcdImageIcon(config.assetsUrl + '/icons/es.svg').init()
+                });
         }
     }
 

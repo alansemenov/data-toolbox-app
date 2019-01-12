@@ -1,6 +1,10 @@
 .dtb-node-layout {
-  & > .dtb-node-row:not(:last-child) {
-    margin-bottom: 12px;
+  & > .dtb-node-column {
+    flex-grow: 1;
+    & > * {
+      margin-bottom: 12px;
+    }
+    margin-bottom: 0;
   }
 }
 
