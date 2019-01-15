@@ -12,8 +12,13 @@ import systems.rcd.fwk.core.format.json.data.RcdJsonArray;
 import systems.rcd.fwk.core.format.json.data.RcdJsonObject;
 import systems.rcd.fwk.core.format.json.data.RcdJsonValue;
 
+import com.enonic.xp.branch.Branch;
+import com.enonic.xp.context.Context;
+import com.enonic.xp.context.ContextAccessor;
+import com.enonic.xp.context.ContextBuilder;
 import com.enonic.xp.export.NodeImportResult;
 import com.enonic.xp.lib.task.TaskProgressHandler;
+import com.enonic.xp.repository.RepositoryId;
 import com.enonic.xp.script.bean.BeanContext;
 import com.enonic.xp.script.bean.ScriptBean;
 
@@ -127,5 +132,13 @@ public class RcdScriptBean
         taskProgressHandler.setCurrent( (double) current );
         taskProgressHandler.setTotal( (double) total );
         taskProgressHandler.reportProgress();
+    }
+
+    protected Context createContext( final RepositoryId repositoryId, final Branch branch )
+    {
+        return ContextBuilder.from( ContextAccessor.current() ).
+            repositoryId( repositoryId ).
+            branch( branch ).
+            build();
     }
 }

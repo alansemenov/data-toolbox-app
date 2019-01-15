@@ -193,12 +193,4 @@ public class RcdPropertyScriptBean
         }
     }
 
-    private Context createContext( final RepositoryId repositoryId, final Branch branch )
-    {
-        return ContextBuilder.from( ContextAccessor.current() ).
-            repositoryId( repositoryId ).
-            branch( branch ).
-            build();
-    }
-
 }

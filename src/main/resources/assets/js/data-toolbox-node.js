@@ -108,6 +108,8 @@ class NodeRoute extends DtbRoute {
             const displayPermissionsCallback = () => setState('permissions',
                 {repo: getRepoParameter(), branch: getBranchParameter(), path: meta._path});
             const displayJsonCallback = () => this.displayNodeAsJson(meta._id);
+            const displayVersionsCallback = () => setState('versions',
+                {repo: getRepoParameter(), branch: getBranchParameter(), id:meta._id, path: meta._path});
 
             this.mainDisplayCard
                 .addRow('Display siblings', null,
@@ -119,7 +121,9 @@ class NodeRoute extends DtbRoute {
                 .addRow('Display permission', null,
                     {callback: displayPermissionsCallback, icon: new RcdGoogleMaterialIcon('lock').init()})
                 .addRow('Display as JSON', null,
-                    {callback: displayJsonCallback, icon: new RcdImageIcon(config.assetsUrl + '/icons/json.svg').init()});
+                    {callback: displayJsonCallback, icon: new RcdImageIcon(config.assetsUrl + '/icons/json.svg').init()})
+                .addRow('Display versions', null,
+                    {callback: displayVersionsCallback, icon: new RcdImageIcon(config.assetsUrl + '/icons/json.svg').init()});
             
             this.actionsCard
                 .addRow('Export node', null,

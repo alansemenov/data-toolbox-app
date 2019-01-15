@@ -18,6 +18,7 @@ function createApp() {
         .addRoute(new MetaRoute().init())
         .addRoute(new PropertiesRoute().init())
         .addRoute(new PermissionsRoute().init())
+        .addRoute(new VersionsRoute().init())
         .addRoute(new SnapshotsRoute().init())
         .addRoute(new ExportsRoute().init())
         .addRoute(new DumpsRoute().init())

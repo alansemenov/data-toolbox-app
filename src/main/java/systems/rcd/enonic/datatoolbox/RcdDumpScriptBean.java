@@ -19,9 +19,6 @@ import systems.rcd.fwk.core.io.file.RcdTextFileService;
 import systems.rcd.fwk.core.script.js.RcdJavascriptService;
 
 import com.enonic.xp.branch.Branch;
-import com.enonic.xp.context.Context;
-import com.enonic.xp.context.ContextAccessor;
-import com.enonic.xp.context.ContextBuilder;
 import com.enonic.xp.dump.BranchDumpResult;
 import com.enonic.xp.dump.BranchLoadResult;
 import com.enonic.xp.dump.DumpError;
@@ -515,13 +512,5 @@ public class RcdDumpScriptBean
     protected String getType()
     {
         return "dump";
-    }
-
-    private Context createContext( final RepositoryId repositoryId, final Branch branch )
-    {
-        return ContextBuilder.from( ContextAccessor.current() ).
-            repositoryId( repositoryId ).
-            branch( branch ).
-            build();
     }
 }
