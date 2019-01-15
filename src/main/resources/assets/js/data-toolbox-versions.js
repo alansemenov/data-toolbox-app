@@ -11,12 +11,13 @@ class VersionsRoute extends DtbRoute {
     }
 
     createLayout() {
-        this.tableCard = new RcdMaterialTableCard('Versions',{selectable: false}).init()
+        this.tableCard = new RcdMaterialTableCard('Versions', {selectable: false}).init()
             .addClass('dtb-table-card-versions')
             .addColumn('Version ID')
             .addColumn('Blob key', {classes: ['non-mobile-cell']})
             .addColumn('Path', {classes: ['non-mobile-cell']})
-            .addColumn('Timestamp');
+            .addColumn('Timestamp')
+            .addColumn('', {icon: true});
 
         return new RcdMaterialLayout().init()
             .addChild(this.tableCard);
@@ -51,6 +52,7 @@ class VersionsRoute extends DtbRoute {
             .addCell('', {classes: ['non-mobile-cell']})
             .addCell('', {classes: ['non-mobile-cell']})
             .addCell('')
+            .addCell('', {icon: true})
             .addClass('rcd-clickable')
             .addClickListener(() => setState('node', {
                 repo: getRepoParameter(),
@@ -60,14 +62,24 @@ class VersionsRoute extends DtbRoute {
 
 
         if (handleResultError(result)) {
-            const properties = result.success.hits;
+            const versions = result.success.hits;
 
-            properties.forEach(property => {
+            versions.forEach(property => {
+
+                const displayNodeBlobCallback = () => this.displayNodeAsJson(node._id);
+                const moreIconAreaItems = [{text: 'Display node blob', callback: displayNodeBlobCallback}];
+                const moreIconArea = new RcdGoogleMaterialIconArea('more_vert', (source, event) => {
+                    RcdMaterialMenuHelper.displayMenu(source, moreIconAreaItems, 200)
+                    event.stopPropagation();
+                }).init()
+                    .setTooltip('Display...');
+
                 this.tableCard.createRow()
                     .addCell(property.versionId)
                     .addCell(property.blobKey, {classes: ['non-mobile-cell']})
                     .addCell(property.nodePath, {classes: ['non-mobile-cell']})
-                    .addCell(property.timestamp);
+                    .addCell(property.timestamp)
+                    .addCell(moreIconArea, {icon: true});
 
             });
 
@@ -91,7 +103,7 @@ class VersionsRoute extends DtbRoute {
             });
             this.tableCard.setFooter({
                 start: parseInt(getStartParameter()),
-                count: properties.length,
+                count: versions.length,
                 total: result.success.total,
                 previousCallback: previousCallback,
                 nextCallback: nextCallback
