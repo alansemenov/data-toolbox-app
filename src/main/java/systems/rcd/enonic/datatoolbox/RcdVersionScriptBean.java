@@ -54,6 +54,7 @@ public class RcdVersionScriptBean
                     put( "nodeBlobKey", nodeVersionKey.getNodeBlobKey().toString() ).
                     put( "indexConfigBlobKey", nodeVersionKey.getIndexConfigBlobKey().toString() ).
                     put( "accessControlBlobKey", nodeVersionKey.getAccessControlBlobKey().toString() ).
+                    put( "nodeId", nodeVersionMetadata.getNodeId().toString() ).
                     put( "nodePath", nodeVersionMetadata.getNodePath().toString() ).
                     put( "timestamp", nodeVersionMetadata.getTimestamp().toString() );
             } );

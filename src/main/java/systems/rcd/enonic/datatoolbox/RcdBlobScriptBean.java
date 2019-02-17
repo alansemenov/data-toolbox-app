@@ -34,13 +34,15 @@ public class RcdBlobScriptBean
         blobStoreSupplier = context.getService( BlobStore.class );
     }
 
-    public String get( final String repositoryName, final String branchName, final String id, final String versionKey, final String type )
+    public String get( final String repositoryName, final String branchName, final String id, final String versionKey, final String type,
+                       final String blobKeyString )
     {
         try
         {
             final RepositoryId repositoryId = RepositoryId.from( repositoryName );
             final SegmentLevel blobSegmentLevel = SegmentLevel.from( type );
-            final BlobKey blobKey = getBlobKey( repositoryName, branchName, id, versionKey, type );
+            final BlobKey blobKey =
+                blobKeyString == null ? getBlobKey( repositoryName, branchName, id, versionKey, type ) : BlobKey.from( blobKeyString );
             final Segment segment = RepositorySegmentUtils.toSegment( repositoryId, blobSegmentLevel );
             final BlobRecord blobRecord = blobStoreSupplier.get().
                 getRecord( segment, blobKey );

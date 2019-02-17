@@ -7,8 +7,9 @@ exports.post = function (req) {
     var type = body.type;
     var id = body.id;
     var versionKey = body.versionKey;
+    var blobKey = body.blobKey;
 
-    var result = blobBean.get(repositoryName, branchName, id, versionKey, type);
+    var result = blobBean.get(repositoryName, branchName, id, versionKey, type, blobKey);
 
     return {
         contentType: 'application/json',

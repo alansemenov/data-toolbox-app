@@ -14,7 +14,6 @@ class VersionsRoute extends DtbRoute {
         this.tableCard = new RcdMaterialTableCard('Versions', {selectable: false}).init()
             .addClass('dtb-table-card-versions')
             .addColumn('Version ID')
-            .addColumn('Blob key', {classes: ['non-mobile-cell']})
             .addColumn('Path', {classes: ['non-mobile-cell']})
             .addColumn('Timestamp')
             .addColumn('', {icon: true});
@@ -50,7 +49,6 @@ class VersionsRoute extends DtbRoute {
         this.tableCard.createRow({selectable: false})
             .addCell('..')
             .addCell('', {classes: ['non-mobile-cell']})
-            .addCell('', {classes: ['non-mobile-cell']})
             .addCell('')
             .addCell('', {icon: true})
             .addClass('rcd-clickable')
@@ -64,10 +62,17 @@ class VersionsRoute extends DtbRoute {
         if (handleResultError(result)) {
             const versions = result.success.hits;
 
-            versions.forEach(property => {
+            versions.forEach(version => {
 
-                const displayNodeBlobCallback = () => this.displayNodeAsJson(node._id);
-                const moreIconAreaItems = [{text: 'Display node blob', callback: displayNodeBlobCallback}];
+                const displayNodeBlobCallback = () => this.displayBlobAsJson('Node', version.nodeId, null, version.nodeBlobKey);
+                const displayIndexBlobCallback = () => this.displayBlobAsJson('Index', version.nodeId, null, version.indexConfigBlobKey);
+                const displayAccessBlobCallback = () => this.displayBlobAsJson('Access', version.nodeId, null,
+                    version.accessControlBlobKey);
+                const moreIconAreaItems = [
+                    {text: 'Display node blob', callback: displayNodeBlobCallback},
+                    {text: 'Display index blob', callback: displayIndexBlobCallback},
+                    {text: 'Display access blob', callback: displayAccessBlobCallback},
+                ];
                 const moreIconArea = new RcdGoogleMaterialIconArea('more_vert', (source, event) => {
                     RcdMaterialMenuHelper.displayMenu(source, moreIconAreaItems, 200)
                     event.stopPropagation();
@@ -75,10 +80,9 @@ class VersionsRoute extends DtbRoute {
                     .setTooltip('Display...');
 
                 this.tableCard.createRow()
-                    .addCell(property.versionId)
-                    .addCell(property.blobKey, {classes: ['non-mobile-cell']})
-                    .addCell(property.nodePath, {classes: ['non-mobile-cell']})
-                    .addCell(property.timestamp)
+                    .addCell(version.versionId)
+                    .addCell(version.nodePath, {classes: ['non-mobile-cell']})
+                    .addCell(version.timestamp)
                     .addCell(moreIconArea, {icon: true});
 
             });
