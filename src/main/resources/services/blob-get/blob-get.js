@@ -3,13 +3,10 @@ exports.post = function (req) {
     var body = JSON.parse(req.body);
 
     var repositoryName = body.repositoryName;
-    var branchName = body.branchName;
     var type = body.type;
-    var id = body.id;
-    var versionKey = body.versionKey;
     var blobKey = body.blobKey;
 
-    var result = blobBean.get(repositoryName, branchName, id, versionKey, type, blobKey);
+    var result = blobBean.get(repositoryName, type, blobKey);
 
     return {
         contentType: 'application/json',

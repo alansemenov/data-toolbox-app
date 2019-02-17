@@ -352,17 +352,14 @@ class DtbRoute extends RcdMaterialRoute {
         });
     }
 
-    displayBlobAsJson(type, id, versionKey, blobKey) {
+    displayBlobAsJson(type, blobKey) {
         const infoDialog = showShortInfoDialog("Retrieving blob...");
         return $.ajax({
             method: 'POST',
             url: config.servicesUrl + '/blob-get',
             data: JSON.stringify({
                 repositoryName: getRepoParameter(),
-                branchName: getBranchParameter(),
                 type: type.toLowerCase(),
-                id: id,
-                versionKey: versionKey,
                 blobKey: blobKey
             }),
             contentType: 'application/json; charset=utf-8'

@@ -64,10 +64,9 @@ class VersionsRoute extends DtbRoute {
 
             versions.forEach(version => {
 
-                const displayNodeBlobCallback = () => this.displayBlobAsJson('Node', version.nodeId, null, version.nodeBlobKey);
-                const displayIndexBlobCallback = () => this.displayBlobAsJson('Index', version.nodeId, null, version.indexConfigBlobKey);
-                const displayAccessBlobCallback = () => this.displayBlobAsJson('Access', version.nodeId, null,
-                    version.accessControlBlobKey);
+                const displayNodeBlobCallback = () => this.displayBlobAsJson('Node', version.nodeBlobKey);
+                const displayIndexBlobCallback = () => this.displayBlobAsJson('Index', version.indexConfigBlobKey);
+                const displayAccessBlobCallback = () => this.displayBlobAsJson('Access', version.accessControlBlobKey);
                 const moreIconAreaItems = [
                     {text: 'Display node blob', callback: displayNodeBlobCallback},
                     {text: 'Display index blob', callback: displayIndexBlobCallback},

@@ -44,18 +44,16 @@ class NodeRoute extends DtbRoute {
 
         this.actionsCard = new RcdMaterialListCard().init();
         this.displayIndexDocumentCard = new RcdMaterialListCard().init();
-        this.displayBlobCard = new RcdMaterialListCard().init();
 
         const firstColumn = new RcdDivElement().init()
             .addClass('dtb-node-column')
             .addChild(this.nodeDetails)
-            .addChild(this.mainDisplayCard);
+            .addChild(this.actionsCard);
 
         const secondColumn = new RcdDivElement().init()
             .addClass('dtb-node-column')
-            .addChild(this.actionsCard)
-            .addChild(this.displayIndexDocumentCard)
-            .addChild(this.displayBlobCard);
+            .addChild(this.mainDisplayCard)
+            .addChild(this.displayIndexDocumentCard);
 
         return new RcdMaterialLayout()
             .init()
@@ -89,7 +87,6 @@ class NodeRoute extends DtbRoute {
         this.mainDisplayCard.deleteRows();
         this.actionsCard.deleteRows();
         this.displayIndexDocumentCard.deleteRows();
-        this.displayBlobCard.deleteRows();
         if (handleResultError(result)) {
             const meta = result.success;
 
@@ -109,7 +106,7 @@ class NodeRoute extends DtbRoute {
                 {repo: getRepoParameter(), branch: getBranchParameter(), path: meta._path});
             const displayJsonCallback = () => this.displayNodeAsJson(meta._id);
             const displayVersionsCallback = () => setState('versions',
-                {repo: getRepoParameter(), branch: getBranchParameter(), id:meta._id, path: meta._path});
+                {repo: getRepoParameter(), branch: getBranchParameter(), id: meta._id, path: meta._path});
 
             this.mainDisplayCard
                 .addRow('Display siblings', null,
@@ -118,13 +115,13 @@ class NodeRoute extends DtbRoute {
                     {callback: displayChildrenCallback, icon: new RcdImageIcon(config.assetsUrl + '/icons/datatree.svg').init()})
                 .addRow('Display properties', null,
                     {callback: displayPropertiesCallback, icon: new RcdImageIcon(config.assetsUrl + '/icons/properties.svg').init()})
-                .addRow('Display permission', null,
+                .addRow('Display permissions', null,
                     {callback: displayPermissionsCallback, icon: new RcdGoogleMaterialIcon('lock').init()})
                 .addRow('Display as JSON', null,
                     {callback: displayJsonCallback, icon: new RcdImageIcon(config.assetsUrl + '/icons/json.svg').init()})
                 .addRow('Display versions', null,
                     {callback: displayVersionsCallback, icon: new RcdImageIcon(config.assetsUrl + '/icons/json.svg').init()});
-            
+
             this.actionsCard
                 .addRow('Export node', null,
                     {callback: () => this.exportNode(meta), icon: new RcdImageIcon(config.assetsUrl + '/icons/export-icon.svg').init()})
@@ -158,20 +155,6 @@ class NodeRoute extends DtbRoute {
                 })
                 .addRow('Display Version Index Document', null, {
                     callback: () => this.displayIndexDocument('Version', meta._id, meta._versionKey),
-                    icon: new RcdImageIcon(config.assetsUrl + '/icons/es.svg').init()
-                });
-
-            this.displayBlobCard
-                .addRow('Display Node blob', null, {
-                    callback: () => this.displayBlobAsJson('Node', meta._id, meta._versionKey),
-                    icon: new RcdImageIcon(config.assetsUrl + '/icons/es.svg').init()
-                })
-                .addRow('Display Access Control blob', null, {
-                    callback: () => this.displayBlobAsJson('Access', meta._id, meta._versionKey),
-                    icon: new RcdImageIcon(config.assetsUrl + '/icons/es.svg').init()
-                })
-                .addRow('Display Index Config blob', null, {
-                    callback: () => this.displayBlobAsJson('Index', meta._id, meta._versionKey),
                     icon: new RcdImageIcon(config.assetsUrl + '/icons/es.svg').init()
                 });
         }
