@@ -41,11 +41,11 @@ dependencies {
     include "com.enonic.xp:lib-auth:${xpVersion}"
     include "com.enonic.xp:lib-content:${xpVersion}"
     include "com.enonic.xp:lib-portal:${xpVersion}"
-    include "com.enonic.xp:lib-mustache:${xpVersion}"
     include "com.enonic.xp:lib-io:${xpVersion}"
     include "com.enonic.xp:lib-repo:${xpVersion}"
     include "com.enonic.xp:lib-node:${xpVersion}"
     include "com.enonic.xp:lib-task:${xpVersion}"
+    include 'com.enonic.lib:lib-mustache:2.0.0-SNAPSHOT'
     include "systems.rcd.fwk.core:rcd-fwk-core:7.2.0-SNAPSHOT"
     rcdjsfwkcore "systems.rcd.js.fwk.core:rcd-jsfwk-core:3.0.5"
     rcdjsfwkmaterial "systems.rcd.js.fwk.material:rcd-jsfwk-material:3.0.6"

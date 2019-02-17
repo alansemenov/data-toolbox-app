@@ -1,6 +1,6 @@
 var authLib = require('/lib/xp/auth');
 var contentLib = require('/lib/xp/content');
-var mustacheLib = require('/lib/xp/mustache');
+var mustacheLib = require('/lib/mustache');
 var portalLib = require('/lib/xp/portal');
 
 exports.get = function (req) {

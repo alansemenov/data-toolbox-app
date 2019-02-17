@@ -6,6 +6,7 @@ import systems.rcd.fwk.core.format.json.RcdJsonService;
 import systems.rcd.fwk.core.format.json.data.RcdJsonArray;
 import systems.rcd.fwk.core.format.json.data.RcdJsonObject;
 
+import com.enonic.xp.blob.NodeVersionKey;
 import com.enonic.xp.branch.Branch;
 import com.enonic.xp.node.NodeId;
 import com.enonic.xp.node.NodeService;
@@ -47,9 +48,12 @@ public class RcdVersionScriptBean
 
             final RcdJsonArray hits = result.createArray( "hits" );
             queryResult.getNodeVersionsMetadata().forEach( nodeVersionMetadata -> {
+                final NodeVersionKey nodeVersionKey = nodeVersionMetadata.getNodeVersionKey();
                 final RcdJsonObject versionMeta = hits.createObject().
                     put( "versionId", nodeVersionMetadata.getNodeVersionId().toString() ).
-                    put( "blobKey", nodeVersionMetadata.getBlobKey().toString() ).
+                    put( "nodeBlobKey", nodeVersionKey.getNodeBlobKey().toString() ).
+                    put( "indexConfigBlobKey", nodeVersionKey.getIndexConfigBlobKey().toString() ).
+                    put( "accessControlBlobKey", nodeVersionKey.getAccessControlBlobKey().toString() ).
                     put( "nodePath", nodeVersionMetadata.getNodePath().toString() ).
                     put( "timestamp", nodeVersionMetadata.getTimestamp().toString() );
             } );
