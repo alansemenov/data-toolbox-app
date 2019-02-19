@@ -114,7 +114,7 @@ class BranchesRoute extends DtbRoute {
     displayHelp() {
         const definition = 'A branch is a set of data in a repository.  All repositories have a default branch called master. ' +
                            'Any number of branches can be added to facilitate your data. ' +
-                           'For example, the cms-repo repository contains two branches:' +
+                           'For example, the com.enonic.cms.default repository contains two branches:' +
                            '"draft" containing the content as seen in the Content Studio and ' +
                            '"master" containing the published content served by the portal.<br/>' +
                            'See <a class="rcd-material-link" href="http://xp.readthedocs.io/en/6.10/developer/node-domain/branch.html">Branch</a> for more information.';

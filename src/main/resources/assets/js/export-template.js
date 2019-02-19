@@ -10,7 +10,7 @@
             tableCard = new RcdMaterialTableCard('Exports').init().
                 addColumn('Export name').
                 addIconArea(new RcdImageIconArea(config.assetsUrl + '/icons/export-icon.svg',
-                    createExport).init().setTooltip('Export current content'), {max: 0}).
+                    createExport).init().setTooltip('Export current content'), config.contentPath === '/'? {min:1,max: 0}: {max: 0}).
                 addIconArea(new RcdImageIconArea(config.assetsUrl + '/icons/import-icon.svg',
                     loadExports).init().setTooltip('Import selected exports'), {min: 1}).
                 addIconArea(new RcdGoogleMaterialIconArea('file_download',
@@ -64,6 +64,8 @@
             method: 'POST',
             url: config.servicesUrl + '/export-create',
             data: JSON.stringify({
+                cmsRepositoryShortName: config.cmsRepositoryShortName,
+                branchName: config.branchName,
                 contentPath: config.contentPath,
                 exportName: exportName
             }),
@@ -97,6 +99,8 @@
             method: 'POST',
             url: config.servicesUrl + '/export-load',
             data: JSON.stringify({
+                cmsRepositoryShortName: config.cmsRepositoryShortName,
+                branchName: config.branchName,
                 contentPath: contentPath,
                 exportNames: exportNames
             }),

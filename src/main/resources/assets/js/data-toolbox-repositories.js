@@ -102,7 +102,7 @@ class RepositoriesRoute extends DtbRoute {
     displayHelp() {
         const definition = 'Enonic XP data is split in repositories. Enonic XP uses by default 2 repositories:<br/>' +
                            '"system-repo", the core repository, contains the users, groups, roles, installed application, settings of repositories, ...<br/>' +
-                           '"cms-repo", the content domain repository, contains the data managed by Content Studio.<br/>' +
+                           '"com.enonic.cms.default", the content domain repository, contains the data managed by Content Studio.<br/>' +
                            'See <a class="rcd-material-link" href="http://xp.readthedocs.io/en/6.10/developer/node-domain/repository.html">Repository</a> for more information.';
 
         const viewDefinition = 'The view lists in a table all the repositories. Click on a row to display its branches.';

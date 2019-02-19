@@ -6,7 +6,7 @@ exports.post = function (req) {
     var result;
     if (repositoryNames.some(isProtectedAgainstDeletion)) {
         result = {
-            error: 'The repositories [cms-repo] and [system-repo] cannot be deleted.'
+            error: 'The repositories [com.enonic.cms.default] and [system-repo] cannot be deleted.'
         };
     } else {
         result = runSafely(deleteRepositories, repositoryNames);
@@ -18,7 +18,7 @@ exports.post = function (req) {
 };
 
 function isProtectedAgainstDeletion(repositoryName) {
-    return "cms-repo" === repositoryName || "system-repo" === repositoryName;
+    return "com.enonic.cms.default" === repositoryName || "system-repo" === repositoryName;
 }
 
 function deleteRepositories(repositoryNames) {

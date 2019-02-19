@@ -282,7 +282,7 @@ class NodesRoute extends DtbRoute {
                            'See <a class="rcd-material-link" href="http://xp.readthedocs.io/en/6.10/developer/node-domain/nodes.html">Nodes</a> for more information. ';
 
         const structureDefinition = 'This tool represent nodes in a tree structure. ' +
-                                    'While this solution is adapted to repositories like cms-repo or system-repo, ' +
+                                    'While this solution is adapted to repositories like com.enonic.cms.default or system-repo, ' +
                                     'it may be problematic for custom repositories or for nodes with too many children. ' +
                                     'Node search for all paths will be available in the future, but if this representation is blocking we recommend using the tool ' +
                                     '<a class="rcd-material-link" href="https://market.enonic.com/vendors/runar-myklebust/repoxplorer">repoXPlorer</a>.';
