@@ -96,13 +96,14 @@ public class RcdDumpScriptBean
                     if ( dumpPath.toFile().isDirectory() )
                     {
                         final DumpInfo dumpInfo = getDumpInfo( dumpPath );
+                        final String dumpType = getDumpType( dumpPath );
                         final RcdJsonObject dump = RcdJsonService.createJsonObject().
                             put( "name", dumpPath.getFileName().toString() ).
                             put( "timestamp", dumpPath.toFile().lastModified() ).
-                            put( "type", getDumpType( dumpPath ) ).
+                            put( "type", dumpType ).
                             put( "xpVersion", dumpInfo.getXpVersion() ).
-                            put( "modelVersion", dumpInfo.getModelVersion() );
-                        //put( "size", RcdFileService.getSize( dumpPath ) );
+                            put( "modelVersion", dumpInfo.getModelVersion() ).
+                            put( "canLoad", "versioned".equals( dumpType ) && "7.0.0".equals( dumpInfo.getModelVersion()) );
                         dumpsJsonArray.add( dump );
                     }
                 } );

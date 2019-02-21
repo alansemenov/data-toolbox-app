@@ -103,11 +103,18 @@ class DumpsRoute extends DtbRoute {
             .addIconArea(new RcdGoogleMaterialIconArea('update', () => this.upgradeDump())
                     .init()
                     .setTooltip('Upgrade selected system dump'),
-                {min: 1, max: 1})
+                {min: 1, max: 1, predicate: () => {
+                    const dumpType = this.tableCard.getSelectedRows().map((row) => row.attributes['type'])[0];
+                    const canLoad = this.tableCard.getSelectedRows().map((row) => row.attributes['canLoad'])[0];
+                    return 'versioned' === dumpType && !canLoad;
+                }})
             .addIconArea(new RcdImageIconArea(config.assetsUrl + '/icons/load.svg', () => this.loadDump())
                     .init()
                     .setTooltip('Load selected system dump'),
-                {min: 1, max: 1})
+                {min: 1, max: 1, predicate: () => {
+                    const canLoad = this.tableCard.getSelectedRows().map((row) => row.attributes['canLoad'])[0];
+                    return canLoad;
+                }})
             .addIconArea(new RcdGoogleMaterialIconArea('file_download', () => this.downloadDumps())
                 .init()
                 .setTooltip('Archive and download selected system dumps'), {min: 1})
@@ -134,7 +141,9 @@ class DumpsRoute extends DtbRoute {
                             .addCell(dump.name)
                             .addCell(toLocalDateTimeFormat(new Date(dump.timestamp)), {classes: ['non-mobile-cell']})
                             .addCell(dump.xpVersion + '<br/>' + dump.modelVersion, {classes: ['non-mobile-cell', 'version-cell']})
-                            .setAttribute('dump', dump.name).setAttribute('type', dump.type);
+                            .setAttribute('dump', dump.name)
+                            .setAttribute('type', dump.type)
+                            .setAttribute('canLoad', dump.canLoad);
                     });
             }
         }).fail(handleAjaxError).always(() => {
