@@ -100,6 +100,10 @@ class DumpsRoute extends DtbRoute {
                     .init()
                     .setTooltip('Generate a system dump'),
                 {max: 0})
+            .addIconArea(new RcdGoogleMaterialIconArea('update', () => this.upgradeDump())
+                    .init()
+                    .setTooltip('Upgrade selected system dump'),
+                {min: 1, max: 1})
             .addIconArea(new RcdImageIconArea(config.assetsUrl + '/icons/load.svg', () => this.loadDump())
                     .init()
                     .setTooltip('Load selected system dump'),
@@ -184,6 +188,32 @@ class DumpsRoute extends DtbRoute {
             taskId: result.taskId,
             message: 'Deleting dumps...',
             doneCallback: () => displaySnackbar('Dump' + (dumpNames.length > 1 ? 's' : '') + ' deleted'),
+            alwaysCallback: () => this.retrieveDumps()
+        })).fail(handleAjaxError).always(() => {
+            infoDialog.close();
+        });
+    }
+
+    upgradeDump() {
+        const dumpName = this.tableCard.getSelectedRows().map((row) => row.attributes['dump'])[0];
+        const dumpType = this.tableCard.getSelectedRows().map((row) => row.attributes['type'])[0];
+        if ('versioned' === dumpType) {
+            showConfirmationDialog('Upgrading this dump will modify the existing dump and cannot be reverted', 'UPGRADE',
+                () => this.doUpgradeDump(dumpName));
+        }
+    }
+
+    doUpgradeDump(dumpName) {
+        const infoDialog = showLongInfoDialog("Upgrading dump...");
+        $.ajax({
+            method: 'POST',
+            url: config.servicesUrl + '/dump-upgrade',
+            data: JSON.stringify({dumpName: dumpName}),
+            contentType: 'application/json; charset=utf-8'
+        }).done((result) => handleTaskCreation(result, {
+            taskId: result.taskId,
+            message: 'Upgrading dump...',
+            doneCallback: () => displaySnackbar('Dump upgraded'),
             alwaysCallback: () => this.retrieveDumps()
         })).fail(handleAjaxError).always(() => {
             infoDialog.close();

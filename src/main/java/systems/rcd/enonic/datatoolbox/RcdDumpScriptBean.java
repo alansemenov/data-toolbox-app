@@ -29,6 +29,8 @@ import com.enonic.xp.dump.RepoLoadResult;
 import com.enonic.xp.dump.SystemDumpListener;
 import com.enonic.xp.dump.SystemDumpParams;
 import com.enonic.xp.dump.SystemDumpResult;
+import com.enonic.xp.dump.SystemDumpUpgradeParams;
+import com.enonic.xp.dump.SystemDumpUpgradeResult;
 import com.enonic.xp.dump.SystemLoadListener;
 import com.enonic.xp.dump.SystemLoadParams;
 import com.enonic.xp.dump.SystemLoadResult;
@@ -44,6 +46,7 @@ import com.enonic.xp.repository.RepositoryId;
 import com.enonic.xp.repository.RepositoryService;
 import com.enonic.xp.script.bean.BeanContext;
 import com.enonic.xp.security.SystemConstants;
+import com.enonic.xp.upgrade.UpgradeListener;
 import com.enonic.xp.vfs.VirtualFiles;
 
 public class RcdDumpScriptBean
@@ -272,6 +275,39 @@ public class RcdDumpScriptBean
         };
     }
 
+    private UpgradeListener createUpgraderListener()
+    {
+        return new UpgradeListener()
+        {
+            private String action = "Upgrading dump";
+
+            private int currentProgress = 0;
+
+            private int totalProgress = 0;
+
+            @Override
+            public void total( final long total )
+            {
+                currentProgress = 0;
+                totalProgress = (int) total;
+                reportProgress( action, currentProgress, totalProgress );
+            }
+
+            @Override
+            public void upgraded()
+            {
+                currentProgress++;
+                reportProgress( action, currentProgress, totalProgress );
+            }
+
+            @Override
+            public void finished()
+            {
+
+            }
+        };
+    }
+
     private RcdJsonValue convertSystemDumpResultToJson( final SystemDumpResult systemDumpResult )
     {
         final RcdJsonObject result = RcdJsonService.createJsonObject();
@@ -320,6 +356,28 @@ public class RcdDumpScriptBean
                 return convertSystemLoadResultToJson( systemLoadResult );
             }
         }, "Error while loading dump" );
+    }
+
+    public String upgrade( final String dumpName )
+    {
+        return runSafely( () -> {
+            final SystemDumpUpgradeParams params = SystemDumpUpgradeParams.create().
+                dumpName( dumpName ).
+                upgradeListener( createUpgraderListener() ).
+                build();
+            final SystemDumpUpgradeResult upgradeResult = dumpServiceSupplier.get().
+                upgrade( params );
+            final RcdJsonValue result = convertSystemUpgradeResultToJson( upgradeResult );
+            return createSuccessResult( result );
+        }, "Error while upgrading dump" );
+    }
+
+    private RcdJsonValue convertSystemUpgradeResultToJson( final SystemDumpUpgradeResult upgradeResult )
+    {
+        final RcdJsonObject result = RcdJsonService.createJsonObject();
+        result.put( "initialVersion", upgradeResult.getInitialVersion().toString() );
+        result.put( "upgradedVersion", upgradeResult.getUpgradedVersion().toString() );
+        return result;
     }
 
     private boolean isExportDump( final String dumpName )
