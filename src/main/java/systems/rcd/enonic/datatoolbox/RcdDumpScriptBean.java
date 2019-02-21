@@ -144,7 +144,7 @@ public class RcdDumpScriptBean
                 final String dumpJsonContent = RcdTextFileService.readAsString( dumpPath.resolve( "dump.json" ) );
                 final JSObject dumpJson = (JSObject) RcdJavascriptService.eval( "JSON.parse('" + dumpJsonContent + "')" );
                 xpVersion = (String) dumpJson.getMember( "xpVersion" );
-                modelVersion = (String) dumpJson.getMember( "modelVersion" );
+                modelVersion = dumpJson.hasMember( "modelVersion" ) ? (String) dumpJson.getMember( "modelVersion" ) : "";
             }
         }
         catch ( Exception e )
