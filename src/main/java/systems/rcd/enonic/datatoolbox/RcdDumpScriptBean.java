@@ -103,7 +103,7 @@ public class RcdDumpScriptBean
                             put( "type", dumpType ).
                             put( "xpVersion", dumpInfo.getXpVersion() ).
                             put( "modelVersion", dumpInfo.getModelVersion() ).
-                            put( "canLoad", "versioned".equals( dumpType ) && "7.0.0".equals( dumpInfo.getModelVersion()) );
+                            put( "canLoad", "versioned".equals( dumpType ) && "8.0.0".equals( dumpInfo.getModelVersion()) );
                         dumpsJsonArray.add( dump );
                     }
                 } );
