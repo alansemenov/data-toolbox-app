@@ -47,11 +47,11 @@ dependencies {
     include "com.enonic.xp:lib-node:${xpVersion}"
     include "com.enonic.xp:lib-task:${xpVersion}"
     include 'com.enonic.lib:lib-mustache:2.0.0-SNAPSHOT'
-    include "systems.rcd.fwk.core:rcd-fwk-core:7.2.0-SNAPSHOT"
+    include "systems.rcd.fwk.core:rcd-fwk-core:7.2.0"
     rcdjsfwkcore "systems.rcd.js.fwk.core:rcd-jsfwk-core:3.0.5"
-    rcdjsfwkmaterial "systems.rcd.js.fwk.material:rcd-jsfwk-material:3.1.0-SNAPSHOT"
+    rcdjsfwkmaterial "systems.rcd.js.fwk.material:rcd-jsfwk-material:3.1.0"
     compile "systems.rcd.js.fwk.core:rcd-jsfwk-core:3.0.5"
-    compile "systems.rcd.js.fwk.material:rcd-jsfwk-material:3.1.0-SNAPSHOT"
+    compile "systems.rcd.js.fwk.material:rcd-jsfwk-material:3.1.0"
     compile "org.elasticsearch:elasticsearch:2.4.6"
 }
 
